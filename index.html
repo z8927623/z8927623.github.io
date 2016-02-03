@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-
 <meta http-equiv="Cache-Control" content="no-transform" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 
@@ -72,6 +71,7 @@
     motion: true
   };
 </script>
+
 
   <title> Wild Yaoyao's blog </title>
 </head>
@@ -179,6 +179,15 @@
     
 
     
+    
+      
+      
+        
+        
+        
+      
+
+      
     
 
     
@@ -340,136 +349,6 @@
 <p>这里由于<code>-methodSignatureForSelector:</code>没有获取到有效签名，因此<code>-forwardInvocation:</code>消息并没有发送。</p>
 <p>综上，可以用如下这张图来描述整个过程</p>
 <p><img src="/images/runtime_7.png" alt="runtime_7"></p>
-
-            
-          </span>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/02/01/Objective-C之Runtime/" itemprop="url">
-                  Objective-C Runtime之概览
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2016-02-01T00:00:00+08:00" content="2016-02-01">
-              2016-02-01
-            </time>
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/02/01/Objective-C之Runtime/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/01/Objective-C之Runtime/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <span itemprop="articleBody">
-            
-              <p>什么，你和我说runtime，大多数iOS程序员听到runtime的时候，脑子里第一反映便是，这货太特么抽象难理解了，而且工作中不常用到。的确，我也是这么认为的，Objective-C里两大最难的点当属Runtime和Runloop。然而，难虽难，这硬骨头还是要啃啊，不然理解不到这门语言的精髓呀。</p>
-<p>我们都知道，Objective-C这门语言是动态的，是扩充于C的面向对象语言，所谓动态的核心就是<code>Runtime</code>。平常写程序的时候，它被系统加载进去，然后在幕后默默工作着，我们甚至察觉不到它的存在。但是，假如没有它，OC就运行不了了。也就是说，<code>C + Runtime = Objctive-C</code>。</p>
-<h1 id="runtime-h">runtime.h</h1><p>runtime是开源的，我们可以在<a href="https://opensource.apple.com/tarballs/objc4/" target="_blank" rel="external">https://opensource.apple.com/tarballs/objc4/</a>下载。</p>
-<p>runtime.h里声明了以下开头的函数，我们通过观察类的命名可以发现：</p>
-<ul>
-<li><code>objc_...</code><br>和runtime一些属性设置有关。比如<ul>
-<li>类相关<br>创建一个类（<em>objc_allocateClassPair</em>）、注册该类（<em>objc_registerClassPair</em>）、销毁该类（<em>objc_disposeClassPair</em>）、指定类名返回该类（<em>objc_getClass</em>）、指定类名返回该类元类（<em>objc_getMetaClass</em>）、获取注册的类的列表（<em>objc_getClassList</em>或者<em>objc_copyClassList</em>）等</li>
-<li>对象相关<br>设置关联对象（<em>objc_setAssociatedObject</em>），获取关联对象（<em>objc_getAssociatedObject</em>）等。</li>
-<li>协议相关<br>创建一个协议（<em>objc_allocateProtocol</em>）、注册该协议（<em>objc_registerProtocol</em>）、指定协议名字获取协议（<em>objc_getProtocol</em>）、运行时所有的协议名（<em>objc_copyProtocolList</em>）等。</li>
-</ul>
-</li>
-<li><p><code>class_...</code><br>和类相关。<br>比如获取类名（<em>class_getName</em>）、为类添加一个新的方法（<em>class_addMethod</em>）、获取类对应选择器的方法描述Method（<em>class_getClassMethod</em>）、获取类的变量列表（<em>class_copyIvarList</em>）、属性列表（<em>class_copyPropertyList</em>）、协议列表（<em>class_copyProtocolList</em>）、方法列表（<em>class_copyMethodList</em>）等。</p>
-</li>
-<li><p><code>object_..</code><br>和对象相关。<br>比如获取对象的类名（<em>object_getClassName</em>）、获取对象某个变量的值（<em>object_getIvar</em>）等。</p>
-</li>
-<li><p><code>method_...</code><br>和方法描述有关。<br>比如获取方法名SEL（<em>method_getName</em>）、方法的实现IMP（<em>method_getImplementation</em>）、参数和返回参数的类型编码（<em>method_getTypeEncoding</em>）等。</p>
-</li>
-<li><p><code>ivar_...</code><br>和变量有关。<br>比如获取变量名（<em>ivar_getName</em>）、实例变量的类型编码（<em>ivar_getTypeEncoding</em>）等。</p>
-</li>
-<li><p><code>property_...</code><br>和属性方法有关。<br>比如获取属性名（<em>property_getName</em>）、属性的编码（<em>property_getAttributes</em>）等。</p>
-</li>
-<li><p><code>protocol_...</code><br>和协议有关。<br>比如获取协议名（<em>protocol_getName</em>）、协议的方法描述（protocol_getMethodDescription）、判断某个协议是否实现另一个协议（<em>protocol_conformsToProtocol</em>）等。</p>
-</li>
-<li><p><code>sel_...</code><br>和方法选择器selectors有关。<br>比如获取选择器的名字（<em>sel_getName</em>）、注册一个选择器（<em>sel_registerName</em>或者<em>sel_getUid</em>）等。</p>
-</li>
-<li><p><code>imp_...</code><br>和方法的实现有关。<br>比如用block实现某selector的具体实现（<em>imp_implementationWithBlock</em>）等</p>
-</li>
-</ul>
-<h1 id="foundation-h">foundation.h</h1><p><code>Foundation</code>是一个framework，它定义了OC类的基础。其中，NSObject类是Cocoa里大部分类的基类，它定义了一些基础的方法，比如<code>description</code>方法，NSObject对这个方法的实现仅仅是返回对象的名字和地址，我们可以通过覆写该方法来返回更多的信息。</p>
-<p>除了实现了一些基本的方法，NSObject也定义了部分的runtime接口：</p>
-<ul>
-<li><code>- (Class)class;</code></li>
-<li><code>- (BOOL)isKindOfClass:(Class)class;</code></li>
-<li><code>- (BOOL)isMemberOfClass:(Class)aClass;</code></li>
-<li><code>- (BOOL)respondsToSelector:(SEL)selector;</code></li>
-<li><code>+ (BOOL)instancesRespondToSelector:(SEL)aSelector;</code></li>
-<li><code>- (id)performSelector:(SEL)selector;</code></li>
-<li><code>- (IMP)methodForSelector:(SEL)aSelector;</code></li>
-<li><code>+ (IMP)instanceMethodForSelector:(SEL)aSelector;</code></li>
-<li><code>- (void)doesNotRecognizeSelector:(SEL)aSelector;</code></li>
-<li><code>- (BOOL)conformsToProtocol:(Protocol *)aProtocol;</code></li>
-<li><code>+ (BOOL)conformsToProtocol:(Protocol *)protocol;</code></li>
-</ul>
 
             
           </span>
