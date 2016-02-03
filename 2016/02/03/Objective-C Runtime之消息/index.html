@@ -51,15 +51,25 @@
 
 
 
-<meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Wild Yaoyao's blog">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="Method&amp;amp;Message什么是Method？  
+方法就是一个类中有名字的一串代码，平常我们写的- (int)func:(NString *)str { ... }就是一个方法，但是它在编译的时候会被转换成C函数调用，static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }，也就是说，所谓的方法实际上就是C函数。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Objective-C Runtime之消息">
+<meta property="og:url" content="http://yoursite.com/2016/02/03/Objective-C Runtime之消息/index.html">
 <meta property="og:site_name" content="Wild Yaoyao's blog">
-<meta property="og:description">
+<meta property="og:description" content="Method&amp;amp;Message什么是Method？  
+方法就是一个类中有名字的一串代码，平常我们写的- (int)func:(NString *)str { ... }就是一个方法，但是它在编译的时候会被转换成C函数调用，static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }，也就是说，所谓的方法实际上就是C函数。">
+<meta property="og:image" content="http://yoursite.com/images/runtime_2.png">
+<meta property="og:image" content="http://yoursite.com/images/runtime_3.png">
+<meta property="og:image" content="http://yoursite.com/images/runtime_4.png">
+<meta property="og:image" content="http://yoursite.com/images/runtime_5.png">
+<meta property="og:image" content="http://yoursite.com/images/runtime_6.png">
+<meta property="og:image" content="http://yoursite.com/images/runtime_7.png">
+<meta property="og:updated_time" content="2016-02-03T08:09:12.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Wild Yaoyao's blog">
-<meta name="twitter:description">
+<meta name="twitter:title" content="Objective-C Runtime之消息">
+<meta name="twitter:description" content="Method&amp;amp;Message什么是Method？  
+方法就是一个类中有名字的一串代码，平常我们写的- (int)func:(NString *)str { ... }就是一个方法，但是它在编译的时候会被转换成C函数调用，static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }，也就是说，所谓的方法实际上就是C函数。">
 
 
 
@@ -71,7 +81,7 @@
   };
 </script>
 
-  <title> Wild Yaoyao's blog </title>
+  <title> Objective-C Runtime之消息 | Wild Yaoyao's blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -92,9 +102,7 @@
 
 
 
-  <div class="container one-column 
-   page-home 
-">
+  <div class="container one-column page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -171,15 +179,9 @@
       <div class="main-inner">
         <div id="content" class="content">
           
-  <section id="posts" class="posts-expand">
 
+  <div id="posts" class="posts-expand">
     
-
-    
-    
-
-    
-      
 
   
   
@@ -199,10 +201,7 @@
             
             
               
-                
-                <a class="post-title-link" href="/2016/02/03/Objective-C Runtime之消息/" itemprop="url">
-                  Objective-C Runtime之消息
-                </a>
+                Objective-C Runtime之消息
               
             
           </h1>
@@ -235,10 +234,7 @@
       
 
       
-        
-          <span itemprop="articleBody">
-            
-              <h3 id="Method&amp;Message">Method&amp;Message</h3><p>什么是Method？  </p>
+        <span itemprop="articleBody"><h3 id="Method&amp;Message">Method&amp;Message</h3><p>什么是Method？  </p>
 <p>方法就是一个类中有名字的一串代码，平常我们写的<br><code>- (int)func:(NString *)str { ... }</code>就是一个方法，但是它在编译的时候会被转换成C函数调用，<br><code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>，也就是说，所谓的方法实际上就是C函数。</p>
 <p>从<code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>就可以明白为什么我们可以使用<code>self</code>和<code>_cmd</code>，因为他们在源码中是隐藏的，self代表着receiver，_cmd代表调用选择器selector。</p>
 <p>什么是Message？  </p>
@@ -330,10 +326,7 @@
 <p>这里由于<code>-methodSignatureForSelector:</code>没有获取到有效签名，因此<code>-forwardInvocation:</code>消息并没有发送。</p>
 <p>综上，可以用如下这张图来描述整个过程</p>
 <p><img src="/images/runtime_7.png" alt="runtime_7"></p>
-
-            
-          </span>
-        
+</span>
       
     </div>
 
@@ -341,147 +334,32 @@
       
 
       
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
+              <a href="/2016/02/01/Objective-C之Runtime/" rel="next" title="Objective-C Runtime之概览">
+                <i class="fa fa-chevron-left"></i> Objective-C Runtime之概览
+              </a>
             
-              
-                
-                <a class="post-title-link" href="/2016/02/01/Objective-C之Runtime/" itemprop="url">
-                  Objective-C Runtime之概览
-                </a>
-              
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
             
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2016-02-01T00:00:00+08:00" content="2016-02-01">
-              2016-02-01
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
       
 
       
-        
-          <span itemprop="articleBody">
-            
-              <p>什么，你和我说runtime，大多数iOS程序员听到runtime的时候，脑子里第一反映便是，这货太特么抽象难理解了，而且工作中不常用到。的确，我也是这么认为的，Objective-C里两大最难的点当属Runtime和Runloop。然而，难虽难，这硬骨头还是要啃啊，不然理解不到这门语言的精髓呀。</p>
-<p>我们都知道，Objective-C这门语言是动态的，是扩充于C的面向对象语言，所谓动态的核心就是<code>Runtime</code>。平常写程序的时候，它被系统加载进去，然后在幕后默默工作着，我们甚至察觉不到它的存在。但是，假如没有它，OC就运行不了了。也就是说，<code>C + Runtime = Objctive-C</code>。</p>
-<h1 id="runtime-h">runtime.h</h1><p>runtime是开源的，我们可以在<a href="https://opensource.apple.com/tarballs/objc4/" target="_blank" rel="external">https://opensource.apple.com/tarballs/objc4/</a>下载。</p>
-<p>runtime.h里声明了以下开头的函数，我们通过观察类的命名可以发现：</p>
-<ul>
-<li><code>objc_...</code><br>和runtime一些属性设置有关。比如<ul>
-<li>类相关<br>创建一个类（<em>objc_allocateClassPair</em>）、注册该类（<em>objc_registerClassPair</em>）、销毁该类（<em>objc_disposeClassPair</em>）、指定类名返回该类（<em>objc_getClass</em>）、指定类名返回该类元类（<em>objc_getMetaClass</em>）、获取注册的类的列表（<em>objc_getClassList</em>或者<em>objc_copyClassList</em>）等</li>
-<li>对象相关<br>设置关联对象（<em>objc_setAssociatedObject</em>），获取关联对象（<em>objc_getAssociatedObject</em>）等。</li>
-<li>协议相关<br>创建一个协议（<em>objc_allocateProtocol</em>）、注册该协议（<em>objc_registerProtocol</em>）、指定协议名字获取协议（<em>objc_getProtocol</em>）、运行时所有的协议名（<em>objc_copyProtocolList</em>）等。</li>
-</ul>
-</li>
-<li><p><code>class_...</code><br>和类相关。<br>比如获取类名（<em>class_getName</em>）、为类添加一个新的方法（<em>class_addMethod</em>）、获取类对应选择器的方法描述Method（<em>class_getClassMethod</em>）、获取类的变量列表（<em>class_copyIvarList</em>）、属性列表（<em>class_copyPropertyList</em>）、协议列表（<em>class_copyProtocolList</em>）、方法列表（<em>class_copyMethodList</em>）等。</p>
-</li>
-<li><p><code>object_..</code><br>和对象相关。<br>比如获取对象的类名（<em>object_getClassName</em>）、获取对象某个变量的值（<em>object_getIvar</em>）等。</p>
-</li>
-<li><p><code>method_...</code><br>和方法描述有关。<br>比如获取方法名SEL（<em>method_getName</em>）、方法的实现IMP（<em>method_getImplementation</em>）、参数和返回参数的类型编码（<em>method_getTypeEncoding</em>）等。</p>
-</li>
-<li><p><code>ivar_...</code><br>和变量有关。<br>比如获取变量名（<em>ivar_getName</em>）、实例变量的类型编码（<em>ivar_getTypeEncoding</em>）等。</p>
-</li>
-<li><p><code>property_...</code><br>和属性方法有关。<br>比如获取属性名（<em>property_getName</em>）、属性的编码（<em>property_getAttributes</em>）等。</p>
-</li>
-<li><p><code>protocol_...</code><br>和协议有关。<br>比如获取协议名（<em>protocol_getName</em>）、协议的方法描述（protocol_getMethodDescription）、判断某个协议是否实现另一个协议（<em>protocol_conformsToProtocol</em>）等。</p>
-</li>
-<li><p><code>sel_...</code><br>和方法选择器selectors有关。<br>比如获取选择器的名字（<em>sel_getName</em>）、注册一个选择器（<em>sel_registerName</em>或者<em>sel_getUid</em>）等。</p>
-</li>
-<li><p><code>imp_...</code><br>和方法的实现有关。<br>比如用block实现某selector的具体实现（<em>imp_implementationWithBlock</em>）等</p>
-</li>
-</ul>
-<h1 id="foundation-h">foundation.h</h1><p><code>Foundation</code>是一个framework，它定义了OC类的基础。其中，NSObject类是Cocoa里大部分类的基类，它定义了一些基础的方法，比如<code>description</code>方法，NSObject对这个方法的实现仅仅是返回对象的名字和地址，我们可以通过覆写该方法来返回更多的信息。</p>
-<p>除了实现了一些基本的方法，NSObject也定义了部分的runtime接口：</p>
-<ul>
-<li><code>- (Class)class;</code></li>
-<li><code>- (BOOL)isKindOfClass:(Class)class;</code></li>
-<li><code>- (BOOL)isMemberOfClass:(Class)aClass;</code></li>
-<li><code>- (BOOL)respondsToSelector:(SEL)selector;</code></li>
-<li><code>+ (BOOL)instancesRespondToSelector:(SEL)aSelector;</code></li>
-<li><code>- (id)performSelector:(SEL)selector;</code></li>
-<li><code>- (IMP)methodForSelector:(SEL)aSelector;</code></li>
-<li><code>+ (IMP)instanceMethodForSelector:(SEL)aSelector;</code></li>
-<li><code>- (void)doesNotRecognizeSelector:(SEL)aSelector;</code></li>
-<li><code>- (BOOL)conformsToProtocol:(Protocol *)aProtocol;</code></li>
-<li><code>+ (BOOL)conformsToProtocol:(Protocol *)protocol;</code></li>
-</ul>
-
-            
-          </span>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
 
-  </section>
-
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
-  </nav>
-
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
         </div>
@@ -490,6 +368,10 @@
 
 
         
+  <div class="comments" id="comments">
+    
+  </div>
+
 
       </div>
 
@@ -510,8 +392,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel  sidebar-panel-active ">
+      <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" src="/images/avatar.png" alt="Wild Yaoyao" itemprop="image"/>
           <p class="site-author-name" itemprop="name">Wild Yaoyao</p>
@@ -556,6 +447,23 @@
 
       </section>
 
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Method&Message"><span class="nav-number">1.</span> <span class="nav-text">Method&Message</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#objc_msgSend"><span class="nav-number">1.1.</span> <span class="nav-text">objc_msgSend</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态方法决议（Dynamic_Method_Resolution）"><span class="nav-number">2.</span> <span class="nav-text">动态方法决议（Dynamic Method Resolution）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#消息转发（Message_Forwarding）"><span class="nav-number">3.</span> <span class="nav-text">消息转发（Message Forwarding）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#快速转发（Fast_Forwarding）"><span class="nav-number">3.1.</span> <span class="nav-text">快速转发（Fast Forwarding）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#标准转发（Normal_Forwarding）"><span class="nav-number">3.2.</span> <span class="nav-text">标准转发（Normal Forwarding）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#错误"><span class="nav-number">4.</span> <span class="nav-text">错误</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
       
 
     </div>
@@ -626,6 +534,167 @@
   <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
 
   
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
 
   <script type="text/javascript" src="/js/bootstrap.js"></script>
 

@@ -51,19 +51,15 @@
 
 
 
-<meta name="description" content="先来看下面这段代码
-12345678910111213141516171819202122232425262728293031+ (void)load &amp;#123;    static dispatch_once_t onceToken;    dispatch_once(&amp;amp;onceToken, ^&amp;#123;        Class class = [self class];">
-<meta property="og:type" content="article">
-<meta property="og:title" content="iOS Method Swizzling">
-<meta property="og:url" content="http://yoursite.com/2016/01/14/iOS_Method_Swizzling/index.html">
+<meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Wild Yaoyao's blog">
+<meta property="og:url" content="http://yoursite.com/page/4/index.html">
 <meta property="og:site_name" content="Wild Yaoyao's blog">
-<meta property="og:description" content="先来看下面这段代码
-12345678910111213141516171819202122232425262728293031+ (void)load &amp;#123;    static dispatch_once_t onceToken;    dispatch_once(&amp;amp;onceToken, ^&amp;#123;        Class class = [self class];">
-<meta property="og:updated_time" content="2016-01-30T05:59:30.000Z">
+<meta property="og:description">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS Method Swizzling">
-<meta name="twitter:description" content="先来看下面这段代码
-12345678910111213141516171819202122232425262728293031+ (void)load &amp;#123;    static dispatch_once_t onceToken;    dispatch_once(&amp;amp;onceToken, ^&amp;#123;        Class class = [self class];">
+<meta name="twitter:title" content="Wild Yaoyao's blog">
+<meta name="twitter:description">
 
 
 
@@ -75,7 +71,7 @@
   };
 </script>
 
-  <title> iOS Method Swizzling | Wild Yaoyao's blog </title>
+  <title> Wild Yaoyao's blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -96,7 +92,9 @@
 
 
 
-  <div class="container one-column page-post-detail">
+  <div class="container one-column 
+   page-home 
+">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -173,9 +171,15 @@
       <div class="main-inner">
         <div id="content" class="content">
           
+  <section id="posts" class="posts-expand">
 
-  <div id="posts" class="posts-expand">
     
+
+    
+    
+
+    
+      
 
   
   
@@ -195,7 +199,10 @@
             
             
               
-                iOS Method Swizzling
+                
+                <a class="post-title-link" href="/2016/01/14/iOS_Method_Swizzling/" itemprop="url">
+                  iOS Method Swizzling
+                </a>
               
             
           </h1>
@@ -228,7 +235,10 @@
       
 
       
-        <span itemprop="articleBody"><p>先来看下面这段代码</p>
+        
+          <span itemprop="articleBody">
+            
+              <p>先来看下面这段代码</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">+ (void)load &#123;</span><br><span class="line">    static dispatch_once_t onceToken;</span><br><span class="line">    dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">        Class <span class="class"><span class="keyword">class</span> = [<span class="title">self</span> <span class="title">class</span>];</span></span><br><span class="line"></span><br><span class="line">        SEL oldSelector = @selector(viewDidLoad);</span><br><span class="line">        SEL newSelector = @selector(xxx_viewDidLoad);</span><br><span class="line"></span><br><span class="line">        Method oldMethod = class_getInstanceMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">oldSelector);</span></span></span><br><span class="line">        Method newMethod = class_getInstanceMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">newSelector);</span></span></span><br><span class="line"></span><br><span class="line">        IMP oldIMP = method_getImplementation(oldMethod);</span><br><span class="line">        IMP newIMP = method_getImplementation(newMethod);</span><br><span class="line"></span><br><span class="line">        const char *oldMethodType = method_getTypeEncoding(oldMethod);</span><br><span class="line">        const char *newMethodType = method_getTypeEncoding(newMethod);</span><br><span class="line"></span><br><span class="line">        BOOL didAddMethod = class_addMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">oldSelector</span>, <span class="typename">newIMP</span>, <span class="typename">newMethodType);</span></span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (didAddMethod) &#123;</span><br><span class="line">            class_replaceMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">newSelector</span>, <span class="typename">oldIMP</span>, <span class="typename">oldMethodType);</span></span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            method_exchangeImplementations(oldMethod, newMethod);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)xxx_viewDidLoad</span><br><span class="line">&#123;</span><br><span class="line">    [self xxx_viewDidLoad];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这段代码想必只要我们学习过<code>method swizzle</code>的同学都很熟悉，实现也比较简单。其中有两个地方需要注意，也是难点，即</p>
 <p><code>BOOL didAddMethod = class_addMethod(class, oldSelector, newIMP, newMethodType);</code></p>
@@ -252,7 +262,10 @@
 <p>比如我想要替换掉<code>UITableViewController</code>的<code>viewDidLoad</code>的实现，由于<code>UITableViewController</code>的<code>viewDidLoad</code>是在其父类<code>UIViewController</code>中实现的（<code>class-dump</code>出来看到的），因此<code>class_addMethod</code>会添加成功；如果直接交换实现的话，就把它的父类<code>UIViewController</code>的<code>viewDidLoad</code>的实现替换了，这就不是我们的初衷了。</p>
 <p>接下来讲一下为什么要调用老方法，或者我们不调用老方法那它真的就没调用了吗。</p>
 <p>顾名思义，系统调用老方法的时候，由于它的实现被指向了我自己的实现，我们实现自己的逻辑之后，当然要调用原来的方法，不然就像隐藏了一个定时炸弹，指定什么时候出现什么奇怪的问题。比如我自己为了测试，hook了<code>UIView</code>的<code>-setBackgroundColor:</code>方法，假如我不调用老方法，则不管我将view设置成什么颜色，它将都是黑色，这说明了的确老方法的实现被我们绕过了。因此，为了安全起见，我们在自己的方法里面一定要调用原来的方法。</p>
-</span>
+
+            
+          </span>
+        
       
     </div>
 
@@ -260,36 +273,161 @@
       
 
       
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2015/11/24/使用clang语法消除编译警告/" rel="next" title="使用clang语法消除编译警告">
-                <i class="fa fa-chevron-left"></i> 使用clang语法消除编译警告
-              </a>
-            
-          </div>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/01/15/iOS的事件响应机制/" rel="prev" title="iOS的事件响应机制">
-                iOS的事件响应机制 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
 
       
+      
+        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
+    
+      
 
-    <div class="post-spread">
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2015/11/24/使用clang语法消除编译警告/" itemprop="url">
+                  使用clang语法消除编译警告
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-11-24T12:51:33+08:00" content="2015-11-24">
+              2015-11-24
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <span itemprop="articleBody">
+            
+              <p>自己总结了一些常用的clang语法用于消除Xcode警告</p>
+<p><em>用法</em></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic push</span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic ignored <span class="string">"-Wundeclared-selector"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// your code</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic pop</span></span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>Warning</th>
+<th style="text-align:left">Message</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-Warc-performSelector-leaks</code></td>
+<td style="text-align:left"><code>performSelector</code>可能会造成内存泄露因为无法知道具体的selector</td>
+</tr>
+<tr>
+<td><code>-Wunreachable-code&quot;</code></td>
+<td style="text-align:left">无法执行到的代码</td>
+</tr>
+<tr>
+<td><code>-Wunused-function</code></td>
+<td style="text-align:left">没有使用的函数</td>
+</tr>
+<tr>
+<td><code>-Wdeprecated-implementations</code></td>
+<td style="text-align:left">标记为已经废弃的方法</td>
+</tr>
+<tr>
+<td><code>-Wdeprecated-declarations</code></td>
+<td style="text-align:left">消除使用废弃方法警告</td>
+</tr>
+<tr>
+<td><code>-Wreceiver-is-weak</code>和<code>-Warc-repeated-use-of-weak</code></td>
+<td style="text-align:left">接受者是weak属性</td>
+</tr>
+<tr>
+<td><code>-Wundeclared-selector</code></td>
+<td style="text-align:left">未定义的selector</td>
+</tr>
+<tr>
+<td><code>-Wgnu</code></td>
+<td style="text-align:left">未知</td>
+</tr>
+<tr>
+<td><code>-Wreturn-type</code></td>
+<td style="text-align:left">control reaches end of non-void function</td>
+</tr>
+<tr>
+<td><code>-Wimplicit-function-declaration</code></td>
+<td style="text-align:left">implicit declaration of function</td>
+</tr>
+<tr>
+<td><code>-Wconversion</code></td>
+<td style="text-align:left">消除精度丢失warning</td>
+</tr>
+</tbody>
+</table>
+
+            
+          </span>
+        
       
     </div>
-  </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+
+  </section>
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
+  </nav>
+
 
 
         </div>
@@ -298,10 +436,6 @@
 
 
         
-  <div class="comments" id="comments">
-    
-  </div>
-
 
       </div>
 
@@ -322,17 +456,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel ">
+      <section class="site-overview sidebar-panel  sidebar-panel-active ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" src="/images/avatar.png" alt="Wild Yaoyao" itemprop="image"/>
           <p class="site-author-name" itemprop="name">Wild Yaoyao</p>
@@ -377,23 +502,6 @@
 
       </section>
 
-      
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc-indicator-top post-toc-indicator">
-            <i class="fa fa-angle-double-up"></i>
-          </div>
-          <div class="post-toc">
-            
-              
-            
-            
-              <p class="post-toc-empty">此文章未包含目录</p>
-            
-          </div>
-          <div class="post-toc-indicator-bottom post-toc-indicator">
-            <i class="fa fa-angle-double-down"></i>
-          </div>
-        </section>
       
 
     </div>
@@ -464,167 +572,6 @@
   <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
 
   
-  
-<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
-
-
-<script type="text/javascript" id="sidebar.toc.highlight">
-  $(document).ready(function () {
-    var tocSelector = '.post-toc';
-    var $tocSelector = $(tocSelector);
-    var activeCurrentSelector = '.active-current';
-
-    $tocSelector
-      .on('activate.bs.scrollspy', function () {
-        var $currentActiveElement = $(tocSelector + ' .active').last();
-
-        removeCurrentActiveClass();
-        $currentActiveElement.addClass('active-current');
-
-        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
-      })
-      .on('clear.bs.scrollspy', function () {
-        removeCurrentActiveClass();
-      });
-
-    function removeCurrentActiveClass () {
-      $(tocSelector + ' ' + activeCurrentSelector)
-        .removeClass(activeCurrentSelector.substring(1));
-    }
-
-    function processTOC () {
-      getTOCMaxHeight();
-      toggleTOCOverflowIndicators();
-    }
-
-    function getTOCMaxHeight () {
-      var height = $('.sidebar').height() -
-                   $tocSelector.position().top -
-                   $('.post-toc-indicator-bottom').height();
-
-      $tocSelector.css('height', height);
-
-      return height;
-    }
-
-    function toggleTOCOverflowIndicators () {
-      tocOverflowIndicator(
-        '.post-toc-indicator-top',
-        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
-      );
-
-      tocOverflowIndicator(
-        '.post-toc-indicator-bottom',
-        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
-      )
-    }
-
-    $(document).on('sidebar.motion.complete', function () {
-      processTOC();
-    });
-
-    $('body').scrollspy({ target: tocSelector });
-    $(window).on('resize', function () {
-      if ( $('.sidebar').hasClass('sidebar-active') ) {
-        processTOC();
-      }
-    });
-
-    onScroll($tocSelector);
-
-    function onScroll (element) {
-      element.on('mousewheel DOMMouseScroll', function (event) {
-          var oe = event.originalEvent;
-          var delta = oe.wheelDelta || -oe.detail;
-
-          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
-          event.preventDefault();
-
-          toggleTOCOverflowIndicators();
-      });
-    }
-
-    function tocOverflowIndicator (indicator, action) {
-      var $indicator = $(indicator);
-      var opacity = action === 'show' ? 1 : 0;
-      $indicator.velocity ?
-        $indicator.velocity('stop').velocity({
-          opacity: opacity
-        }, { duration: 100 }) :
-        $indicator.stop().animate({
-          opacity: opacity
-        }, 100);
-    }
-
-  });
-</script>
-
-<script type="text/javascript" id="sidebar.nav">
-  $(document).ready(function () {
-    var html = $('html');
-    var TAB_ANIMATE_DURATION = 200;
-    var hasVelocity = $.isFunction(html.velocity);
-
-    $('.sidebar-nav li').on('click', function () {
-      var item = $(this);
-      var activeTabClassName = 'sidebar-nav-active';
-      var activePanelClassName = 'sidebar-panel-active';
-      if (item.hasClass(activeTabClassName)) {
-        return;
-      }
-
-      var currentTarget = $('.' + activePanelClassName);
-      var target = $('.' + item.data('target'));
-
-      hasVelocity ?
-        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
-          target
-            .velocity('stop')
-            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
-            .addClass(activePanelClassName);
-        }) :
-        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
-          currentTarget.hide();
-          target
-            .stop()
-            .css({'opacity': 0, 'display': 'block'})
-            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
-              currentTarget.removeClass(activePanelClassName);
-              target.addClass(activePanelClassName);
-            });
-        });
-
-      item.siblings().removeClass(activeTabClassName);
-      item.addClass(activeTabClassName);
-    });
-
-    $('.post-toc a').on('click', function (e) {
-      e.preventDefault();
-      var targetSelector = escapeSelector(this.getAttribute('href'));
-      var offset = $(targetSelector).offset().top;
-      hasVelocity ?
-        html.velocity('stop').velocity('scroll', {
-          offset: offset  + 'px',
-          mobileHA: false
-        }) :
-        $('html, body').stop().animate({
-          scrollTop: offset
-        }, 500);
-    });
-
-    // Expand sidebar on post detail page by default, when post has a toc.
-    motionMiddleWares.sidebar = function () {
-      var $tocContent = $('.post-toc-content');
-      if (CONFIG.sidebar === 'post') {
-        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
-          displaySidebar();
-        }
-      }
-    };
-  });
-</script>
-
-
 
   <script type="text/javascript" src="/js/bootstrap.js"></script>
 
