@@ -177,6 +177,15 @@
 
     
     
+      
+      
+        
+        
+        
+      
+
+      
+    
 
     
       
@@ -220,6 +229,13 @@
 
           
             
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/02/03/Objective-C Runtime之消息/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/03/Objective-C Runtime之消息/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -251,7 +267,7 @@
 <p>然后我们使用<code>clang -rewrite-objc MyClass.m</code>命令将OC代码转换为C++代码，这会在同目录下生成<code>MyClass.cpp</code>的C++文件，用vim打开打开，跳转到10万行左右，可以看到</p>
 <p><img src="/images/runtime_2.png" alt="runtime_2"></p>
 <p><code>[self func:@&quot;呵呵哒&quot;];</code>的确被转换成了<code>static int _I_MyClass_func_(MyClass * self, SEL _cmd, NSString *func)</code>。</p>
-<h4 id="objc_msgSend">objc_msgSend</h4><p>objc_msgSend可能是iOS app运行时被调用的最多的函数了，那么它都干了什么？很可惜，为了提高调用速度，它是用汇编实现的。不过我们仍然可以通过源码来窥知一二。我们打开runtime源码然后搜索.s，.s是汇编文件的后缀</p>
+<h3 id="objc_msgSend">objc_msgSend</h3><p>objc_msgSend可能是iOS app运行时被调用的最多的函数了，那么它都干了什么？很可惜，为了提高调用速度，它是用汇编实现的。不过我们仍然可以通过源码来窥知一二。我们打开runtime源码然后搜索.s，.s是汇编文件的后缀</p>
 <p><img src="/images/runtime_3.png" alt="runtime_3"></p>
 <p>可以看到，不同平台msg的实现是不一样的，这里我们选择X86_64的，扎到objc_msgSend的实现如下：</p>
 <figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">/<span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span></span><br><span class="line"> <span class="keyword">*</span></span><br><span class="line"> <span class="keyword">*</span> id objc_msgSend(id self, SEL	_cmd,...);</span><br><span class="line"> <span class="keyword">*</span></span><br><span class="line"> <span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span>/</span><br><span class="line">	</span><br><span class="line">	ENTRY	_objc_msgSend</span><br><span class="line">	DW_START _objc_msgSend</span><br><span class="line"></span><br><span class="line">// check whether selector is ignored</span><br><span class="line">// 检查selector是否可以忽略</span><br><span class="line">	cmpq    $ kIgnore, %a2</span><br><span class="line">	// 如果可以忽略，直接返回self</span><br><span class="line">	je      LMsgSendReturnSelf	// ignore and return self</span><br><span class="line"></span><br><span class="line">// check whether receiver is nil </span><br><span class="line">// 检查消息接收者是否是nil</span><br><span class="line">	testq	%a1, %a1</span><br><span class="line">	// 跳转响应的处理</span><br><span class="line">	je	LMsgSendNilSelf</span><br><span class="line"></span><br><span class="line">// receiver (in %a1) is non-nil: search the cache</span><br><span class="line">// 如果接收者不是nil，则查找这个selector，先从缓存中找</span><br><span class="line"></span><br><span class="line">// 缓存命中</span><br><span class="line">LMsgSendReceiverOk:</span><br><span class="line">	// 获取它的isa指针，确定它的类</span><br><span class="line">	movq	isa(%a1), %r11		// class = self-&gt;isa</span><br><span class="line">	CacheLookup %a2, _objc_msgSend</span><br><span class="line">	// CacheLookup placed method in r11</span><br><span class="line">	movq	method_imp(%r11), %r11</span><br><span class="line">	cmp	%r11, %r11		// set nonstret (eq) for </span><br><span class="line">forwarding</span><br><span class="line">	// 找到了selector，跳转到函数实现去执行</span><br><span class="line">	jmp	<span class="keyword">*</span>%r11			// goto <span class="keyword">*</span>imp</span><br><span class="line"></span><br><span class="line">// cache miss: go search the method lists</span><br><span class="line">// 缓存没有找到，搜索方法列表</span><br><span class="line">LCacheMiss_objc_msgSend:</span><br><span class="line">	MethodTableLookup isa(%a1), %a2, _objc_msgSend</span><br><span class="line">	// MethodTableLookup placed IMP in r11</span><br><span class="line">	cmp	%r11, %r11		// set nonstret (eq) for </span><br><span class="line">// 在方法列表中找到了selector，跳转到函数实现去执行</span><br><span class="line">forwarding</span><br><span class="line">	jmp	<span class="keyword">*</span>%r11			// goto <span class="keyword">*</span>imp</span><br><span class="line"></span><br><span class="line">// message sent to nil: redirect to nil receiver, if any</span><br><span class="line">// 消息是否发送给nil及之后的处理</span><br><span class="line">LMsgSendNilSelf:</span><br><span class="line">	movq	__objc_nilReceiver(%rip), %a1</span><br><span class="line">	// 接收者不是nil</span><br><span class="line">	testq	%a1, %a1		// if (receiver != nil)</span><br><span class="line">	// 跳转到之后的处理</span><br><span class="line">	jne	LMsgSendReceiverOk	//   send to new receiver</span><br><span class="line"></span><br><span class="line">	// message sent to nil - return 0</span><br><span class="line">	// 接收者是nil，直接返回0</span><br><span class="line">	movq	$0, %rax</span><br><span class="line">	movq	$0, %rdx</span><br><span class="line">	xorps	%xmm0, %xmm0</span><br><span class="line">	xorps	%xmm1, %xmm1</span><br><span class="line">	ret</span><br><span class="line">	</span><br><span class="line">LMsgSendReturnSelf:</span><br><span class="line">	movq	%a1, %rax</span><br><span class="line">	ret</span><br><span class="line"></span><br><span class="line">LMsgSendExit:</span><br><span class="line">	DW_END 		_objc_msgSend</span><br><span class="line">	END_ENTRY	_objc_msgSend</span><br></pre></td></tr></table></figure>
@@ -392,6 +408,13 @@
 
           
             
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/02/01/Objective-C之Runtime/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/01/Objective-C之Runtime/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -489,8 +512,22 @@
         
 
 
-        
-
+        <!-- 多说评论框 start -->
+  <div class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"wildyao"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- 多说公共JS代码 end -->
       </div>
 
       
@@ -603,11 +640,28 @@
 
   
     
-    
 
   
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"wildyao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
 
 
+    
   
 
   
