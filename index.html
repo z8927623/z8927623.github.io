@@ -180,15 +180,6 @@
 
     
     
-      
-      
-        
-        
-        
-      
-
-      
-    
 
     
       
@@ -447,17 +438,14 @@
 </ul>
 </li>
 <li>先从本类的方法列表中找（或者<code>dispatch table</code>即分发表）<ul>
-<li>如果找到，则执行它的imp，同时以selector为key，imp的地址为value存入缓存<ul>
+<li>如果找到，则执行它的imp，同时以selector为key，imp的地址为value存入缓存</li>
 <li>如果没找到，则通过isa指针继续查找其父类的分发表直到根类NSObject</li>
 </ul>
 </li>
-</ul>
-</li>
 <li>如果到NSObject还没有找到，则执行<strong>动态方法决议</strong></li>
-<li><p>动态方法决议是个很重要的流程，接下来会重点讲</p>
-<p> 整个过程可用下图表示</p>
-</li>
+<li>动态方法决议是个很重要的流程，接下来会重点讲</li>
 </ol>
+<p>整个过程可用下图表示</p>
 <p><img src="/images/runtime_4_1.png" alt="runtime_4_1"></p>
 <h3 id="动态方法决议（Dynamic_Method_Resolution）">动态方法决议（Dynamic Method Resolution）</h3><p>上面提到了，当到NSObject还没有找到selector的时候，就进入了<strong>动态方法决议</strong>，简单的说就是当我们无法找到匹配的方法实现时，runtime允许我们在运行期间动态地添加一个方法。</p>
 <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="built_in">BOOL</span>)resolveInstanceMethod:(SEL)aSEL &#123;</span><br><span class="line">    <span class="keyword">if</span> (aSEL == <span class="keyword">@selector</span>(resolveThisMethodDynamically)) &#123;</span><br><span class="line">    	class_addMethod([<span class="keyword">self</span> class], aSEL, (IMP)dynamicMethodIMP, <span class="string">"v@:"</span>);</span><br><span class="line">    	<span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> [<span class="keyword">super</span> resolveInstanceMethod:aSEL];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> dynamicMethodIMP(<span class="keyword">id</span> <span class="keyword">self</span>, SEL _cmd) &#123;</span><br><span class="line">    <span class="comment">// implementation ....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
