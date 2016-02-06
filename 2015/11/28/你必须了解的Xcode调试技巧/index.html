@@ -1,0 +1,704 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wild Yaoyao's blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="我们开发iOS或者OSX程序时候，调试是避免不了的，而调试最大的一个利器就是断点。接下来我介绍一下Xcode一些常用的和不常用的技巧。
+条件断点如下图，这是个最基本的断点，我们写了一个0到10000的循环，需要在循环到5000的时候打个断点。
+
+我们在Condition里填写我们的条件，这样当idx=5000的时候程序就会停在这里。
+高级log术经常在调试程序的时候，我们需要在程序里面打印一些东西">
+<meta property="og:type" content="article">
+<meta property="og:title" content="你必须了解的Xcode调试技巧">
+<meta property="og:url" content="http://yoursite.com/2015/11/28/你必须了解的Xcode调试技巧/index.html">
+<meta property="og:site_name" content="Wild Yaoyao's blog">
+<meta property="og:description" content="我们开发iOS或者OSX程序时候，调试是避免不了的，而调试最大的一个利器就是断点。接下来我介绍一下Xcode一些常用的和不常用的技巧。
+条件断点如下图，这是个最基本的断点，我们写了一个0到10000的循环，需要在循环到5000的时候打个断点。
+
+我们在Condition里填写我们的条件，这样当idx=5000的时候程序就会停在这里。
+高级log术经常在调试程序的时候，我们需要在程序里面打印一些东西">
+<meta property="og:image" content="http://yoursite.com/images/debug_1.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_2.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_3.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_4.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_5.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_6.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_7.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_8.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_9.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_10.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_11.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_12.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_13.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_14.png">
+<meta property="og:image" content="http://yoursite.com/images/debug_15.png">
+<meta property="og:updated_time" content="2016-02-06T06:54:59.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="你必须了解的Xcode调试技巧">
+<meta name="twitter:description" content="我们开发iOS或者OSX程序时候，调试是避免不了的，而调试最大的一个利器就是断点。接下来我介绍一下Xcode一些常用的和不常用的技巧。
+条件断点如下图，这是个最基本的断点，我们写了一个0到10000的循环，需要在循环到5000的时候打个断点。
+
+我们在Condition里填写我们的条件，这样当idx=5000的时候程序就会停在这里。
+高级log术经常在调试程序的时候，我们需要在程序里面打印一些东西">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+
+  <title> 你必须了解的Xcode调试技巧 | Wild Yaoyao's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Wild Yaoyao's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">野瑶瑶的技术博客</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                你必须了解的Xcode调试技巧
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-11-28T00:00:00+08:00" content="2015-11-28">
+              2015-11-28
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/11/28/你必须了解的Xcode调试技巧/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/28/你必须了解的Xcode调试技巧/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>我们开发iOS或者OSX程序时候，调试是避免不了的，而调试最大的一个利器就是断点。接下来我介绍一下Xcode一些常用的和不常用的技巧。</p>
+<h4 id="条件断点">条件断点</h4><p>如下图，这是个最基本的断点，我们写了一个0到10000的循环，需要在循环到5000的时候打个断点。</p>
+<p><img src="/images/debug_1.png" alt="debug_1"></p>
+<p>我们在Condition里填写我们的条件，这样当idx=5000的时候程序就会停在这里。</p>
+<h4 id="高级log术">高级log术</h4><p>经常在调试程序的时候，我们需要在程序里面打印一些东西，最常用的就是NSLog，但是NSLog有几个缺点</p>
+<ul>
+<li>NSLog会拖慢运行速度，效率低</li>
+<li>大量log导致代码混乱</li>
+<li>最重要的一点，假如我们在程序运行的时候想要打印某些信息，这个时候我们可能会想到使用<code>po</code>，这个在打印单个信息的时候很有用，但是比如在上面我们的循环里面，我需要知道每次偶数的时候的idx是多少，那就不得不在编写完后重新编译运行，很麻烦。</li>
+</ul>
+<p>那么怎么办呢，还是在条件断点里面设置</p>
+<p><img src="/images/debug_2.png" alt="debug_2"></p>
+<p>我们首先设置条件为偶数，然后再在Action里面选择<code>Debug Command</code>，这和允许我们直接使用<code>lldb</code>或者<code>gdb</code>的命令进行调试，这里我们使用<code>po idx</code>打印出idx的值，表示当满足偶数条件的时候打印。接下来最重要的就是勾选下面那个<code>Automatically continue after evaluating</code>选项，表示在执行动作之后不暂停程序继续运行。</p>
+<p><img src="/images/debug_3.png" alt="debug_3"></p>
+<p>可以看到，Xcode乖乖地打印除了0到10000的偶数。</p>
+<p>假如我们需要输出一些信息，也好办，点击Action右边的加号，添加动作，这次我们选择<code>Log Message</code>，这里可以写下我们需要输出的信息，可以选择在控制台输出或者语音播放，或者也可以再添加一个动作，选择<code>Sound</code>，内置丰富的声音，在您调试的时候也能够享受美妙的交响乐。</p>
+<p><img src="/images/debug_4.png" alt="debug_4"></p>
+<p>查看输出，同时伴有frog的叫声</p>
+<p><img src="/images/debug_5.png" alt="debug_5"> </p>
+<h4 id="高级log术的其他用途">高级log术的其他用途</h4><p>平时我们查看调用堆栈的时候都是打个断点然后在Xcode左侧的Debug栏查看，或者在命令行输入lldb命令<code>bt</code>，但是有时候我们不想要程序暂停，这个时候我们就可以使用条件断点的<code>Automatically continue after evaluating</code>，同样，在Action里选择<code>Debug Command</code>，然后输入<code>bt</code>或者<code>bt 10</code>，表示只输出10个frame的调用堆栈。</p>
+<p><img src="/images/debug_6.png" alt="debug_6"></p>
+<p><code>-viewWillAppear:</code>的调用堆栈如下（只输出了10个frame）</p>
+<p><img src="/images/debug_7.png" alt="debug_7"></p>
+<p>也可以使用<code>dis -f</code>显示运行时的反汇编代码</p>
+<p><img src="/images/debug_8.png" alt="debug_8"></p>
+<h4 id="符号断点（Symbolic_BreakPoints）">符号断点（Symbolic BreakPoints）</h4><p><code>Symbolic BreakPoints</code>我们可能用得比较少，但其实它是个神器，用于我们想要在某个方法触发的时候打断点，尤其是当我们使用了第三方库或者framework等我们无法直接在方法里打断点的情况。</p>
+<p>好了，假如我们想要在每个<code>-viewDidLoad:</code>执行的时候，打断点，要怎么做呢，首先我们得见一个符号断点</p>
+<p><img src="/images/debug_9.png" alt="debug_9"></p>
+<p>然后在<code>Symbol</code>里填写我们要追踪的方法，这里填写<code>-[UIViewController viewWillAppear:]</code>。这样，当每次执行到的时候，都会停下来，便于我们分析调试。</p>
+<p><img src="/images/debug_10.png" alt="debug_10"></p>
+<p>Xcode停留在了第一个断点处</p>
+<p><img src="/images/debug_11.png" alt="debug_11"></p>
+<p>或者，我们直接输入<code>viewDidLoad</code>，运行，观察Xcode的反应</p>
+<p><img src="/images/debug_12.png" alt="debug_12"></p>
+<p>执行之后Xcode断点下</p>
+<p><img src="/images/debug_13.png" alt="debug_13"></p>
+<p>从上图中可以看到，Xcode将程序运行时候所有类中执行到该方法的地方都标记了断点，其中有很多系统类，等于自动<code>class_dump</code>出来了。</p>
+<h4 id="全局断点，捕捉程序运行时候的全部异常。">全局断点，捕捉程序运行时候的全部异常。</h4><p>添加断点的时候选择选择<code>Add Exception Breakpoint</code></p>
+<p><img src="/images/debug_14.png" alt="debug_14"></p>
+<p>然后在编辑的时候我们可以选择捕捉全部或者Objective-C或者C++的异常，一般情况下我们保持默认，这样当出现crash的时候就会停留在相应的代码处了。</p>
+<p><img src="/images/debug_15.png" alt="debug_15"></p>
+<p>开发程序时，巧妙地利用Xcode强大的调试技巧，可以达到事半功倍的效果。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/11/13/NSOperation和NSOperationQueue/" rel="next" title="NSOperation和NSOperationQueue">
+                <i class="fa fa-chevron-left"></i> NSOperation和NSOperationQueue
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/12/25/记一次Code_Review/" rel="prev" title="记一次Code Review">
+                记一次Code Review <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/11/28/你必须了解的Xcode调试技巧/"
+           data-title="你必须了解的Xcode调试技巧" data-url="http://yoursite.com/2015/11/28/你必须了解的Xcode调试技巧/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/avatar.png" alt="Wild Yaoyao" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">Wild Yaoyao</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">0</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            
+              <span class="site-state-item-count">0</span>
+              <span class="site-state-item-name">标签</span>
+              
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#条件断点"><span class="nav-number">1.</span> <span class="nav-text">条件断点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#高级log术"><span class="nav-number">2.</span> <span class="nav-text">高级log术</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#高级log术的其他用途"><span class="nav-number">3.</span> <span class="nav-text">高级log术的其他用途</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#符号断点（Symbolic_BreakPoints）"><span class="nav-number">4.</span> <span class="nav-text">符号断点（Symbolic BreakPoints）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#全局断点，捕捉程序运行时候的全部异常。"><span class="nav-number">5.</span> <span class="nav-text">全局断点，捕捉程序运行时候的全部异常。</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="author" itemprop="copyrightHolder">Wild Yaoyao</span>
+</span>
+</div>
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"wildyao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

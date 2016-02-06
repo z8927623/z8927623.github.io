@@ -63,10 +63,9 @@
 123typedef struct objc_object &amp;#123;    Class isa;&amp;#125; *id;
 可知，id是一个指向objec_object结构的C指针，而objec_object又包含了一个isa指针，该指针指向名为Class的变量，因此，每个OC对象都有个Class，">
 <meta property="og:image" content="http://yoursite.com/images/runtime_8.png">
-<meta property="og:image" content="http://yoursite.com/images/honey.png">
 <meta property="og:image" content="http://yoursite.com/images/runtime_9.png">
-<meta property="og:image" content="http://yoursite.com/../images/runtime_10.png">
-<meta property="og:updated_time" content="2016-02-06T04:25:32.000Z">
+<meta property="og:image" content="http://yoursite.com/images/runtime_10.png">
+<meta property="og:updated_time" content="2016-02-06T16:34:51.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Objective-C Runtime之实现">
 <meta name="twitter:description" content="id首先从id说起，Objective-C中id是个可以指向任何OC对象的指针，我们来看看它的结构
@@ -293,8 +292,6 @@
 <p><code>IMP</code>是一个函数指针，指向<code>Method</code>的实现，<code>Method</code>的实现是个C函数，因此确切地说是指向C函数的地址。它有两个固定参数，分别是<code>id</code>和<code>方法选择器SEL</code>，以及可变参数，并且返回一个<code>id</code>类型的对象。</p>
 <h3 id="继承层次图">继承层次图</h3><p>了解了以上概念后，我们再来看看OC的继承层次图，其中实线表示<code>superclass</code>，虚线表示<code>isa</code>指针。</p>
 <p><img src="/images/runtime_8.png" alt="runtime_8"></p>
-<p>唉，写不下去了，有点想我的温柔贤惠漂亮大美妞傻逼宝贝了，不知道她现在睡了没😔？</p>
-<p><img src="/images/honey.png" alt="honey"></p>
 <h3 id="实例">实例</h3><p><strong>例子1</strong>：结合class和object和结构，以<code>[@&quot;呵呵&quot; stringByAppendingString:@&quot;哒&quot;];</code>为例子，说明整个消息发送过程：</p>
 <p>首先@”呵呵”是个对象，runtime系统根据对象的<code>isa</code>指针发现它的类（<code>Class</code>）是<code>NSString</code>，首先查找它的缓存（<code>cache</code>），如果找到了直接调用IMP，否则查看它的方法列表（<code>methodLists</code>），如果本类找不到，则查找父类（<code>super_class</code>），最后找到了匹配的方法选择器selector<code>-stringByAppendingString:</code>，然后取出和selector一起存储在<code>objc_method</code>中的IMP，触发。</p>
 <p><strong>例子2</strong>：OC类的继承关系</p>
@@ -313,7 +310,7 @@
 <li>MyClass的元类的元类是NSObject，地址为<code>0x7fff7542c118</code></li>
 </ul>
 <p>是不是绕晕了，用图表示一下：</p>
-<p><img src="../images/runtime_10.png" alt="runtime_10"></p>
+<p><img src="/images/runtime_10.png" alt="runtime_10"></p>
 <p>好了，下一篇来讲讲runtime的应用。</p>
 </span>
       
@@ -333,6 +330,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/02/05/额...runloop/" rel="prev" title="额...runloop">
+                额...runloop <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -404,7 +405,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">13</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

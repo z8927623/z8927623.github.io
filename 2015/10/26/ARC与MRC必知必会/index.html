@@ -1,0 +1,758 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wild Yaoyao's blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫ɑ:k，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。
+ARC下的autorelease poolARC下最明显的就是对autorelease pool的改进。
+Autorelease pool会自动管理对象的生命周期，每个发送autorelease消息的对象不会马上被释放，它们会被加入到NSAutoreleas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARC与MRC必知必会">
+<meta property="og:url" content="http://yoursite.com/2015/10/26/ARC与MRC必知必会/index.html">
+<meta property="og:site_name" content="Wild Yaoyao's blog">
+<meta property="og:description" content="我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫ɑ:k，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。
+ARC下的autorelease poolARC下最明显的就是对autorelease pool的改进。
+Autorelease pool会自动管理对象的生命周期，每个发送autorelease消息的对象不会马上被释放，它们会被加入到NSAutoreleas">
+<meta property="og:updated_time" content="2016-02-06T06:54:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ARC与MRC必知必会">
+<meta name="twitter:description" content="我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫ɑ:k，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。
+ARC下的autorelease poolARC下最明显的就是对autorelease pool的改进。
+Autorelease pool会自动管理对象的生命周期，每个发送autorelease消息的对象不会马上被释放，它们会被加入到NSAutoreleas">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+
+  <title> ARC与MRC必知必会 | Wild Yaoyao's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Wild Yaoyao's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">野瑶瑶的技术博客</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ARC与MRC必知必会
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-10-26T00:00:00+08:00" content="2015-10-26">
+              2015-10-26
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/10/26/ARC与MRC必知必会/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/26/ARC与MRC必知必会/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫<code>ɑ:k</code>，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。</p>
+<h4 id="ARC下的autorelease_pool">ARC下的autorelease pool</h4><p>ARC下最明显的就是对autorelease pool的改进。</p>
+<p>Autorelease pool会自动管理对象的生命周期，每个发送<code>autorelease</code>消息的对象不会马上被释放，它们会被加入到NSAutoreleasePool中，当pool被drain的时候，它会依次给池子中的每个对象发送<code>release</code>消息。因此，使用autorelease管理内存的对象的生命周期被延长了。</p>
+<p>MRC下main函数是这么写的</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSAutoreleasePool</span> *pool = [[<span class="built_in">NSAutoreleasePool</span> alloc] init];</span><br><span class="line">    <span class="keyword">int</span> retVal = <span class="built_in">UIApplicationMain</span>(argc, argv, <span class="literal">nil</span>, <span class="literal">nil</span>);</span><br><span class="line">    [pool release];</span><br><span class="line">    <span class="keyword">return</span> retVal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ARC下，我们不需要直接管理autorelease pool了，使用@autorelease即可，并且比NSAutoreleasePool更高效。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">char</span> * argv[]) &#123;</span><br><span class="line">    <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">UIApplicationMain</span>(argc, argv, <span class="literal">nil</span>, <span class="built_in">NSStringFromClass</span>([AppDelegate class]));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么@autoreleasepool到底干啥了呢，文档上是这样说的</p>
+<blockquote>
+<p> On entry, an autorelease pool is pushed. On normal exit (break, return, goto, fall-through, and so on) the autorelease pool is popped</p>
+</blockquote>
+<p>意思是说在@autoreleasepool入口处，一个autorelease pool会被push进去，出口处会被pop出来。实际上通过断点查看反汇编代码可以发现，所谓的push是调用了<code>objc_autoreleasePoolPush</code>，pop是调用了<code>objc_autoreleasePoolPop</code>。</p>
+<h4 id="ARC下对象的创建和使用">ARC下对象的创建和使用</h4><p>MRC下，我们创建一个对象并且使用完的时候，必须释放它。以数组为例</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NSArray *<span class="built_in">array</span> = [[NSArray alloc] initWithObjects:<span class="literal">nil</span> <span class="built_in">count</span>:<span class="number">0</span>];</span><br><span class="line"><span class="comment">// do something</span></span><br><span class="line">[<span class="built_in">array</span> release];   <span class="comment">// 使用完了，释放</span></span><br></pre></td></tr></table></figure>
+<p>或者直接使用<code>+array</code>方法</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSArray *<span class="built_in">array</span> = [NSArray <span class="built_in">array</span>];</span><br></pre></td></tr></table></figure>
+<p>因为这里<code>Foundation</code>内部已经为我们的<code>+array</code>方法自动添加了autorelease，即内部可能是这样实现的</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ (instancetype)<span class="built_in">array</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> [[[self alloc] initWithObjects:<span class="literal">NULL</span> count:<span class="number">0</span>] autorelease];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其他诸如<code>NSDictionary</code>的<code>+dictionary</code>或者<code>NSString</code>的<code>+stringWithFormat:</code>也是类似。</p>
+<p>ARC下我们只管使用就好了，不管使用alloc还是类方法，不需要手写release，autorelease，ARC会在合适的地方自动插上。</p>
+<p>同理，ARC下我们已经习惯的初始化赋值方法</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.array = <span class="comment">[<span class="comment">[NSArray alloc]</span> init]</span>;</span><br></pre></td></tr></table></figure>
+<p>实际上ARC隐式转化为</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.array = <span class="comment">[<span class="comment">[<span class="comment">[NSArray alloc]</span> init]</span> autorelease]</span>;</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NSArray *tempArray = [[NSArray alloc] init]<span class="comment">;</span></span><br><span class="line">self.array = tempArray<span class="comment">;</span></span><br><span class="line">[tempArray release]<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<h4 id="ARC下的属性修饰符">ARC下的属性修饰符</h4><p>ARC新增了几个属性修饰符</p>
+<ul>
+<li><p><code>__strong</code></p>
+<p>  ARC下，默认所有的栈变量都是strong类型，这个属性和retain一样，并且假如我们没有为其赋值，会自动初始化为nil。</p>
+<p>  <code>NSString *name;</code><br>  实际上它等于拥有了以下属性<br>  <code>__strong NSString *name = nil;</code></p>
+</li>
+<li><p><code>__weak</code></p>
+<p>  不会增加对象的引用计数，当指向的对象被释放时，自动置为nil。ARC下替代MRC下delegate的assign方法，既可以打破循环引用又可以避免野指针造成的crash。</p>
+</li>
+<li><p><code>__unsafe_unretained</code></p>
+<p>  字面意思unretained表示不会增加对象的引用计数，unsafe表示当指向的对象被释放时，该指针就成为野指针了，因此是不安全的。</p>
+</li>
+<li><p><code>__autoreleasing</code></p>
+<p>  类似@autorelease，被修饰的对象被设置为自动释放，一般被用于参数传递，比如</p>
+  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="typename">void</span>)<span class="string">save:</span>(NSError * __autoreleasing *)error</span><br><span class="line">&#123;</span><br><span class="line">    *error = [[NSError alloc] <span class="string">initWithDomain:</span>@<span class="string">"123"</span> <span class="string">code:</span><span class="number">0</span> <span class="string">userInfo:</span>nil];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  这样我们就不需要管理error的内存了，因为已经被设置成自动释放，相当于如下代码，否则会造成内存泄露。</p>
+  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*error = [[[NSError alloc] <span class="string">initWithDomain:</span>@<span class="string">"123"</span> <span class="string">code:</span><span class="number">0</span> <span class="string">userInfo:</span>nil] autorelease];</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="ARC下存取器@property">ARC下存取器@property</h4><p>先看看MRC下我们手写存取器的例子</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyClass</span> : <span class="title">NSObject</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, retain) <span class="built_in">NSNumber</span> *count;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyClass</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSNumber</span> *)count &#123;</span><br><span class="line">    <span class="keyword">return</span> _count;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setCount:(<span class="built_in">NSNumber</span> *)newCount &#123;</span><br><span class="line">    <span class="keyword">if</span> (_count != newCount) &#123;</span><br><span class="line">        _count = [newCount retain];</span><br><span class="line">        [_count release];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>我们可以看到，getter方法没有变化，仅仅是返回变量的值；setter方法做了两件事：</p>
+<ul>
+<li><p>retain新值<br>retain新值是因为我们无法知道新的值在什么时候被释放，我们必须确保在使用的时候它没有被释放，因此我们必须持有它。</p>
+</li>
+<li><p>释放旧值<br>释放旧值是因为如果不释放，旧值就会失去对象对它的引用，我们就再也无法访问到旧值了，因此也就无法释放它，最终导致内存泄露。</p>
+</li>
+</ul>
+<p>注意那个判断是因为，假如新值和旧值是同一对象，就会导致自己retain自己。</p>
+<p>ARC下，很简单，直接按照逻辑来写，不用管复杂的新值旧值了</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby"> (<span class="constant">NSNumber</span> *)count &#123;</span><br><span class="line"></span>    return _count;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">-<span class="ruby"> (void)<span class="symbol">setCount:</span>(<span class="constant">NSNumber</span> *)newCount &#123;</span><br><span class="line"></span>    _count = newCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ARC下函数返回值">ARC下函数返回值</h4><p>MRC的时候，对象在函数内部创建并返回的时候，我们必须要放弃对其的所有权。但是如果我们直接使用release，对象会在返回的时候立即被释放，这个时候我们就必须使用autorelease延迟的它的释放时机，这样，调用者仍旧可以使用返回的对象，并且使用完之后会被安全的释放而不会内存泄露</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)fullName &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *string = [[[<span class="built_in">NSString</span> alloc] initWithFormat:<span class="string">@"%@ %@"</span>, <span class="keyword">self</span><span class="variable">.firstName</span>, <span class="keyword">self</span><span class="variable">.lastName</span>] autorelease];	</span><br><span class="line">    <span class="comment">// 没有autorelease就会导致内存泄露，因为调用者使用完之后得不到释放</span></span><br><span class="line">    <span class="keyword">return</span> string;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>或者也可以</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)fullName &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *string = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%@ %@"</span>,</span><br><span class="line">                                 <span class="keyword">self</span><span class="variable">.firstName</span>, <span class="keyword">self</span><span class="variable">.lastName</span>];</span><br><span class="line">    <span class="keyword">return</span> string;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为<code>+stringWithFormat</code>内部自动autorelease，我们已经不再拥有对string的所有权，因此我们可以安全的返回。</p>
+<p>但是到了ARC，我们可以不用在写autorelease，只需创建好之后直接返回，ARC在编译的时候会自动帮我们加上。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)fullName &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *string = [[<span class="built_in">NSString</span> alloc] initWithFormat:<span class="string">@"%@ %@"</span>, <span class="keyword">self</span><span class="variable">.firstName</span>, <span class="keyword">self</span><span class="variable">.lastName</span>];	</span><br><span class="line">    <span class="comment">// ARC下直接返回就好了</span></span><br><span class="line">    <span class="keyword">return</span> string;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ARC下的block">ARC下的block</h4><p>ARC和MRC block的类型还是有所区别的。</p>
+<p>ARC下创建的block，和其他对象一样，默认是<code>strong</code>类型。当<code>__NSStackBlock__</code>类型的block使用外部变量时，这个block会被copy进堆中，就成为了<code>__NSMallocBlock__</code>（有个例外，直接在参数中传递的block）；如果没有使用外部变量，则是<code>__NSGlobalBlock__</code>。那么有没有办法使它成为<code>__NSStackBlock__</code>呢，可以显式声明block为<code>weak</code>。</p>
+<p>MRC</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// MRC下，是__NSStackBlock__</span></span><br><span class="line"><span class="keyword">void</span> (^myBlock)(<span class="keyword">int</span> i) = ^(<span class="keyword">int</span> i) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, <span class="keyword">self</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"myBlock : %@"</span>, myBlock);</span><br></pre></td></tr></table></figure>
+<p>ARC</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ARC下，却是__NSMallocBlock__</span></span><br><span class="line"><span class="keyword">void</span> (^myBlock)(<span class="keyword">int</span> i) = ^(<span class="keyword">int</span> i) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, <span class="keyword">self</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"myBlock : %@"</span>, myBlock);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明为weak类型，变回__NSStackBlock__</span></span><br><span class="line">__<span class="keyword">weak</span> <span class="keyword">void</span> (^myBlock)(<span class="keyword">int</span> i) = ^(<span class="keyword">int</span> i) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, <span class="keyword">self</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"myBlock : %@"</span>, myBlock);</span><br></pre></td></tr></table></figure>
+<p>例外，ARC下，如果使用了外部变量的block直接作为函数参数，这个时候还是<code>__NSStackBlock__</code></p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="list">[<span class="keyword">self</span> performBlock:^&#123;</span><br><span class="line">    NSLog<span class="list">(<span class="keyword">@</span><span class="string">"self = %@"</span>, self)</span><span class="comment">;</span></span><br><span class="line">&#125;]<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">- <span class="list">(<span class="keyword">void</span>)</span>performBlock:<span class="list">(<span class="keyword">void</span> <span class="list">(<span class="keyword">^</span>)</span><span class="list">()</span>)</span>block</span><br><span class="line">&#123;</span><br><span class="line">    // 这个block是栈block</span><br><span class="line">    NSLog<span class="list">(<span class="keyword">@</span><span class="string">"block: %@"</span>, block)</span><span class="comment">;</span></span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>讨论完ARC和MRC下block的类型，接下来我们来看看ARC中有哪些需要注意的地方以及和MRC相比ARC为我们所做的工作。</p>
+<h5 id="先看函数返回值为block的情况。">先看函数返回值为block的情况。</h5><p>  MRC下，copy是因为这里创建的block是个<code>__NSStackBlock__</code>（因为它使用了外部变量<code>i</code>），不copy的话当函数返回时它就被释放了，因此必须将它copy到堆上，也就是成为<code>__NSMallocBlock__</code>。实际上如果我们创建的是<strong>NSGlobalBlock</strong>，这里是可以不用copy的，但是copy总是正确的；autorelease的原因和前面一样，返回对象之后我们必须放弃对其所有权，这样才会被安全释放。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>(^)())getBlock:(<span class="keyword">int</span>)i &#123;</span><br><span class="line">    <span class="keyword">void</span> (^block)() = ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"a = %@"</span>,  @(i));</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"dd"</span>);</span><br><span class="line">    <span class="keyword">return</span> [[block <span class="keyword">copy</span>] autorelease];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ARC下会自动将返回的栈block copy和autorelease，我们不需要手动书写。实际上这个block在ARC下是<code>__NSMallocBlock__</code>，实验结果来看ARC并没有做copy。</p>
+<figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="pp">- <span class="params">(void (^)</span><span class="params">()</span>)getBlock:<span class="params">(int)</span>i &#123;</span><br><span class="line">    // ARC这是个__NSMallocBlock__</span><br><span class="line">    void <span class="params">(^block)</span><span class="params">()</span> = ^&#123;</span><br><span class="line">        NSLog<span class="params">(@<span class="string">"a = %@"</span>, @(i)</span>);</span><br><span class="line">    &#125;;</span><br><span class="line">    return block;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+<h5 id="再看block作为函数参数的情况。">再看block作为函数参数的情况。</h5><p>我们建立了一个类，并且将myBlock作为成员变量，然后初始化方法传入一个block。</p>
+<p>MRC下，我们必须copy我们的block，这里原因和block作为返回值类似。假如作为参数传入的block是个<code>__NSStackBlock__</code>，那么当创建block的函数栈返回时，这个block就会被释放，那么当我们使用的时候，就会因为使用了已经释放的对象而crash，而这也是我们使用属性定义block的时候使用copy的原因。</p>
+<p><em>例子1：</em></p>
+<p>MRC</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyClass</span> : <span class="title">NSObject</span> </span>&#123;</span><br><span class="line">    <span class="keyword">void</span> (^myBlock)(<span class="keyword">int</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//@property (nonatomic, copy) void (^myBlock)(int);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line">- (instancetype)initWithBlock:(<span class="keyword">void</span> (^)(<span class="keyword">int</span>))block 	&#123;</span><br><span class="line">    <span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">        myBlock = [block <span class="keyword">copy</span>];</span><br><span class="line"><span class="comment">//        self.myBlock = blk;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)dealloc &#123;</span><br><span class="line">    [myBlock release];</span><br><span class="line"></span><br><span class="line">    [<span class="keyword">super</span> dealloc];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ARC下，我们只要<code>myBlock = block;</code>就行了，它会为我们自动copy。</p>
+<p><em>例子2：</em></p>
+<p>我们常用的<code>-performSelector:withObject:afterDelay:</code>方法</p>
+<p>MRC</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="typename">int</span> var = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">[self <span class="string">performSelector:</span><span class="annotation">@selector</span>(<span class="string">action:</span>) <span class="string">withObject:</span>[[^(<span class="typename">int</span> i) &#123;</span><br><span class="line">    NSLog(@<span class="string">"result = %@"</span>, @(i+var));</span><br><span class="line">&#125; copy] autorelease] <span class="string">afterDelay:</span><span class="number">1.0</span>];</span><br></pre></td></tr></table></figure>
+<p>ARC</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="typename">int</span> var = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">[self <span class="string">performSelector:</span><span class="annotation">@selector</span>(<span class="string">action:</span>) <span class="string">withObject:</span>^(<span class="typename">int</span> i) &#123;</span><br><span class="line">    NSLog(@<span class="string">"result = %@"</span>, @(i+var));</span><br><span class="line">&#125; <span class="string">afterDelay:</span><span class="number">1.0</span>];</span><br></pre></td></tr></table></figure>
+<h5 id="block加入数组或集合">block加入数组或集合</h5><p>MRC下block加入数组，copy原因同上，将栈上的block变成堆block；autorelease的原因是数组会对加入其中的对象retain，因此在加入之后必须要释放它</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[self.muteArray addObject:<span class="string">[[myBlock copy] autorelease]]</span>;</span><br></pre></td></tr></table></figure>
+<p>ARC下，直接add就行了。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">[self.muteArray addObject:myBlock]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<h4 id="ARC下的循环引用问题">ARC下的循环引用问题</h4><p>使用block的时候，当A持有block，而block又持有A的时候，就会造成循环引用而相互无法释放。<br>MRC下我们只需要使用<code>__block</code>修饰对象，block就不会retain它</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__block <span class="keyword">id</span> blockSelf = <span class="keyword">self</span>;</span><br><span class="line"><span class="keyword">self</span><span class="variable">.myBlock</span> = ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, blockSelf);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>但是在ARC下，即使你的变量使用了<code>__block</code>，仍旧会被retain，因此仍然会循环引用，这个时候就应该使用<code>__weak</code>或者<code>__unsafe_unretained</code>（iOS5以下）了，但是<code>__unsafe_unretained</code>是不安全的，因为当它指向的对象被释放的时候，而这个指针还指着那块被释放的地址，也就是野指针，就会造成crash；而<code>__weak</code>则会在发生这个情况的时候自动将指针置为nil，OC里对nil发消息是可以的。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__<span class="keyword">weak</span> <span class="keyword">id</span> weakSelf = <span class="keyword">self</span>;</span><br><span class="line"><span class="keyword">self</span><span class="variable">.myBlock</span> = ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, weakSelf);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__unsafe_unretained <span class="keyword">id</span> blockSelf = <span class="keyword">self</span>;    <span class="comment">// 不推荐</span></span><br><span class="line"><span class="keyword">self</span><span class="variable">.myBlock</span> = ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, blockSelf);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>以下是几点需要注意的循环引用的地方</p>
+<ul>
+<li>block中使用了属性定义的变量，如<code>self.xxx</code>，block就会retain self，而如果self又retain该block，就会造成循环引用，也是最常见的类型。</li>
+<li><p>block中使用了不是使用属性定义的成员变量，默认是strong类型，也会被强引用。这个时候我们就可以使用一个临时变量来存储。</p>
+  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__<span class="keyword">weak</span> <span class="built_in">NSNumber</span> *tempNum = num;</span><br><span class="line"><span class="built_in">NSUInteger</span> tempCount = count;</span><br><span class="line"><span class="keyword">self</span><span class="variable">.myBlock</span> = ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"value = %@"</span>, tempNum);</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"value2 = %@"</span>, @(tempCount));</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>delegate的属性修饰符要从assign改为weak，这样既可以打破循环引用又可以避免野指针造成的crash。</p>
+</li>
+</ul>
+<p>当然也并不是一有block我们就要使用弱引用，以下是几个不需要使用weak的地方</p>
+<ul>
+<li><p>当block不被诸如vc之类的持有时，我们不需要使用weak，比如我定义了一个函数使用block作参数，但是这个block仅仅是参数而没有被我持有。</p>
+  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 传进去的block并没有被self retain，不需要weakSelf</span></span><br><span class="line">[<span class="keyword">self</span> doSomething:^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, <span class="keyword">self</span>);</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>GCD中一般情况下不需要使用weakSelf，GCD中block虽然retain了外部的变量，但是我们并不持有该block</p>
+</li>
+<li>系统的一些诸如动画之类的block，原因同上</li>
+</ul>
+<h4 id="关于ARC下__block和__weak的区别">关于ARC下<code>__block</code>和<code>__weak</code>的区别</h4><p>ARC下的一些开源库中我们经常能看到<code>__block</code>和<code>__weak</code>一起修饰某个变量，他们两个属性各有各的作用，<code>__weak</code>是为了避免循环引用；<strong>而<code>__block</code>是为了可以修改外部的变量，不是避免循环引用，因为ARC下<code>__block</code>仍然可以retain变量</strong>，不要搞混淆了。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/09/20/iOS_Method_Swizzling/" rel="next" title="iOS Method Swizzling">
+                <i class="fa fa-chevron-left"></i> iOS Method Swizzling
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/11/13/NSOperation和NSOperationQueue/" rel="prev" title="NSOperation和NSOperationQueue">
+                NSOperation和NSOperationQueue <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/10/26/ARC与MRC必知必会/"
+           data-title="ARC与MRC必知必会" data-url="http://yoursite.com/2015/10/26/ARC与MRC必知必会/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/avatar.png" alt="Wild Yaoyao" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">Wild Yaoyao</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">0</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            
+              <span class="site-state-item-count">0</span>
+              <span class="site-state-item-name">标签</span>
+              
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#ARC下的autorelease_pool"><span class="nav-number">1.</span> <span class="nav-text">ARC下的autorelease pool</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARC下对象的创建和使用"><span class="nav-number">2.</span> <span class="nav-text">ARC下对象的创建和使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARC下的属性修饰符"><span class="nav-number">3.</span> <span class="nav-text">ARC下的属性修饰符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARC下存取器@property"><span class="nav-number">4.</span> <span class="nav-text">ARC下存取器@property</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARC下函数返回值"><span class="nav-number">5.</span> <span class="nav-text">ARC下函数返回值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARC下的block"><span class="nav-number">6.</span> <span class="nav-text">ARC下的block</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#先看函数返回值为block的情况。"><span class="nav-number">6.1.</span> <span class="nav-text">先看函数返回值为block的情况。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#再看block作为函数参数的情况。"><span class="nav-number">6.2.</span> <span class="nav-text">再看block作为函数参数的情况。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#block加入数组或集合"><span class="nav-number">6.3.</span> <span class="nav-text">block加入数组或集合</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARC下的循环引用问题"><span class="nav-number">7.</span> <span class="nav-text">ARC下的循环引用问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#关于ARC下__block和__weak的区别"><span class="nav-number">8.</span> <span class="nav-text">关于ARC下__block和__weak的区别</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="author" itemprop="copyrightHolder">Wild Yaoyao</span>
+</span>
+</div>
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"wildyao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

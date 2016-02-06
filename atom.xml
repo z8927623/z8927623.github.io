@@ -4,7 +4,7 @@
   <subtitle><![CDATA[野瑶瑶的技术博客]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com/"/>
-  <updated>2016-02-06T04:25:32.000Z</updated>
+  <updated>2016-02-06T07:13:34.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,11 +15,79 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[额...runloop]]></title>
+    <link href="http://yoursite.com/2016/02/05/%E9%A2%9D...runloop/"/>
+    <id>http://yoursite.com/2016/02/05/额...runloop/</id>
+    <published>2016-02-04T16:00:00.000Z</published>
+    <updated>2016-02-06T07:13:34.000Z</updated>
+    <content type="html"><![CDATA[<p>run loop的目的是让我们的线程保持繁忙，同时当线程没事儿可做的时候使之休眠。</p>
+<p>主线程的run loop已经在程序启动的时候作为启动进程运行，而子线程，我们需要手动使run loop运行。</p>
+<p>run loop就像它的名字一样，是个循环，那它是什么循环呢，和线程有关，线程利用它去响应事件的</p>
+<p>run loop接收两种类型的事件源：  </p>
+<ul>
+<li>输入源（<code>Input sources</code>）：投递异步事件，通常是从另一个线程或者另一个app过来的。</li>
+<li>Timer源（<code>Timer sources</code>）：投递同步事件，通常出现在timer运行的时候</li>
+</ul>
+<p>下面这张图是run loop的运行状态图</p>
+<p><img src="../images/runloop_1.png" alt="runloop_1"></p>
+<p>Input sources投递异步事件去响应handlers，并且使<code>runUntilDate:</code>方法退出<br>Timer sources投递timer事件处理但是不会造成run loop退出</p>
+<p>除了处理输入源，run loop也可以对自己的行为生成通知，我们可以注册<code>run-loop observers</code>，然后我们就可以收到这些通知，然后在线程上做一些自己的事情，我们可以使用<code>Core Foundation</code>去安装观察者在我们的线程上。</p>
+<h3 id="Run_Loop_Modes">Run Loop Modes</h3><p>当我们显式或者隐式运行run loop，都必须指定一个<code>model</code>，当指定mode之后，只有和该mode相关的事件源才能被投递到线程去处理，其他不相关的事件源只能被挂起，直到run loop回到和该事件源相关的mode。</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th style="text-align:left">Name</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Default</code></td>
+<td style="text-align:left"><code>NSDefaultRunLoopMode</code>(Cocoa)  <code>kCFRunLoopDefaultMode</code>(Core Foundation)</td>
+<td style="text-align:left">默认模式，大部分情况我们使用这个模式就OK了</td>
+</tr>
+<tr>
+<td><code>Connection</code></td>
+<td style="text-align:left"><code>NSConnectionReplyMode</code>(Cocoa)</td>
+<td style="text-align:left">这个模式是给NSConnection处理网络回调用的，我们几乎用不到</td>
+</tr>
+<tr>
+<td><code>Modal</code></td>
+<td style="text-align:left"><code>NSModalPanelRunLoopMode</code>(Cocoa)</td>
+<td style="text-align:left">模态模式，Cocoa使用这个模式给模态视图投递事件</td>
+</tr>
+<tr>
+<td><code>Event tracking</code></td>
+<td style="text-align:left"><code>NSEventTrackingRunLoopMode</code>(Cocoa)</td>
+<td style="text-align:left">这个模式和iOS的流畅不无关系，当我们拖动鼠标或者滑动scrollView的时候，处于这个模式下的run loop会限制其他事件</td>
+</tr>
+<tr>
+<td><code>Common modes</code></td>
+<td style="text-align:left"><code>NSRunLoopCommonModes</code>(Cocoa)  <code>kCFRunLoopCommonModes</code>(Core Foundation)</td>
+<td style="text-align:left">通用模式，如果run loop运行在这个模式下，等于运行在以上所有模式下</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Input_Sources">Input Sources</h3><p>input sources异步投递事件到线程，</p>
+<p>当我们在子线程上执行例如<code>-performSelector:withObject:afterDelay:</code>等方法时，该线程必须有一个活跃的run loop，因为这是我们自己创建的，我们必须手动去启动线程</p>
+<p>run loop会在每次循环的时候处理全部入队列的selector calls，而不是在每个循环只处理一个</p>
+<h3 id="Timer_Sources">Timer Sources</h3><p>timer关联到run loop的模式，当timer不再它所安排运行的那个mode时，它并不会被触发直到run loop运行在自己安排的那个线程。相似的，如果timer在一个run loop执行但还没有执行完的时候触发，那么它必须等到下次run loop循环重新触发，如果run loop根本没有运行，那么timer就不会被触发</p>
+<h3 id="Run_Loop_Observers">Run Loop Observers</h3>]]></content>
+    <summary type="html">
+    <![CDATA[<p>run loop的目的是让我们的线程保持繁忙，同时当线程没事儿可做的时候使之休眠。</p>
+<p>主线程的run loop已经在程序启动的时候作为启动进程运行，而子线程，我们需要手动使run loop运行。</p>
+<p>run loop就像它的名字一样，是个循环，那它是什]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[Objective-C Runtime之实现]]></title>
     <link href="http://yoursite.com/2016/02/05/Objective-C%20Runtime%E4%B9%8B%E5%AE%9E%E7%8E%B0/"/>
     <id>http://yoursite.com/2016/02/05/Objective-C Runtime之实现/</id>
     <published>2016-02-04T16:00:00.000Z</published>
-    <updated>2016-02-06T04:25:32.000Z</updated>
+    <updated>2016-02-06T16:34:51.000Z</updated>
     <content type="html"><![CDATA[<h3 id="id">id</h3><p>首先从<code>id</code>说起，Objective-C中id是个可以指向任何OC对象的指针，我们来看看它的结构</p>
 <figure class="highlight thrift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">objc_object</span> </span>&#123;</span><br><span class="line">    Class isa;</span><br><span class="line">&#125; *id;</span><br></pre></td></tr></table></figure>
 <p>可知，<code>id</code>是一个指向<code>objec_object</code>结构的C指针，而<code>objec_object</code>又包含了一个<code>isa</code>指针，该指针指向名为<code>Class</code>的变量，因此，每个OC对象都有个<code>Class</code>，那么<code>Class</code>又是什么呢？</p>
@@ -68,8 +136,6 @@
 <p><code>IMP</code>是一个函数指针，指向<code>Method</code>的实现，<code>Method</code>的实现是个C函数，因此确切地说是指向C函数的地址。它有两个固定参数，分别是<code>id</code>和<code>方法选择器SEL</code>，以及可变参数，并且返回一个<code>id</code>类型的对象。</p>
 <h3 id="继承层次图">继承层次图</h3><p>了解了以上概念后，我们再来看看OC的继承层次图，其中实线表示<code>superclass</code>，虚线表示<code>isa</code>指针。</p>
 <p><img src="/images/runtime_8.png" alt="runtime_8"></p>
-<p>唉，写不下去了，有点想我的温柔贤惠漂亮大美妞傻逼宝贝了，不知道她现在睡了没😔？</p>
-<p><img src="/images/honey.png" alt="honey"></p>
 <h3 id="实例">实例</h3><p><strong>例子1</strong>：结合class和object和结构，以<code>[@&quot;呵呵&quot; stringByAppendingString:@&quot;哒&quot;];</code>为例子，说明整个消息发送过程：</p>
 <p>首先@”呵呵”是个对象，runtime系统根据对象的<code>isa</code>指针发现它的类（<code>Class</code>）是<code>NSString</code>，首先查找它的缓存（<code>cache</code>），如果找到了直接调用IMP，否则查看它的方法列表（<code>methodLists</code>），如果本类找不到，则查找父类（<code>super_class</code>），最后找到了匹配的方法选择器selector<code>-stringByAppendingString:</code>，然后取出和selector一起存储在<code>objc_method</code>中的IMP，触发。</p>
 <p><strong>例子2</strong>：OC类的继承关系</p>
@@ -88,7 +154,7 @@
 <li>MyClass的元类的元类是NSObject，地址为<code>0x7fff7542c118</code></li>
 </ul>
 <p>是不是绕晕了，用图表示一下：</p>
-<p><img src="../images/runtime_10.png" alt="runtime_10"></p>
+<p><img src="/images/runtime_10.png" alt="runtime_10"></p>
 <p>好了，下一篇来讲讲runtime的应用。</p>
 ]]></content>
     <summary type="html">
@@ -258,11 +324,258 @@
   </entry>
   
   <entry>
+    <title><![CDATA[iOS事件响应机制]]></title>
+    <link href="http://yoursite.com/2016/01/19/iOS%E4%BA%8B%E4%BB%B6%E5%93%8D%E5%BA%94%E6%9C%BA%E5%88%B6/"/>
+    <id>http://yoursite.com/2016/01/19/iOS事件响应机制/</id>
+    <published>2016-01-18T16:00:00.000Z</published>
+    <updated>2016-02-06T06:51:09.000Z</updated>
+    <content type="html"><![CDATA[<p>学习iOS事件响应机制时候，经常会听到一个词，即<code>hit-testing</code>或者<code>hit-test</code>视图，字面意思理解为敲打测试，实际上，<code>hit-testing</code>是一个过程，是iOS用来确定用户点击的部分在屏幕哪个部位的一个方法，而点击部分所在的视图就是<code>hit-test</code>视图。</p>
+<p>那么当用户触摸屏幕时，iOS是如何确定<code>hit-testing</code>并且最终找到这个<code>hit-testing</code>视图的呢。</p>
+<p>当用户触摸屏幕即响应的事件发生时，<code>UIKit</code>首先会生成一个<code>UIEvent</code>对象，这个对象包含着事件的一些基本信息，包括事件类型、事件发生的时间，然后会将它放入<code>event queue</code>里面。接下来，就是事件从底部向上到顶部找到<code>hit-test</code>视图的过程了。</p>
+<ul>
+<li><code>UIApplication</code>对象从<code>event queue</code>中取出event，然后将它分发给其他对象处理。</li>
+<li>然后<code>UIApplication</code>会先将event发送给<code>UIWindow</code>对象，接下来由window将事件传递到事件发生的那个视图。</li>
+<li>那么window是怎么做的呢，它会自下而上遍历它的子视图，对每个视图调用<code>-hitTest:withEvent:</code>，而该方法会触发<code>-pointInside:withEvent:</code>检查触摸区域是否在该视图边界内，<ul>
+<li>如果在则返回<code>YES</code>，并且<code>-hitTest:withEvent:</code>返回该视图自身，表示当前查找的这个视图是<code>hit-testing</code>视图；</li>
+<li>否则为<code>NO</code>，<code>hitTest:withEvent:</code>返回<code>nil</code>，表示触摸事件并不发生在那个视图上面，那么该视图被抛弃，其所有子视图的<code>hitTest:withEvent:</code>也都返回<code>nil</code>，进而检查其他视图。</li>
+</ul>
+</li>
+<li>如果触摸发生在相关视图上（即<code>pointInside:withEvent:</code>返回<code>YES</code>），那么该视图会再次遍历它的子视图（逆序），对每个子视图调用<code>-hitTest:withEvent:</code>做同样一遍查找过程，直到该视图没有子视图，最终确定那个视图为<code>hit-testing</code>视图，查找<code>hit-testing</code>视图的这个过程就叫做<code>hit-testing</code>。</li>
+</ul>
+<p>找到<code>hit-testing</code>视图之后，它就有机会去处理该事件，如果它不能处理，则事件会沿着响应链继续传递，每个响应者都有机会决定是否去处理事件或者继续传递给下一个响应者，直到找到一个可以处理它的对象或者被丢弃。</p>
+<ul>
+<li><code>hit-testing</code>视图是第一个可以处理事件的，如果它不能处理，则它会将事件传递给它的父视图</li>
+<li>父视图如果不能处理，则它会再次传递给它的父视图</li>
+<li>直到传到最顶端的视图，即直接添加到<code>UIWindow</code>上的那个视图，如果它还不能处理，则它会传递给它的视图控制器</li>
+<li>如果视图控制器也不能处理，那么只能最后传递给window对象了</li>
+<li>如果window对象无法处理，那么它会还给<code>UIApplication</code>对象</li>
+<li>如果<code>UIApplication</code>也不处理，那么该事件就只能被丢弃。</li>
+</ul>
+<p>从以上可以看出，查找<code>hit-test</code>视图的过程是<strong>从下往上</strong>的，而找到之后查找响应者的过程是<strong>自下而上</strong>的。</p>
+<p>接下来通过一个实例来说明一下。</p>
+<p>这个图是苹果文档里的一个图，我用实验证明了一下</p>
+<p><img src="/images/hit-test_1.png" alt="hit-test_1"></p>
+<p>我点击在视图D上面，查看控制台的输出如下</p>
+<p><img src="/images/hit-test_2.png" alt="hit-test_2"></p>
+<p>从图中我们可以看到</p>
+<ol>
+<li><p>由<code>UIApplication</code>分发给<code>UIWindow</code>之后，首先调用<code>UIWindow</code>的<code>-hitTest:withEvent:</code>，进而调用<code>-pointInside:withEvent:</code>，发现触摸在window之内，因此返回<code>YES</code>,<code>-hitTest:withEvent:</code>返回window自身，表示当前<code>hit-test</code>视图是window。</p>
+</li>
+<li><p>遍历window上面的视图，由于window的子视图只有View A，因此调用View A的<code>-pointInside:withEvent:</code>，发现触摸在window之内，因此返回<code>YES</code>,<code>-hitTest:withEvent:</code>返回View A，表示当前<code>hit-test</code>视图是View A。</p>
+</li>
+<li><p>遍历View A上面的视图，这里要注意，ViewA的子视图有两个，分别是View B和View C，通过测试我发现调用的顺序是子视图逆序，即View C是在View B之后加的，</p>
+<ul>
+<li>因此这里先调用View C的<code>-pointInside:withEvent:</code>，发现触摸在View C之内，因此返回<code>YES</code>,<code>-hitTest:withEvent:</code>返回View C，表示当前<code>hit-test</code>视图是View C，因此View B则被忽略。</li>
+<li>倘若这里View B加在View C之后，则会先调用View B</li>
+</ul>
+</li>
+<li><p>接着遍历View C上面的视图，同样的道理，</p>
+<ul>
+<li>先测试View E，发现触摸不在上面，即View E的<code>pointInside:withEvent:</code>返回<code>NO</code>，所以View E的<code>-hitTest:withEvent:</code>返回<code>nil</code></li>
+<li>再测试View D，发现触摸在上面，<code>pointInside:withEvent:</code>返回<code>YES</code>，<code>-hitTest:withEvent:</code>返回View D，表示当前<code>hit-test</code>视图是View D。</li>
+</ul>
+</li>
+<li><p>再次遍历View D上面的子视图，发现已经没有子视图，因此此次点击最终的<code>hit-test</code>视图是View D</p>
+</li>
+</ol>
+<p>不知道大家有没有注意到那个图，<code>hit-testing</code>过程执行了两遍，至于为什么会执行两遍，目前还不清楚。</p>
+<p>了解了<code>hit-testing</code>过程之后，这就很好理解，有时候我们添加一个button在view上面，点击之后无法响应事件的原因了。</p>
+<p>如图，我在View B上添加了一个button，查看button的响应情况</p>
+<p><img src="/images/hit-test_3.png" alt="hit-test_3"></p>
+<p>首先，我点击在button右侧，注意点击的部位必须在View B之内，查看输出情况。</p>
+<p><img src="/images/hit-test_4.png" alt="hit-test_4"></p>
+<p>可以看到，查找View B之后，发现在View B上，然后查找button，发现也在button之上，因此，正常的响应了事件。</p>
+<p>然后，我点击在button左侧，点击在View B之外</p>
+<p><img src="/images/hit-test_5.png" alt="hit-test_5"></p>
+<p>可以看到，View B在检测的时候，发现点击在View B之外，因此<code>-pointInside:withEvent</code>直接返回<code>NO</code>，接着<code>-hitTest:withEvent:</code>返回<code>nil</code>，表示触摸事件并不发生在那个视图上面，则它的所有子视图的<code>-hitTest:withEvent:</code>全部返回<code>nil</code>，因此button并不会响应我们的点击事件。</p>
+<p>这种情况尤其要注意，尤其是我们设置了<code>clipsToBounds</code>为<code>NO</code>的时候。</p>
+<p>那么假如我们想要button继续响应事件呢，只需要在<code>-hitTest:withEvent:</code>方法里修改即可</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ [-hitTest:withEvent:]"</span>, <span class="keyword">self</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将点击的点转化为button自身的坐标</span></span><br><span class="line">    <span class="built_in">CGPoint</span> touchPointInButton = [<span class="keyword">self</span><span class="variable">.button</span> convertPoint:point fromView:<span class="keyword">self</span>];</span><br><span class="line">    <span class="comment">// 如果点击的点在button之内，则返回</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">CGRectContainsPoint</span>(<span class="keyword">self</span><span class="variable">.button</span><span class="variable">.bounds</span>, touchPointInButton)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span><span class="variable">.button</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> [<span class="keyword">super</span> hitTest:point withEvent:event];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们所做的就是判断点击的点是否在button之内，如果是，则返回button为<code>hit-test</code>视图，否则，调用super处理。</p>
+<p>因此，通过<code>hit-testing</code>我们可以改变事件的分发，可以完成诸如点击A而让B响应的特殊情况，进而满足一些特殊的需求。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>学习iOS事件响应机制时候，经常会听到一个词，即<code>hit-testing</code>或者<code>hit-test</code>视图，字面意思理解为敲打测试，实际上，<code>hit-testing</code>是一个过程，是iOS用来确定用户点击的部分在屏]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[记一次Code Review]]></title>
+    <link href="http://yoursite.com/2015/12/25/%E8%AE%B0%E4%B8%80%E6%AC%A1Code%20Review/"/>
+    <id>http://yoursite.com/2015/12/25/记一次Code Review/</id>
+    <published>2015-12-24T16:00:00.000Z</published>
+    <updated>2016-02-06T06:47:31.000Z</updated>
+    <content type="html"><![CDATA[<ul>
+<li><p>首先是代码规范，我理解的代码规范，也就是代码风格吧，除了可读性强以外，最重要的就是代码看起来要大方，所谓”人靠衣装”，代码也是有颜值的，因为可能以后维护代码的人就不是你了，人家见代码如见人，万一看到个很小气的代码，可能会觉得写代码的人都和代码一样”小气”了。代码规范主要有以下几点：</p>
+<ul>
+<li><p><strong>空格</strong>，该空的空，不该空的不要空，这是最重要的一点，也是写出漂亮代码最重要的一个点。具体如下</p>
+<ul>
+<li><code>#import &quot;filename.h&quot;</code>或者<code>#import &lt;framework/filename.h&gt;</code> import的右边必须空1格</li>
+<li><p><code>if else</code>。最佳的应该这样，左右花括号都得加空格</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">case</span>) &#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (other <span class="keyword">case</span>) &#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>方法名。左括号旁需要加一个空格</p>
+  <figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby"> (void)myFoo</span><br><span class="line"></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  而不是这样或其他变种</p>
+  <figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby">(void) myFoo</span><br><span class="line"></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>属性声明。左右括号和逗号旁星号前面都是一个空格<br><code>@property (nonatomic, strong) NSString *name;</code></p>
+</li>
+<li>协议定义。协议名左右两边都得有空格<br><code>@protocol MyProtocol &lt;NSObject&gt;</code></li>
+</ul>
+</li>
+<li><p><strong>换行</strong>，一个部分写完了，最好用两个回车隔开或者使用<code>#pragma mark -</code>或者我个人比较喜欢的<code>////////////</code>，这样一个文件内部各个代码的功能就比较清楚了。具体如下：</p>
+<ul>
+<li>头文件下至少空一行</li>
+<li><code>extension</code>和实现之间空一行</li>
+<li>第一个方法和<code>@implementation</code>之间空一行</li>
+<li>最后一个方法和<code>@end</code>之间空一行</li>
+<li>各个函数之间至少空一行</li>
+</ul>
+<p>综上写个示例</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">"filename.h"</span></span></span><br><span class="line">	</span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyClass</span> ()</span></span><br><span class="line">	</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyClass</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)firstFoo</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)lastFoo</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>#import &lt;framework/filename.h&gt;</code>与<code>#import &quot;filename.h&quot;</code>，系统、<code>CocoaPod</code>、第三方库的头文件，要用<code>#import &lt;framework/filename.h&gt;</code>或者<code>#import &lt;pods_name/filename.h&gt;</code>，这样人家一眼就看出来了你这个文件是自己加的还是外部引入的。</p>
+</li>
+<li>空函数，去掉多余的函数，比如Xcode自动为我们生成的<code>- drawRect:</code>、<code>- didReceiveMemoryWarning</code>等等，如果没用到，确保删掉，尽量做到写的代码都是有用的。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>VC自定义初始化方法时不要传太多参数，如果必须，最好封装成一个数据结构，字典或者数组都行。比如在<code>CNNLSelectTypesViewController</code>中的</p>
+  <figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-(instancetype)initWithType:(<span class="type">SelectType</span>) <span class="typedef"><span class="keyword">type</span> brand:<span class="container">(<span class="type">NSString</span> *)</span>brand series:<span class="container">(<span class="type">NSString</span> *)</span>series callBack:<span class="container">(<span class="type">SelectCallBack</span>)</span>callback defaultSelect:<span class="container">(<span class="type">NSInteger</span>)</span>defaultSelect withTitle:<span class="container">(<span class="type">NSString</span> *)</span>title;</span></span><br></pre></td></tr></table></figure>
+<p>  一下子传了6个参数，既不美观又不方便外部调用，对于这种，可以改成这样，将所有参数放在字典里再传入</p>
+  <figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="pp">- <span class="params">(instancetype)</span>initWithDataSource:<span class="params">(<span class="variable">NSDictionary</span> *)</span>dataSource callBack:<span class="params">(<span class="variable">SelectCallBack</span>)</span>callback;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>之前我们为了分辨是外部方法还是内部私有方法，一般是使用<code>#pragma mark - Private</code>或者<code>#pragma mark - Public</code>等编译指令，这个确实蛮方便的，但是假如在一个方法内部调用了另一个方法，我们需要知道被调用的方法到底是私有的还是共有的，这个时候我们必须跳转到相应的方法来查看它的作用域。这样也行，但是有个更好的方法，就是在私有方法之前加个下划线前缀。</p>
+  <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">-</span> (void)<span class="tag">publicFoo</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr_selector">[self _privateFoo]</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">-</span> (void)<span class="tag">_privateFoo</span></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  这样既避免了写编译指令带来的麻烦，而且可以非常直观的查看每个方法的作用域。而这个也恰恰是苹果所做的，比如下面这个UIViewController的头文件</p>
+<p>  <img src="/images/codereview_1.png" alt="codereview_1"></p>
+</li>
+<li><p>应对64位造成的warning。自从5S发布之后，苹果系列产品跨入了64位时代，然后速度变快了，你的Xcode的warning也变多了。最明显的地方，就是<code>%d</code>,<code>%f</code>了，为了让你的代码在64和32通吃，建议使用NSNumber也就是使用<code>@()</code>指令。比如下面这行代码，来自<code>CNNLCityListView</code></p>
+  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="keyword">self</span><span class="variable">.selectIndexAry</span> removeObject:[<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%d~0-0"</span>, <span class="keyword">self</span><span class="variable">.currentProvinceIndex</span><span class="variable">.row</span>]];</span><br></pre></td></tr></table></figure>
+<p>  当我在5上编译运行时候是没问题的，但是在6上就会有warning了，提示转换成<code>%ld</code>。如果我们改成这样</p>
+  <figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="collection">[self.selectIndexAry removeObject:<span class="collection">[NSString stringWithFormat:@<span class="string">"%@~0-0"</span>, @<span class="list">(<span class="keyword">self.currentProvinceIndex.row</span>)</span>]</span>]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>  则不管在5和6上都不会有warning了，因为类型转换交给系统去处理了而不需要我们自己关心。类似的还有以下建议</p>
+<ul>
+<li><code>int</code> -&gt; <code>NSInteger</code></li>
+<li><code>unsigned</code> -&gt; <code>NSUInteger</code></li>
+<li><code>float</code> -&gt; <code>CGFloat</code></li>
+<li><code>NSLog(@&quot;value: %d&quot;, i)</code> -&gt; <code>NSLog(@&quot;value: %@&quot;, @(i))</code></li>
+<li>枚举，使用<code>NS_ENUM</code>指定类型而不是传统的<code>enum</code></li>
+</ul>
+</li>
+<li><p><code>autolayout</code>的正确使用。关于约束的更新，根据autolayout官方文档，当view更新约束的时候，它会自动调用<code>- updateConstraints</code>，</p>
+<blockquote>
+<p>Override this to adjust your special constraints during a constraints update pass</p>
+</blockquote>
+<p>  因此，我们需要覆写<code>- updateConstraints</code>，然后在需要更新的地方调用</p>
+  <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">[self setNeedsUpdateConstraints]</span><span class="comment">;</span></span><br><span class="line"><span class="title">[self updateConstraintsIfNeeded]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>  表示马上更新约束。</p>
+<p>  例子：</p>
+  <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">-</span> (void)<span class="tag">updateConstraints</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr_selector">[self.detectLevelLabel mas_updateConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line"></span><br><span class="line">    &#125;]</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attr_selector">[super updateConstraints]</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">-</span> (void)<span class="tag">configureSomething</span>:(id)<span class="tag">item</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// code ...</span></span><br><span class="line">  <span class="comment">// need update constraints</span></span><br><span class="line"></span><br><span class="line">  <span class="attr_selector">[self setNeedsUpdateConstraints]</span>;</span><br><span class="line">  <span class="attr_selector">[self updateConstraintsIfNeeded]</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+]]></content>
+    <summary type="html">
+    <![CDATA[<ul>
+<li><p>首先是代码规范，我理解的代码规范，也就是代码风格吧，除了可读性强以外，最重要的就是代码看起来要大方，所谓”人靠衣装”，代码也是有颜值的，因为可能以后维护代码的人就不是你了，人家见代码如见人，万一看到个很小气的代码，可能会觉得写代码的人都和代码一样”小气”了]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[记一次Code Review]]></title>
+    <link href="http://yoursite.com/2015/12/25/%E8%AE%B0%E4%B8%80%E6%AC%A1Code_Review/"/>
+    <id>http://yoursite.com/2015/12/25/记一次Code_Review/</id>
+    <published>2015-12-24T16:00:00.000Z</published>
+    <updated>2016-02-06T06:47:31.000Z</updated>
+    <content type="html"><![CDATA[<ul>
+<li><p>首先是代码规范，我理解的代码规范，也就是代码风格吧，除了可读性强以外，最重要的就是代码看起来要大方，所谓”人靠衣装”，代码也是有颜值的，因为可能以后维护代码的人就不是你了，人家见代码如见人，万一看到个很小气的代码，可能会觉得写代码的人都和代码一样”小气”了。代码规范主要有以下几点：</p>
+<ul>
+<li><p><strong>空格</strong>，该空的空，不该空的不要空，这是最重要的一点，也是写出漂亮代码最重要的一个点。具体如下</p>
+<ul>
+<li><code>#import &quot;filename.h&quot;</code>或者<code>#import &lt;framework/filename.h&gt;</code> import的右边必须空1格</li>
+<li><p><code>if else</code>。最佳的应该这样，左右花括号都得加空格</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">case</span>) &#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (other <span class="keyword">case</span>) &#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>方法名。左括号旁需要加一个空格</p>
+  <figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby"> (void)myFoo</span><br><span class="line"></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  而不是这样或其他变种</p>
+  <figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby">(void) myFoo</span><br><span class="line"></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>属性声明。左右括号和逗号旁星号前面都是一个空格<br><code>@property (nonatomic, strong) NSString *name;</code></p>
+</li>
+<li>协议定义。协议名左右两边都得有空格<br><code>@protocol MyProtocol &lt;NSObject&gt;</code></li>
+</ul>
+</li>
+<li><p><strong>换行</strong>，一个部分写完了，最好用两个回车隔开或者使用<code>#pragma mark -</code>或者我个人比较喜欢的<code>////////////</code>，这样一个文件内部各个代码的功能就比较清楚了。具体如下：</p>
+<ul>
+<li>头文件下至少空一行</li>
+<li><code>extension</code>和实现之间空一行</li>
+<li>第一个方法和<code>@implementation</code>之间空一行</li>
+<li>最后一个方法和<code>@end</code>之间空一行</li>
+<li>各个函数之间至少空一行</li>
+</ul>
+<p>综上写个示例</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">"filename.h"</span></span></span><br><span class="line">	</span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyClass</span> ()</span></span><br><span class="line">	</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyClass</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)firstFoo</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)lastFoo</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>#import &lt;framework/filename.h&gt;</code>与<code>#import &quot;filename.h&quot;</code>，系统、<code>CocoaPod</code>、第三方库的头文件，要用<code>#import &lt;framework/filename.h&gt;</code>或者<code>#import &lt;pods_name/filename.h&gt;</code>，这样人家一眼就看出来了你这个文件是自己加的还是外部引入的。</p>
+</li>
+<li>空函数，去掉多余的函数，比如Xcode自动为我们生成的<code>- drawRect:</code>、<code>- didReceiveMemoryWarning</code>等等，如果没用到，确保删掉，尽量做到写的代码都是有用的。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>VC自定义初始化方法时不要传太多参数，如果必须，最好封装成一个数据结构，字典或者数组都行。比如在<code>CNNLSelectTypesViewController</code>中的</p>
+  <figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-(instancetype)initWithType:(<span class="type">SelectType</span>) <span class="typedef"><span class="keyword">type</span> brand:<span class="container">(<span class="type">NSString</span> *)</span>brand series:<span class="container">(<span class="type">NSString</span> *)</span>series callBack:<span class="container">(<span class="type">SelectCallBack</span>)</span>callback defaultSelect:<span class="container">(<span class="type">NSInteger</span>)</span>defaultSelect withTitle:<span class="container">(<span class="type">NSString</span> *)</span>title;</span></span><br></pre></td></tr></table></figure>
+<p>  一下子传了6个参数，既不美观又不方便外部调用，对于这种，可以改成这样，将所有参数放在字典里再传入</p>
+  <figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="pp">- <span class="params">(instancetype)</span>initWithDataSource:<span class="params">(<span class="variable">NSDictionary</span> *)</span>dataSource callBack:<span class="params">(<span class="variable">SelectCallBack</span>)</span>callback;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>之前我们为了分辨是外部方法还是内部私有方法，一般是使用<code>#pragma mark - Private</code>或者<code>#pragma mark - Public</code>等编译指令，这个确实蛮方便的，但是假如在一个方法内部调用了另一个方法，我们需要知道被调用的方法到底是私有的还是共有的，这个时候我们必须跳转到相应的方法来查看它的作用域。这样也行，但是有个更好的方法，就是在私有方法之前加个下划线前缀。</p>
+  <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">-</span> (void)<span class="tag">publicFoo</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr_selector">[self _privateFoo]</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">-</span> (void)<span class="tag">_privateFoo</span></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  这样既避免了写编译指令带来的麻烦，而且可以非常直观的查看每个方法的作用域。而这个也恰恰是苹果所做的，比如下面这个UIViewController的头文件</p>
+<p>  <img src="/images/codereview_1.png" alt="codereview_1"></p>
+</li>
+<li><p>应对64位造成的warning。自从5S发布之后，苹果系列产品跨入了64位时代，然后速度变快了，你的Xcode的warning也变多了。最明显的地方，就是<code>%d</code>,<code>%f</code>了，为了让你的代码在64和32通吃，建议使用NSNumber也就是使用<code>@()</code>指令。比如下面这行代码，来自<code>CNNLCityListView</code></p>
+  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="keyword">self</span><span class="variable">.selectIndexAry</span> removeObject:[<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%d~0-0"</span>, <span class="keyword">self</span><span class="variable">.currentProvinceIndex</span><span class="variable">.row</span>]];</span><br></pre></td></tr></table></figure>
+<p>  当我在5上编译运行时候是没问题的，但是在6上就会有warning了，提示转换成<code>%ld</code>。如果我们改成这样</p>
+  <figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="collection">[self.selectIndexAry removeObject:<span class="collection">[NSString stringWithFormat:@<span class="string">"%@~0-0"</span>, @<span class="list">(<span class="keyword">self.currentProvinceIndex.row</span>)</span>]</span>]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>  则不管在5和6上都不会有warning了，因为类型转换交给系统去处理了而不需要我们自己关心。类似的还有以下建议</p>
+<ul>
+<li><code>int</code> -&gt; <code>NSInteger</code></li>
+<li><code>unsigned</code> -&gt; <code>NSUInteger</code></li>
+<li><code>float</code> -&gt; <code>CGFloat</code></li>
+<li><code>NSLog(@&quot;value: %d&quot;, i)</code> -&gt; <code>NSLog(@&quot;value: %@&quot;, @(i))</code></li>
+<li>枚举，使用<code>NS_ENUM</code>指定类型而不是传统的<code>enum</code></li>
+</ul>
+</li>
+<li><p><code>autolayout</code>的正确使用。关于约束的更新，根据autolayout官方文档，当view更新约束的时候，它会自动调用<code>- updateConstraints</code>，</p>
+<blockquote>
+<p>Override this to adjust your special constraints during a constraints update pass</p>
+</blockquote>
+<p>  因此，我们需要覆写<code>- updateConstraints</code>，然后在需要更新的地方调用</p>
+  <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">[self setNeedsUpdateConstraints]</span><span class="comment">;</span></span><br><span class="line"><span class="title">[self updateConstraintsIfNeeded]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>  表示马上更新约束。</p>
+<p>  例子：</p>
+  <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">-</span> (void)<span class="tag">updateConstraints</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr_selector">[self.detectLevelLabel mas_updateConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line"></span><br><span class="line">    &#125;]</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attr_selector">[super updateConstraints]</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">-</span> (void)<span class="tag">configureSomething</span>:(id)<span class="tag">item</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// code ...</span></span><br><span class="line">  <span class="comment">// need update constraints</span></span><br><span class="line"></span><br><span class="line">  <span class="attr_selector">[self setNeedsUpdateConstraints]</span>;</span><br><span class="line">  <span class="attr_selector">[self updateConstraintsIfNeeded]</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+]]></content>
+    <summary type="html">
+    <![CDATA[<ul>
+<li><p>首先是代码规范，我理解的代码规范，也就是代码风格吧，除了可读性强以外，最重要的就是代码看起来要大方，所谓”人靠衣装”，代码也是有颜值的，因为可能以后维护代码的人就不是你了，人家见代码如见人，万一看到个很小气的代码，可能会觉得写代码的人都和代码一样”小气”了]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[你必须了解的Xcode调试技巧]]></title>
-    <link href="http://yoursite.com/2016/01/28/%E4%BD%A0%E5%BF%85%E9%A1%BB%E4%BA%86%E8%A7%A3%E7%9A%84Xcode%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/"/>
-    <id>http://yoursite.com/2016/01/28/你必须了解的Xcode调试技巧/</id>
-    <published>2016-01-27T16:00:00.000Z</published>
-    <updated>2016-01-30T09:27:38.000Z</updated>
+    <link href="http://yoursite.com/2015/11/28/%E4%BD%A0%E5%BF%85%E9%A1%BB%E4%BA%86%E8%A7%A3%E7%9A%84Xcode%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/"/>
+    <id>http://yoursite.com/2015/11/28/你必须了解的Xcode调试技巧/</id>
+    <published>2015-11-27T16:00:00.000Z</published>
+    <updated>2016-02-06T06:54:59.000Z</updated>
     <content type="html"><![CDATA[<p>我们开发iOS或者OSX程序时候，调试是避免不了的，而调试最大的一个利器就是断点。接下来我介绍一下Xcode一些常用的和不常用的技巧。</p>
 <h4 id="条件断点">条件断点</h4><p>如下图，这是个最基本的断点，我们写了一个0到10000的循环，需要在循环到5000的时候打个断点。</p>
 <p><img src="/images/debug_1.png" alt="debug_1"></p>
@@ -314,142 +627,11 @@
   </entry>
   
   <entry>
-    <title><![CDATA[ARC与MRC必知必会]]></title>
-    <link href="http://yoursite.com/2016/01/26/ARC%E4%B8%8EMRC%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/"/>
-    <id>http://yoursite.com/2016/01/26/ARC与MRC必知必会/</id>
-    <published>2016-01-25T16:00:00.000Z</published>
-    <updated>2016-01-30T05:56:25.000Z</updated>
-    <content type="html"><![CDATA[<p>我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫<code>ɑ:k</code>，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。</p>
-<h4 id="ARC下的autorelease_pool">ARC下的autorelease pool</h4><p>ARC下最明显的就是对autorelease pool的改进。</p>
-<p>Autorelease pool会自动管理对象的生命周期，每个发送<code>autorelease</code>消息的对象不会马上被释放，它们会被加入到NSAutoreleasePool中，当pool被drain的时候，它会依次给池子中的每个对象发送<code>release</code>消息。因此，使用autorelease管理内存的对象的生命周期被延长了。</p>
-<p>MRC下main函数是这么写的</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSAutoreleasePool</span> *pool = [[<span class="built_in">NSAutoreleasePool</span> alloc] init];</span><br><span class="line">    <span class="keyword">int</span> retVal = <span class="built_in">UIApplicationMain</span>(argc, argv, <span class="literal">nil</span>, <span class="literal">nil</span>);</span><br><span class="line">    [pool release];</span><br><span class="line">    <span class="keyword">return</span> retVal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>ARC下，我们不需要直接管理autorelease pool了，使用@autorelease即可，并且比NSAutoreleasePool更高效。</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">char</span> * argv[]) &#123;</span><br><span class="line">    <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">UIApplicationMain</span>(argc, argv, <span class="literal">nil</span>, <span class="built_in">NSStringFromClass</span>([AppDelegate class]));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>那么@autoreleasepool到底干啥了呢，文档上是这样说的</p>
-<blockquote>
-<p> On entry, an autorelease pool is pushed. On normal exit (break, return, goto, fall-through, and so on) the autorelease pool is popped</p>
-</blockquote>
-<p>意思是说在@autoreleasepool入口处，一个autorelease pool会被push进去，出口处会被pop出来。实际上通过断点查看反汇编代码可以发现，所谓的push是调用了<code>objc_autoreleasePoolPush</code>，pop是调用了<code>objc_autoreleasePoolPop</code>。</p>
-<h4 id="ARC下对象的创建和使用">ARC下对象的创建和使用</h4><p>MRC下，我们创建一个对象并且使用完的时候，必须释放它。以数组为例</p>
-<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NSArray *<span class="built_in">array</span> = [[NSArray alloc] initWithObjects:<span class="literal">nil</span> <span class="built_in">count</span>:<span class="number">0</span>];</span><br><span class="line"><span class="comment">// do something</span></span><br><span class="line">[<span class="built_in">array</span> release];   <span class="comment">// 使用完了，释放</span></span><br></pre></td></tr></table></figure>
-<p>或者直接使用<code>+array</code>方法</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSArray *<span class="built_in">array</span> = [NSArray <span class="built_in">array</span>];</span><br></pre></td></tr></table></figure>
-<p>因为这里<code>Foundation</code>内部已经为我们的<code>+array</code>方法自动添加了autorelease，即内部可能是这样实现的</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ (instancetype)<span class="built_in">array</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> [[[self alloc] initWithObjects:<span class="literal">NULL</span> count:<span class="number">0</span>] autorelease];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其他诸如<code>NSDictionary</code>的<code>+dictionary</code>或者<code>NSString</code>的<code>+stringWithFormat:</code>也是类似。</p>
-<p>ARC下我们只管使用就好了，不管使用alloc还是类方法，不需要手写release，autorelease，ARC会在合适的地方自动插上。</p>
-<p>同理，ARC下我们已经习惯的初始化赋值方法</p>
-<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.array = <span class="comment">[<span class="comment">[NSArray alloc]</span> init]</span>;</span><br></pre></td></tr></table></figure>
-<p>实际上ARC隐式转化为</p>
-<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.array = <span class="comment">[<span class="comment">[<span class="comment">[NSArray alloc]</span> init]</span> autorelease]</span>;</span><br></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NSArray *tempArray = [[NSArray alloc] init]<span class="comment">;</span></span><br><span class="line">self.array = tempArray<span class="comment">;</span></span><br><span class="line">[tempArray release]<span class="comment">;</span></span><br></pre></td></tr></table></figure>
-<h4 id="ARC下的属性修饰符">ARC下的属性修饰符</h4><p>ARC新增了几个属性修饰符</p>
-<ul>
-<li><p><code>__strong</code></p>
-<p>  ARC下，默认所有的栈变量都是strong类型，这个属性和retain一样，并且假如我们没有为其赋值，会自动初始化为nil。</p>
-<p>  <code>NSString *name;</code><br>  实际上它等于拥有了以下属性<br>  <code>__strong NSString *name = nil;</code></p>
-</li>
-<li><p><code>__weak</code></p>
-<p>  不会增加对象的引用计数，当指向的对象被释放时，自动置为nil。ARC下替代MRC下delegate的assign方法，既可以打破循环引用又可以避免野指针造成的crash。</p>
-</li>
-<li><p><code>__unsafe_unretained</code></p>
-<p>  字面意思unretained表示不会增加对象的引用计数，unsafe表示当指向的对象被释放时，该指针就成为野指针了，因此是不安全的。</p>
-</li>
-<li><p><code>__autoreleasing</code></p>
-<p>  类似@autorelease，被修饰的对象被设置为自动释放，一般被用于参数传递，比如</p>
-  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="typename">void</span>)<span class="string">save:</span>(NSError * __autoreleasing *)error</span><br><span class="line">&#123;</span><br><span class="line">    *error = [[NSError alloc] <span class="string">initWithDomain:</span>@<span class="string">"123"</span> <span class="string">code:</span><span class="number">0</span> <span class="string">userInfo:</span>nil];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  这样我们就不需要管理error的内存了，因为已经被设置成自动释放，相当于如下代码，否则会造成内存泄露。</p>
-  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*error = [[[NSError alloc] <span class="string">initWithDomain:</span>@<span class="string">"123"</span> <span class="string">code:</span><span class="number">0</span> <span class="string">userInfo:</span>nil] autorelease];</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h4 id="ARC下存取器@property">ARC下存取器@property</h4><p>先看看MRC下我们手写存取器的例子</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyClass</span> : <span class="title">NSObject</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, retain) <span class="built_in">NSNumber</span> *count;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyClass</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSNumber</span> *)count &#123;</span><br><span class="line">    <span class="keyword">return</span> _count;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setCount:(<span class="built_in">NSNumber</span> *)newCount &#123;</span><br><span class="line">    <span class="keyword">if</span> (_count != newCount) &#123;</span><br><span class="line">        _count = [newCount retain];</span><br><span class="line">        [_count release];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-<p>我们可以看到，getter方法没有变化，仅仅是返回变量的值；setter方法做了两件事：</p>
-<ul>
-<li><p>retain新值<br>retain新值是因为我们无法知道新的值在什么时候被释放，我们必须确保在使用的时候它没有被释放，因此我们必须持有它。</p>
-</li>
-<li><p>释放旧值<br>释放旧值是因为如果不释放，旧值就会失去对象对它的引用，我们就再也无法访问到旧值了，因此也就无法释放它，最终导致内存泄露。</p>
-</li>
-</ul>
-<p>注意那个判断是因为，假如新值和旧值是同一对象，就会导致自己retain自己。</p>
-<p>ARC下，很简单，直接按照逻辑来写，不用管复杂的新值旧值了</p>
-<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby"> (<span class="constant">NSNumber</span> *)count &#123;</span><br><span class="line"></span>    return _count;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">-<span class="ruby"> (void)<span class="symbol">setCount:</span>(<span class="constant">NSNumber</span> *)newCount &#123;</span><br><span class="line"></span>    _count = newCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="ARC下函数返回值">ARC下函数返回值</h4><p>MRC的时候，对象在函数内部创建并返回的时候，我们必须要放弃对其的所有权。但是如果我们直接使用release，对象会在返回的时候立即被释放，这个时候我们就必须使用autorelease延迟的它的释放时机，这样，调用者仍旧可以使用返回的对象，并且使用完之后会被安全的释放而不会内存泄露</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)fullName &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *string = [[[<span class="built_in">NSString</span> alloc] initWithFormat:<span class="string">@"%@ %@"</span>, <span class="keyword">self</span><span class="variable">.firstName</span>, <span class="keyword">self</span><span class="variable">.lastName</span>] autorelease];	</span><br><span class="line">    <span class="comment">// 没有autorelease就会导致内存泄露，因为调用者使用完之后得不到释放</span></span><br><span class="line">    <span class="keyword">return</span> string;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>或者也可以</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)fullName &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *string = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%@ %@"</span>,</span><br><span class="line">                                 <span class="keyword">self</span><span class="variable">.firstName</span>, <span class="keyword">self</span><span class="variable">.lastName</span>];</span><br><span class="line">    <span class="keyword">return</span> string;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>因为<code>+stringWithFormat</code>内部自动autorelease，我们已经不再拥有对string的所有权，因此我们可以安全的返回。</p>
-<p>但是到了ARC，我们可以不用在写autorelease，只需创建好之后直接返回，ARC在编译的时候会自动帮我们加上。</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)fullName &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *string = [[<span class="built_in">NSString</span> alloc] initWithFormat:<span class="string">@"%@ %@"</span>, <span class="keyword">self</span><span class="variable">.firstName</span>, <span class="keyword">self</span><span class="variable">.lastName</span>];	</span><br><span class="line">    <span class="comment">// ARC下直接返回就好了</span></span><br><span class="line">    <span class="keyword">return</span> string;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="ARC下的block">ARC下的block</h4><p>ARC和MRC block的类型还是有所区别的。</p>
-<p>ARC下创建的block，和其他对象一样，默认是<code>strong</code>类型。当<code>__NSStackBlock__</code>类型的block使用外部变量时，这个block会被copy进堆中，就成为了<code>__NSMallocBlock__</code>（有个例外，直接在参数中传递的block）；如果没有使用外部变量，则是<code>__NSGlobalBlock__</code>。那么有没有办法使它成为<code>__NSStackBlock__</code>呢，可以显式声明block为<code>weak</code>。</p>
-<p>MRC</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// MRC下，是__NSStackBlock__</span></span><br><span class="line"><span class="keyword">void</span> (^myBlock)(<span class="keyword">int</span> i) = ^(<span class="keyword">int</span> i) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, <span class="keyword">self</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"myBlock : %@"</span>, myBlock);</span><br></pre></td></tr></table></figure>
-<p>ARC</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ARC下，却是__NSMallocBlock__</span></span><br><span class="line"><span class="keyword">void</span> (^myBlock)(<span class="keyword">int</span> i) = ^(<span class="keyword">int</span> i) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, <span class="keyword">self</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"myBlock : %@"</span>, myBlock);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明为weak类型，变回__NSStackBlock__</span></span><br><span class="line">__<span class="keyword">weak</span> <span class="keyword">void</span> (^myBlock)(<span class="keyword">int</span> i) = ^(<span class="keyword">int</span> i) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, <span class="keyword">self</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"myBlock : %@"</span>, myBlock);</span><br></pre></td></tr></table></figure>
-<p>例外，ARC下，如果使用了外部变量的block直接作为函数参数，这个时候还是<code>__NSStackBlock__</code></p>
-<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="list">[<span class="keyword">self</span> performBlock:^&#123;</span><br><span class="line">    NSLog<span class="list">(<span class="keyword">@</span><span class="string">"self = %@"</span>, self)</span><span class="comment">;</span></span><br><span class="line">&#125;]<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">- <span class="list">(<span class="keyword">void</span>)</span>performBlock:<span class="list">(<span class="keyword">void</span> <span class="list">(<span class="keyword">^</span>)</span><span class="list">()</span>)</span>block</span><br><span class="line">&#123;</span><br><span class="line">    // 这个block是栈block</span><br><span class="line">    NSLog<span class="list">(<span class="keyword">@</span><span class="string">"block: %@"</span>, block)</span><span class="comment">;</span></span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
-<p>讨论完ARC和MRC下block的类型，接下来我们来看看ARC中有哪些需要注意的地方以及和MRC相比ARC为我们所做的工作。</p>
-<h5 id="先看函数返回值为block的情况。">先看函数返回值为block的情况。</h5><p>  MRC下，copy是因为这里创建的block是个<code>__NSStackBlock__</code>（因为它使用了外部变量<code>i</code>），不copy的话当函数返回时它就被释放了，因此必须将它copy到堆上，也就是成为<code>__NSMallocBlock__</code>。实际上如果我们创建的是<strong>NSGlobalBlock</strong>，这里是可以不用copy的，但是copy总是正确的；autorelease的原因和前面一样，返回对象之后我们必须放弃对其所有权，这样才会被安全释放。</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>(^)())getBlock:(<span class="keyword">int</span>)i &#123;</span><br><span class="line">    <span class="keyword">void</span> (^block)() = ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"a = %@"</span>,  @(i));</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"dd"</span>);</span><br><span class="line">    <span class="keyword">return</span> [[block <span class="keyword">copy</span>] autorelease];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>ARC下会自动将返回的栈block copy和autorelease，我们不需要手动书写。实际上这个block在ARC下是<code>__NSMallocBlock__</code>，实验结果来看ARC并没有做copy。</p>
-<figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="pp">- <span class="params">(void (^)</span><span class="params">()</span>)getBlock:<span class="params">(int)</span>i &#123;</span><br><span class="line">    // ARC这是个__NSMallocBlock__</span><br><span class="line">    void <span class="params">(^block)</span><span class="params">()</span> = ^&#123;</span><br><span class="line">        NSLog<span class="params">(@<span class="string">"a = %@"</span>, @(i)</span>);</span><br><span class="line">    &#125;;</span><br><span class="line">    return block;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
-<h5 id="再看block作为函数参数的情况。">再看block作为函数参数的情况。</h5><p>我们建立了一个类，并且将myBlock作为成员变量，然后初始化方法传入一个block。</p>
-<p>MRC下，我们必须copy我们的block，这里原因和block作为返回值类似。假如作为参数传入的block是个<code>__NSStackBlock__</code>，那么当创建block的函数栈返回时，这个block就会被释放，那么当我们使用的时候，就会因为使用了已经释放的对象而crash，而这也是我们使用属性定义block的时候使用copy的原因。</p>
-<p><em>例子1：</em></p>
-<p>MRC</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyClass</span> : <span class="title">NSObject</span> </span>&#123;</span><br><span class="line">    <span class="keyword">void</span> (^myBlock)(<span class="keyword">int</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//@property (nonatomic, copy) void (^myBlock)(int);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line">- (instancetype)initWithBlock:(<span class="keyword">void</span> (^)(<span class="keyword">int</span>))block 	&#123;</span><br><span class="line">    <span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">        myBlock = [block <span class="keyword">copy</span>];</span><br><span class="line"><span class="comment">//        self.myBlock = blk;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)dealloc &#123;</span><br><span class="line">    [myBlock release];</span><br><span class="line"></span><br><span class="line">    [<span class="keyword">super</span> dealloc];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>ARC下，我们只要<code>myBlock = block;</code>就行了，它会为我们自动copy。</p>
-<p><em>例子2：</em></p>
-<p>我们常用的<code>-performSelector:withObject:afterDelay:</code>方法</p>
-<p>MRC</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="typename">int</span> var = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">[self <span class="string">performSelector:</span><span class="annotation">@selector</span>(<span class="string">action:</span>) <span class="string">withObject:</span>[[^(<span class="typename">int</span> i) &#123;</span><br><span class="line">    NSLog(@<span class="string">"result = %@"</span>, @(i+var));</span><br><span class="line">&#125; copy] autorelease] <span class="string">afterDelay:</span><span class="number">1.0</span>];</span><br></pre></td></tr></table></figure>
-<p>ARC</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="typename">int</span> var = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">[self <span class="string">performSelector:</span><span class="annotation">@selector</span>(<span class="string">action:</span>) <span class="string">withObject:</span>^(<span class="typename">int</span> i) &#123;</span><br><span class="line">    NSLog(@<span class="string">"result = %@"</span>, @(i+var));</span><br><span class="line">&#125; <span class="string">afterDelay:</span><span class="number">1.0</span>];</span><br></pre></td></tr></table></figure>
-<h5 id="block加入数组或集合">block加入数组或集合</h5><p>MRC下block加入数组，copy原因同上，将栈上的block变成堆block；autorelease的原因是数组会对加入其中的对象retain，因此在加入之后必须要释放它</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[self.muteArray addObject:<span class="string">[[myBlock copy] autorelease]]</span>;</span><br></pre></td></tr></table></figure>
-<p>ARC下，直接add就行了。</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">[self.muteArray addObject:myBlock]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
-<h4 id="ARC下的循环引用问题">ARC下的循环引用问题</h4><p>使用block的时候，当A持有block，而block又持有A的时候，就会造成循环引用而相互无法释放。<br>MRC下我们只需要使用<code>__block</code>修饰对象，block就不会retain它</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__block <span class="keyword">id</span> blockSelf = <span class="keyword">self</span>;</span><br><span class="line"><span class="keyword">self</span><span class="variable">.myBlock</span> = ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, blockSelf);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>但是在ARC下，即使你的变量使用了<code>__block</code>，仍旧会被retain，因此仍然会循环引用，这个时候就应该使用<code>__weak</code>或者<code>__unsafe_unretained</code>（iOS5以下）了，但是<code>__unsafe_unretained</code>是不安全的，因为当它指向的对象被释放的时候，而这个指针还指着那块被释放的地址，也就是野指针，就会造成crash；而<code>__weak</code>则会在发生这个情况的时候自动将指针置为nil，OC里对nil发消息是可以的。</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__<span class="keyword">weak</span> <span class="keyword">id</span> weakSelf = <span class="keyword">self</span>;</span><br><span class="line"><span class="keyword">self</span><span class="variable">.myBlock</span> = ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, weakSelf);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__unsafe_unretained <span class="keyword">id</span> blockSelf = <span class="keyword">self</span>;    <span class="comment">// 不推荐</span></span><br><span class="line"><span class="keyword">self</span><span class="variable">.myBlock</span> = ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, blockSelf);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>以下是几点需要注意的循环引用的地方</p>
-<ul>
-<li>block中使用了属性定义的变量，如<code>self.xxx</code>，block就会retain self，而如果self又retain该block，就会造成循环引用，也是最常见的类型。</li>
-<li><p>block中使用了不是使用属性定义的成员变量，默认是strong类型，也会被强引用。这个时候我们就可以使用一个临时变量来存储。</p>
-  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__<span class="keyword">weak</span> <span class="built_in">NSNumber</span> *tempNum = num;</span><br><span class="line"><span class="built_in">NSUInteger</span> tempCount = count;</span><br><span class="line"><span class="keyword">self</span><span class="variable">.myBlock</span> = ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"value = %@"</span>, tempNum);</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"value2 = %@"</span>, @(tempCount));</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>delegate的属性修饰符要从assign改为weak，这样既可以打破循环引用又可以避免野指针造成的crash。</p>
-</li>
-</ul>
-<p>当然也并不是一有block我们就要使用弱引用，以下是几个不需要使用weak的地方</p>
-<ul>
-<li><p>当block不被诸如vc之类的持有时，我们不需要使用weak，比如我定义了一个函数使用block作参数，但是这个block仅仅是参数而没有被我持有。</p>
-  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 传进去的block并没有被self retain，不需要weakSelf</span></span><br><span class="line">[<span class="keyword">self</span> doSomething:^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, <span class="keyword">self</span>);</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>GCD中一般情况下不需要使用weakSelf，GCD中block虽然retain了外部的变量，但是我们并不持有该block</p>
-</li>
-<li>系统的一些诸如动画之类的block，原因同上</li>
-</ul>
-<h4 id="关于ARC下__block和__weak的区别">关于ARC下<code>__block</code>和<code>__weak</code>的区别</h4><p>ARC下的一些开源库中我们经常能看到<code>__block</code>和<code>__weak</code>一起修饰某个变量，他们两个属性各有各的作用，<code>__weak</code>是为了避免循环引用；<strong>而<code>__block</code>是为了可以修改外部的变量，不是避免循环引用，因为ARC下<code>__block</code>仍然可以retain变量</strong>，不要搞混淆了。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫<code>ɑ:k</code>，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。</p>
-<h4 id="ARC下的autorelease_pool">ARC下的autorelease p]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
     <title><![CDATA[NSOperation和NSOperationQueue]]></title>
-    <link href="http://yoursite.com/2016/01/19/NSOperation%E5%92%8CNSOperationQueue/"/>
-    <id>http://yoursite.com/2016/01/19/NSOperation和NSOperationQueue/</id>
-    <published>2016-01-18T16:00:00.000Z</published>
-    <updated>2016-02-05T12:50:23.000Z</updated>
+    <link href="http://yoursite.com/2015/11/13/NSOperation%E5%92%8CNSOperationQueue/"/>
+    <id>http://yoursite.com/2015/11/13/NSOperation和NSOperationQueue/</id>
+    <published>2015-11-12T16:00:00.000Z</published>
+    <updated>2016-02-06T06:52:17.000Z</updated>
     <content type="html"><![CDATA[<h3 id="NSOperation">NSOperation</h3><h3 id="概述">概述</h3><p><code>NSOperation</code>是一个抽象的类，包装了处理单个任务所需要的一些数据，代表执行单个任务的一个独立单元。不过尽管它是个抽象类，但是它已经帮我们处理了繁杂的多线程问题，并且可以确保线程安全，因此我们在使用的时候，就可以更专注于自己的业务。</p>
 <p>苹果已经默认给我们封装好了两个类，分别是<code>NSInvocationOperation</code>和<code>NSBlockOperation</code></p>
 <ul>
@@ -645,88 +827,142 @@
   </entry>
   
   <entry>
-    <title><![CDATA[iOS的事件响应机制]]></title>
-    <link href="http://yoursite.com/2016/01/15/iOS%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%93%8D%E5%BA%94%E6%9C%BA%E5%88%B6/"/>
-    <id>http://yoursite.com/2016/01/15/iOS的事件响应机制/</id>
-    <published>2016-01-14T16:00:00.000Z</published>
-    <updated>2016-01-30T07:42:50.000Z</updated>
-    <content type="html"><![CDATA[<p>学习iOS事件响应机制时候，经常会听到一个词，即<code>hit-testing</code>或者<code>hit-test</code>视图，字面意思理解为敲打测试，实际上，<code>hit-testing</code>是一个过程，是iOS用来确定用户点击的部分在屏幕哪个部位的一个方法，而点击部分所在的视图就是<code>hit-test</code>视图。</p>
-<p>那么当用户触摸屏幕时，iOS是如何确定<code>hit-testing</code>并且最终找到这个<code>hit-testing</code>视图的呢。</p>
-<p>当用户触摸屏幕即响应的事件发生时，<code>UIKit</code>首先会生成一个<code>UIEvent</code>对象，这个对象包含着事件的一些基本信息，包括事件类型、事件发生的时间，然后会将它放入<code>event queue</code>里面。接下来，就是事件从底部向上到顶部找到<code>hit-test</code>视图的过程了。</p>
+    <title><![CDATA[ARC与MRC必知必会]]></title>
+    <link href="http://yoursite.com/2015/10/26/ARC%E4%B8%8EMRC%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/"/>
+    <id>http://yoursite.com/2015/10/26/ARC与MRC必知必会/</id>
+    <published>2015-10-25T16:00:00.000Z</published>
+    <updated>2016-02-06T06:54:13.000Z</updated>
+    <content type="html"><![CDATA[<p>我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫<code>ɑ:k</code>，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。</p>
+<h4 id="ARC下的autorelease_pool">ARC下的autorelease pool</h4><p>ARC下最明显的就是对autorelease pool的改进。</p>
+<p>Autorelease pool会自动管理对象的生命周期，每个发送<code>autorelease</code>消息的对象不会马上被释放，它们会被加入到NSAutoreleasePool中，当pool被drain的时候，它会依次给池子中的每个对象发送<code>release</code>消息。因此，使用autorelease管理内存的对象的生命周期被延长了。</p>
+<p>MRC下main函数是这么写的</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSAutoreleasePool</span> *pool = [[<span class="built_in">NSAutoreleasePool</span> alloc] init];</span><br><span class="line">    <span class="keyword">int</span> retVal = <span class="built_in">UIApplicationMain</span>(argc, argv, <span class="literal">nil</span>, <span class="literal">nil</span>);</span><br><span class="line">    [pool release];</span><br><span class="line">    <span class="keyword">return</span> retVal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ARC下，我们不需要直接管理autorelease pool了，使用@autorelease即可，并且比NSAutoreleasePool更高效。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">char</span> * argv[]) &#123;</span><br><span class="line">    <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">UIApplicationMain</span>(argc, argv, <span class="literal">nil</span>, <span class="built_in">NSStringFromClass</span>([AppDelegate class]));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么@autoreleasepool到底干啥了呢，文档上是这样说的</p>
+<blockquote>
+<p> On entry, an autorelease pool is pushed. On normal exit (break, return, goto, fall-through, and so on) the autorelease pool is popped</p>
+</blockquote>
+<p>意思是说在@autoreleasepool入口处，一个autorelease pool会被push进去，出口处会被pop出来。实际上通过断点查看反汇编代码可以发现，所谓的push是调用了<code>objc_autoreleasePoolPush</code>，pop是调用了<code>objc_autoreleasePoolPop</code>。</p>
+<h4 id="ARC下对象的创建和使用">ARC下对象的创建和使用</h4><p>MRC下，我们创建一个对象并且使用完的时候，必须释放它。以数组为例</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NSArray *<span class="built_in">array</span> = [[NSArray alloc] initWithObjects:<span class="literal">nil</span> <span class="built_in">count</span>:<span class="number">0</span>];</span><br><span class="line"><span class="comment">// do something</span></span><br><span class="line">[<span class="built_in">array</span> release];   <span class="comment">// 使用完了，释放</span></span><br></pre></td></tr></table></figure>
+<p>或者直接使用<code>+array</code>方法</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSArray *<span class="built_in">array</span> = [NSArray <span class="built_in">array</span>];</span><br></pre></td></tr></table></figure>
+<p>因为这里<code>Foundation</code>内部已经为我们的<code>+array</code>方法自动添加了autorelease，即内部可能是这样实现的</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ (instancetype)<span class="built_in">array</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> [[[self alloc] initWithObjects:<span class="literal">NULL</span> count:<span class="number">0</span>] autorelease];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其他诸如<code>NSDictionary</code>的<code>+dictionary</code>或者<code>NSString</code>的<code>+stringWithFormat:</code>也是类似。</p>
+<p>ARC下我们只管使用就好了，不管使用alloc还是类方法，不需要手写release，autorelease，ARC会在合适的地方自动插上。</p>
+<p>同理，ARC下我们已经习惯的初始化赋值方法</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.array = <span class="comment">[<span class="comment">[NSArray alloc]</span> init]</span>;</span><br></pre></td></tr></table></figure>
+<p>实际上ARC隐式转化为</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.array = <span class="comment">[<span class="comment">[<span class="comment">[NSArray alloc]</span> init]</span> autorelease]</span>;</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NSArray *tempArray = [[NSArray alloc] init]<span class="comment">;</span></span><br><span class="line">self.array = tempArray<span class="comment">;</span></span><br><span class="line">[tempArray release]<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<h4 id="ARC下的属性修饰符">ARC下的属性修饰符</h4><p>ARC新增了几个属性修饰符</p>
 <ul>
-<li><code>UIApplication</code>对象从<code>event queue</code>中取出event，然后将它分发给其他对象处理。</li>
-<li>然后<code>UIApplication</code>会先将event发送给<code>UIWindow</code>对象，接下来由window将事件传递到事件发生的那个视图。</li>
-<li>那么window是怎么做的呢，它会自下而上遍历它的子视图，对每个视图调用<code>-hitTest:withEvent:</code>，而该方法会触发<code>-pointInside:withEvent:</code>检查触摸区域是否在该视图边界内，<ul>
-<li>如果在则返回<code>YES</code>，并且<code>-hitTest:withEvent:</code>返回该视图自身，表示当前查找的这个视图是<code>hit-testing</code>视图；</li>
-<li>否则为<code>NO</code>，<code>hitTest:withEvent:</code>返回<code>nil</code>，表示触摸事件并不发生在那个视图上面，那么该视图被抛弃，其所有子视图的<code>hitTest:withEvent:</code>也都返回<code>nil</code>，进而检查其他视图。</li>
-</ul>
+<li><p><code>__strong</code></p>
+<p>  ARC下，默认所有的栈变量都是strong类型，这个属性和retain一样，并且假如我们没有为其赋值，会自动初始化为nil。</p>
+<p>  <code>NSString *name;</code><br>  实际上它等于拥有了以下属性<br>  <code>__strong NSString *name = nil;</code></p>
 </li>
-<li>如果触摸发生在相关视图上（即<code>pointInside:withEvent:</code>返回<code>YES</code>），那么该视图会再次遍历它的子视图（逆序），对每个子视图调用<code>-hitTest:withEvent:</code>做同样一遍查找过程，直到该视图没有子视图，最终确定那个视图为<code>hit-testing</code>视图，查找<code>hit-testing</code>视图的这个过程就叫做<code>hit-testing</code>。</li>
+<li><p><code>__weak</code></p>
+<p>  不会增加对象的引用计数，当指向的对象被释放时，自动置为nil。ARC下替代MRC下delegate的assign方法，既可以打破循环引用又可以避免野指针造成的crash。</p>
+</li>
+<li><p><code>__unsafe_unretained</code></p>
+<p>  字面意思unretained表示不会增加对象的引用计数，unsafe表示当指向的对象被释放时，该指针就成为野指针了，因此是不安全的。</p>
+</li>
+<li><p><code>__autoreleasing</code></p>
+<p>  类似@autorelease，被修饰的对象被设置为自动释放，一般被用于参数传递，比如</p>
+  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="typename">void</span>)<span class="string">save:</span>(NSError * __autoreleasing *)error</span><br><span class="line">&#123;</span><br><span class="line">    *error = [[NSError alloc] <span class="string">initWithDomain:</span>@<span class="string">"123"</span> <span class="string">code:</span><span class="number">0</span> <span class="string">userInfo:</span>nil];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  这样我们就不需要管理error的内存了，因为已经被设置成自动释放，相当于如下代码，否则会造成内存泄露。</p>
+  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*error = [[[NSError alloc] <span class="string">initWithDomain:</span>@<span class="string">"123"</span> <span class="string">code:</span><span class="number">0</span> <span class="string">userInfo:</span>nil] autorelease];</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
-<p>找到<code>hit-testing</code>视图之后，它就有机会去处理该事件，如果它不能处理，则事件会沿着响应链继续传递，每个响应者都有机会决定是否去处理事件或者继续传递给下一个响应者，直到找到一个可以处理它的对象或者被丢弃。</p>
+<h4 id="ARC下存取器@property">ARC下存取器@property</h4><p>先看看MRC下我们手写存取器的例子</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyClass</span> : <span class="title">NSObject</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, retain) <span class="built_in">NSNumber</span> *count;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyClass</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSNumber</span> *)count &#123;</span><br><span class="line">    <span class="keyword">return</span> _count;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setCount:(<span class="built_in">NSNumber</span> *)newCount &#123;</span><br><span class="line">    <span class="keyword">if</span> (_count != newCount) &#123;</span><br><span class="line">        _count = [newCount retain];</span><br><span class="line">        [_count release];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>我们可以看到，getter方法没有变化，仅仅是返回变量的值；setter方法做了两件事：</p>
 <ul>
-<li><code>hit-testing</code>视图是第一个可以处理事件的，如果它不能处理，则它会将事件传递给它的父视图</li>
-<li>父视图如果不能处理，则它会再次传递给它的父视图</li>
-<li>直到传到最顶端的视图，即直接添加到<code>UIWindow</code>上的那个视图，如果它还不能处理，则它会传递给它的视图控制器</li>
-<li>如果视图控制器也不能处理，那么只能最后传递给window对象了</li>
-<li>如果window对象无法处理，那么它会还给<code>UIApplication</code>对象</li>
-<li>如果<code>UIApplication</code>也不处理，那么该事件就只能被丢弃。</li>
+<li><p>retain新值<br>retain新值是因为我们无法知道新的值在什么时候被释放，我们必须确保在使用的时候它没有被释放，因此我们必须持有它。</p>
+</li>
+<li><p>释放旧值<br>释放旧值是因为如果不释放，旧值就会失去对象对它的引用，我们就再也无法访问到旧值了，因此也就无法释放它，最终导致内存泄露。</p>
+</li>
 </ul>
-<p>从以上可以看出，查找<code>hit-test</code>视图的过程是<strong>从下往上</strong>的，而找到之后查找响应者的过程是<strong>自下而上</strong>的。</p>
-<p>接下来通过一个实例来说明一下。</p>
-<p>这个图是苹果文档里的一个图，我用实验证明了一下</p>
-<p><img src="/images/hit-test_1.png" alt="hit-test_1"></p>
-<p>我点击在视图D上面，查看控制台的输出如下</p>
-<p><img src="/images/hit-test_2.png" alt="hit-test_2"></p>
-<p>从图中我们可以看到</p>
-<ol>
-<li><p>由<code>UIApplication</code>分发给<code>UIWindow</code>之后，首先调用<code>UIWindow</code>的<code>-hitTest:withEvent:</code>，进而调用<code>-pointInside:withEvent:</code>，发现触摸在window之内，因此返回<code>YES</code>,<code>-hitTest:withEvent:</code>返回window自身，表示当前<code>hit-test</code>视图是window。</p>
-</li>
-<li><p>遍历window上面的视图，由于window的子视图只有View A，因此调用View A的<code>-pointInside:withEvent:</code>，发现触摸在window之内，因此返回<code>YES</code>,<code>-hitTest:withEvent:</code>返回View A，表示当前<code>hit-test</code>视图是View A。</p>
-</li>
-<li><p>遍历View A上面的视图，这里要注意，ViewA的子视图有两个，分别是View B和View C，通过测试我发现调用的顺序是子视图逆序，即View C是在View B之后加的，</p>
+<p>注意那个判断是因为，假如新值和旧值是同一对象，就会导致自己retain自己。</p>
+<p>ARC下，很简单，直接按照逻辑来写，不用管复杂的新值旧值了</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby"> (<span class="constant">NSNumber</span> *)count &#123;</span><br><span class="line"></span>    return _count;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">-<span class="ruby"> (void)<span class="symbol">setCount:</span>(<span class="constant">NSNumber</span> *)newCount &#123;</span><br><span class="line"></span>    _count = newCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ARC下函数返回值">ARC下函数返回值</h4><p>MRC的时候，对象在函数内部创建并返回的时候，我们必须要放弃对其的所有权。但是如果我们直接使用release，对象会在返回的时候立即被释放，这个时候我们就必须使用autorelease延迟的它的释放时机，这样，调用者仍旧可以使用返回的对象，并且使用完之后会被安全的释放而不会内存泄露</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)fullName &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *string = [[[<span class="built_in">NSString</span> alloc] initWithFormat:<span class="string">@"%@ %@"</span>, <span class="keyword">self</span><span class="variable">.firstName</span>, <span class="keyword">self</span><span class="variable">.lastName</span>] autorelease];	</span><br><span class="line">    <span class="comment">// 没有autorelease就会导致内存泄露，因为调用者使用完之后得不到释放</span></span><br><span class="line">    <span class="keyword">return</span> string;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>或者也可以</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)fullName &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *string = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%@ %@"</span>,</span><br><span class="line">                                 <span class="keyword">self</span><span class="variable">.firstName</span>, <span class="keyword">self</span><span class="variable">.lastName</span>];</span><br><span class="line">    <span class="keyword">return</span> string;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为<code>+stringWithFormat</code>内部自动autorelease，我们已经不再拥有对string的所有权，因此我们可以安全的返回。</p>
+<p>但是到了ARC，我们可以不用在写autorelease，只需创建好之后直接返回，ARC在编译的时候会自动帮我们加上。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)fullName &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *string = [[<span class="built_in">NSString</span> alloc] initWithFormat:<span class="string">@"%@ %@"</span>, <span class="keyword">self</span><span class="variable">.firstName</span>, <span class="keyword">self</span><span class="variable">.lastName</span>];	</span><br><span class="line">    <span class="comment">// ARC下直接返回就好了</span></span><br><span class="line">    <span class="keyword">return</span> string;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ARC下的block">ARC下的block</h4><p>ARC和MRC block的类型还是有所区别的。</p>
+<p>ARC下创建的block，和其他对象一样，默认是<code>strong</code>类型。当<code>__NSStackBlock__</code>类型的block使用外部变量时，这个block会被copy进堆中，就成为了<code>__NSMallocBlock__</code>（有个例外，直接在参数中传递的block）；如果没有使用外部变量，则是<code>__NSGlobalBlock__</code>。那么有没有办法使它成为<code>__NSStackBlock__</code>呢，可以显式声明block为<code>weak</code>。</p>
+<p>MRC</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// MRC下，是__NSStackBlock__</span></span><br><span class="line"><span class="keyword">void</span> (^myBlock)(<span class="keyword">int</span> i) = ^(<span class="keyword">int</span> i) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, <span class="keyword">self</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"myBlock : %@"</span>, myBlock);</span><br></pre></td></tr></table></figure>
+<p>ARC</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ARC下，却是__NSMallocBlock__</span></span><br><span class="line"><span class="keyword">void</span> (^myBlock)(<span class="keyword">int</span> i) = ^(<span class="keyword">int</span> i) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, <span class="keyword">self</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"myBlock : %@"</span>, myBlock);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明为weak类型，变回__NSStackBlock__</span></span><br><span class="line">__<span class="keyword">weak</span> <span class="keyword">void</span> (^myBlock)(<span class="keyword">int</span> i) = ^(<span class="keyword">int</span> i) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, <span class="keyword">self</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"myBlock : %@"</span>, myBlock);</span><br></pre></td></tr></table></figure>
+<p>例外，ARC下，如果使用了外部变量的block直接作为函数参数，这个时候还是<code>__NSStackBlock__</code></p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="list">[<span class="keyword">self</span> performBlock:^&#123;</span><br><span class="line">    NSLog<span class="list">(<span class="keyword">@</span><span class="string">"self = %@"</span>, self)</span><span class="comment">;</span></span><br><span class="line">&#125;]<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">- <span class="list">(<span class="keyword">void</span>)</span>performBlock:<span class="list">(<span class="keyword">void</span> <span class="list">(<span class="keyword">^</span>)</span><span class="list">()</span>)</span>block</span><br><span class="line">&#123;</span><br><span class="line">    // 这个block是栈block</span><br><span class="line">    NSLog<span class="list">(<span class="keyword">@</span><span class="string">"block: %@"</span>, block)</span><span class="comment">;</span></span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>讨论完ARC和MRC下block的类型，接下来我们来看看ARC中有哪些需要注意的地方以及和MRC相比ARC为我们所做的工作。</p>
+<h5 id="先看函数返回值为block的情况。">先看函数返回值为block的情况。</h5><p>  MRC下，copy是因为这里创建的block是个<code>__NSStackBlock__</code>（因为它使用了外部变量<code>i</code>），不copy的话当函数返回时它就被释放了，因此必须将它copy到堆上，也就是成为<code>__NSMallocBlock__</code>。实际上如果我们创建的是<strong>NSGlobalBlock</strong>，这里是可以不用copy的，但是copy总是正确的；autorelease的原因和前面一样，返回对象之后我们必须放弃对其所有权，这样才会被安全释放。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>(^)())getBlock:(<span class="keyword">int</span>)i &#123;</span><br><span class="line">    <span class="keyword">void</span> (^block)() = ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"a = %@"</span>,  @(i));</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"dd"</span>);</span><br><span class="line">    <span class="keyword">return</span> [[block <span class="keyword">copy</span>] autorelease];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ARC下会自动将返回的栈block copy和autorelease，我们不需要手动书写。实际上这个block在ARC下是<code>__NSMallocBlock__</code>，实验结果来看ARC并没有做copy。</p>
+<figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="pp">- <span class="params">(void (^)</span><span class="params">()</span>)getBlock:<span class="params">(int)</span>i &#123;</span><br><span class="line">    // ARC这是个__NSMallocBlock__</span><br><span class="line">    void <span class="params">(^block)</span><span class="params">()</span> = ^&#123;</span><br><span class="line">        NSLog<span class="params">(@<span class="string">"a = %@"</span>, @(i)</span>);</span><br><span class="line">    &#125;;</span><br><span class="line">    return block;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+<h5 id="再看block作为函数参数的情况。">再看block作为函数参数的情况。</h5><p>我们建立了一个类，并且将myBlock作为成员变量，然后初始化方法传入一个block。</p>
+<p>MRC下，我们必须copy我们的block，这里原因和block作为返回值类似。假如作为参数传入的block是个<code>__NSStackBlock__</code>，那么当创建block的函数栈返回时，这个block就会被释放，那么当我们使用的时候，就会因为使用了已经释放的对象而crash，而这也是我们使用属性定义block的时候使用copy的原因。</p>
+<p><em>例子1：</em></p>
+<p>MRC</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyClass</span> : <span class="title">NSObject</span> </span>&#123;</span><br><span class="line">    <span class="keyword">void</span> (^myBlock)(<span class="keyword">int</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//@property (nonatomic, copy) void (^myBlock)(int);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line">- (instancetype)initWithBlock:(<span class="keyword">void</span> (^)(<span class="keyword">int</span>))block 	&#123;</span><br><span class="line">    <span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">        myBlock = [block <span class="keyword">copy</span>];</span><br><span class="line"><span class="comment">//        self.myBlock = blk;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)dealloc &#123;</span><br><span class="line">    [myBlock release];</span><br><span class="line"></span><br><span class="line">    [<span class="keyword">super</span> dealloc];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ARC下，我们只要<code>myBlock = block;</code>就行了，它会为我们自动copy。</p>
+<p><em>例子2：</em></p>
+<p>我们常用的<code>-performSelector:withObject:afterDelay:</code>方法</p>
+<p>MRC</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="typename">int</span> var = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">[self <span class="string">performSelector:</span><span class="annotation">@selector</span>(<span class="string">action:</span>) <span class="string">withObject:</span>[[^(<span class="typename">int</span> i) &#123;</span><br><span class="line">    NSLog(@<span class="string">"result = %@"</span>, @(i+var));</span><br><span class="line">&#125; copy] autorelease] <span class="string">afterDelay:</span><span class="number">1.0</span>];</span><br></pre></td></tr></table></figure>
+<p>ARC</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="typename">int</span> var = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">[self <span class="string">performSelector:</span><span class="annotation">@selector</span>(<span class="string">action:</span>) <span class="string">withObject:</span>^(<span class="typename">int</span> i) &#123;</span><br><span class="line">    NSLog(@<span class="string">"result = %@"</span>, @(i+var));</span><br><span class="line">&#125; <span class="string">afterDelay:</span><span class="number">1.0</span>];</span><br></pre></td></tr></table></figure>
+<h5 id="block加入数组或集合">block加入数组或集合</h5><p>MRC下block加入数组，copy原因同上，将栈上的block变成堆block；autorelease的原因是数组会对加入其中的对象retain，因此在加入之后必须要释放它</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[self.muteArray addObject:<span class="string">[[myBlock copy] autorelease]]</span>;</span><br></pre></td></tr></table></figure>
+<p>ARC下，直接add就行了。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">[self.muteArray addObject:myBlock]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<h4 id="ARC下的循环引用问题">ARC下的循环引用问题</h4><p>使用block的时候，当A持有block，而block又持有A的时候，就会造成循环引用而相互无法释放。<br>MRC下我们只需要使用<code>__block</code>修饰对象，block就不会retain它</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__block <span class="keyword">id</span> blockSelf = <span class="keyword">self</span>;</span><br><span class="line"><span class="keyword">self</span><span class="variable">.myBlock</span> = ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, blockSelf);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>但是在ARC下，即使你的变量使用了<code>__block</code>，仍旧会被retain，因此仍然会循环引用，这个时候就应该使用<code>__weak</code>或者<code>__unsafe_unretained</code>（iOS5以下）了，但是<code>__unsafe_unretained</code>是不安全的，因为当它指向的对象被释放的时候，而这个指针还指着那块被释放的地址，也就是野指针，就会造成crash；而<code>__weak</code>则会在发生这个情况的时候自动将指针置为nil，OC里对nil发消息是可以的。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__<span class="keyword">weak</span> <span class="keyword">id</span> weakSelf = <span class="keyword">self</span>;</span><br><span class="line"><span class="keyword">self</span><span class="variable">.myBlock</span> = ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, weakSelf);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__unsafe_unretained <span class="keyword">id</span> blockSelf = <span class="keyword">self</span>;    <span class="comment">// 不推荐</span></span><br><span class="line"><span class="keyword">self</span><span class="variable">.myBlock</span> = ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, blockSelf);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>以下是几点需要注意的循环引用的地方</p>
 <ul>
-<li>因此这里先调用View C的<code>-pointInside:withEvent:</code>，发现触摸在View C之内，因此返回<code>YES</code>,<code>-hitTest:withEvent:</code>返回View C，表示当前<code>hit-test</code>视图是View C，因此View B则被忽略。</li>
-<li>倘若这里View B加在View C之后，则会先调用View B</li>
-</ul>
+<li>block中使用了属性定义的变量，如<code>self.xxx</code>，block就会retain self，而如果self又retain该block，就会造成循环引用，也是最常见的类型。</li>
+<li><p>block中使用了不是使用属性定义的成员变量，默认是strong类型，也会被强引用。这个时候我们就可以使用一个临时变量来存储。</p>
+  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__<span class="keyword">weak</span> <span class="built_in">NSNumber</span> *tempNum = num;</span><br><span class="line"><span class="built_in">NSUInteger</span> tempCount = count;</span><br><span class="line"><span class="keyword">self</span><span class="variable">.myBlock</span> = ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"value = %@"</span>, tempNum);</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"value2 = %@"</span>, @(tempCount));</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>接着遍历View C上面的视图，同样的道理，</p>
+<li><p>delegate的属性修饰符要从assign改为weak，这样既可以打破循环引用又可以避免野指针造成的crash。</p>
+</li>
+</ul>
+<p>当然也并不是一有block我们就要使用弱引用，以下是几个不需要使用weak的地方</p>
 <ul>
-<li>先测试View E，发现触摸不在上面，即View E的<code>pointInside:withEvent:</code>返回<code>NO</code>，所以View E的<code>-hitTest:withEvent:</code>返回<code>nil</code></li>
-<li>再测试View D，发现触摸在上面，<code>pointInside:withEvent:</code>返回<code>YES</code>，<code>-hitTest:withEvent:</code>返回View D，表示当前<code>hit-test</code>视图是View D。</li>
+<li><p>当block不被诸如vc之类的持有时，我们不需要使用weak，比如我定义了一个函数使用block作参数，但是这个block仅仅是参数而没有被我持有。</p>
+  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 传进去的block并没有被self retain，不需要weakSelf</span></span><br><span class="line">[<span class="keyword">self</span> doSomething:^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"self = %@"</span>, <span class="keyword">self</span>);</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>GCD中一般情况下不需要使用weakSelf，GCD中block虽然retain了外部的变量，但是我们并不持有该block</p>
+</li>
+<li>系统的一些诸如动画之类的block，原因同上</li>
 </ul>
-</li>
-<li><p>再次遍历View D上面的子视图，发现已经没有子视图，因此此次点击最终的<code>hit-test</code>视图是View D</p>
-</li>
-</ol>
-<p>不知道大家有没有注意到那个图，<code>hit-testing</code>过程执行了两遍，至于为什么会执行两遍，目前还不清楚。</p>
-<p>了解了<code>hit-testing</code>过程之后，这就很好理解，有时候我们添加一个button在view上面，点击之后无法响应事件的原因了。</p>
-<p>如图，我在View B上添加了一个button，查看button的响应情况</p>
-<p><img src="/images/hit-test_3.png" alt="hit-test_3"></p>
-<p>首先，我点击在button右侧，注意点击的部位必须在View B之内，查看输出情况。</p>
-<p><img src="/images/hit-test_4.png" alt="hit-test_4"></p>
-<p>可以看到，查找View B之后，发现在View B上，然后查找button，发现也在button之上，因此，正常的响应了事件。</p>
-<p>然后，我点击在button左侧，点击在View B之外</p>
-<p><img src="/images/hit-test_5.png" alt="hit-test_5"></p>
-<p>可以看到，View B在检测的时候，发现点击在View B之外，因此<code>-pointInside:withEvent</code>直接返回<code>NO</code>，接着<code>-hitTest:withEvent:</code>返回<code>nil</code>，表示触摸事件并不发生在那个视图上面，则它的所有子视图的<code>-hitTest:withEvent:</code>全部返回<code>nil</code>，因此button并不会响应我们的点击事件。</p>
-<p>这种情况尤其要注意，尤其是我们设置了<code>clipsToBounds</code>为<code>NO</code>的时候。</p>
-<p>那么假如我们想要button继续响应事件呢，只需要在<code>-hitTest:withEvent:</code>方法里修改即可</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ [-hitTest:withEvent:]"</span>, <span class="keyword">self</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将点击的点转化为button自身的坐标</span></span><br><span class="line">    <span class="built_in">CGPoint</span> touchPointInButton = [<span class="keyword">self</span><span class="variable">.button</span> convertPoint:point fromView:<span class="keyword">self</span>];</span><br><span class="line">    <span class="comment">// 如果点击的点在button之内，则返回</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">CGRectContainsPoint</span>(<span class="keyword">self</span><span class="variable">.button</span><span class="variable">.bounds</span>, touchPointInButton)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span><span class="variable">.button</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> [<span class="keyword">super</span> hitTest:point withEvent:event];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们所做的就是判断点击的点是否在button之内，如果是，则返回button为<code>hit-test</code>视图，否则，调用super处理。</p>
-<p>因此，通过<code>hit-testing</code>我们可以改变事件的分发，可以完成诸如点击A而让B响应的特殊情况，进而满足一些特殊的需求。</p>
+<h4 id="关于ARC下__block和__weak的区别">关于ARC下<code>__block</code>和<code>__weak</code>的区别</h4><p>ARC下的一些开源库中我们经常能看到<code>__block</code>和<code>__weak</code>一起修饰某个变量，他们两个属性各有各的作用，<code>__weak</code>是为了避免循环引用；<strong>而<code>__block</code>是为了可以修改外部的变量，不是避免循环引用，因为ARC下<code>__block</code>仍然可以retain变量</strong>，不要搞混淆了。</p>
 ]]></content>
     <summary type="html">
-    <![CDATA[<p>学习iOS事件响应机制时候，经常会听到一个词，即<code>hit-testing</code>或者<code>hit-test</code>视图，字面意思理解为敲打测试，实际上，<code>hit-testing</code>是一个过程，是iOS用来确定用户点击的部分在屏]]>
+    <![CDATA[<p>我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫<code>ɑ:k</code>，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。</p>
+<h4 id="ARC下的autorelease_pool">ARC下的autorelease p]]>
     </summary>
     
   </entry>
   
   <entry>
     <title><![CDATA[iOS Method Swizzling]]></title>
-    <link href="http://yoursite.com/2016/01/14/iOS_Method_Swizzling/"/>
-    <id>http://yoursite.com/2016/01/14/iOS_Method_Swizzling/</id>
-    <published>2016-01-13T16:00:00.000Z</published>
-    <updated>2016-01-30T05:59:30.000Z</updated>
+    <link href="http://yoursite.com/2015/09/20/iOS_Method_Swizzling/"/>
+    <id>http://yoursite.com/2015/09/20/iOS_Method_Swizzling/</id>
+    <published>2015-09-19T16:00:00.000Z</published>
+    <updated>2016-02-06T06:50:09.000Z</updated>
     <content type="html"><![CDATA[<p>先来看下面这段代码</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">+ (void)load &#123;</span><br><span class="line">    static dispatch_once_t onceToken;</span><br><span class="line">    dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">        Class <span class="class"><span class="keyword">class</span> = [<span class="title">self</span> <span class="title">class</span>];</span></span><br><span class="line"></span><br><span class="line">        SEL oldSelector = @selector(viewDidLoad);</span><br><span class="line">        SEL newSelector = @selector(xxx_viewDidLoad);</span><br><span class="line"></span><br><span class="line">        Method oldMethod = class_getInstanceMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">oldSelector);</span></span></span><br><span class="line">        Method newMethod = class_getInstanceMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">newSelector);</span></span></span><br><span class="line"></span><br><span class="line">        IMP oldIMP = method_getImplementation(oldMethod);</span><br><span class="line">        IMP newIMP = method_getImplementation(newMethod);</span><br><span class="line"></span><br><span class="line">        const char *oldMethodType = method_getTypeEncoding(oldMethod);</span><br><span class="line">        const char *newMethodType = method_getTypeEncoding(newMethod);</span><br><span class="line"></span><br><span class="line">        BOOL didAddMethod = class_addMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">oldSelector</span>, <span class="typename">newIMP</span>, <span class="typename">newMethodType);</span></span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (didAddMethod) &#123;</span><br><span class="line">            class_replaceMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">newSelector</span>, <span class="typename">oldIMP</span>, <span class="typename">oldMethodType);</span></span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            method_exchangeImplementations(oldMethod, newMethod);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)xxx_viewDidLoad</span><br><span class="line">&#123;</span><br><span class="line">    [self xxx_viewDidLoad];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这段代码想必只要我们学习过<code>method swizzle</code>的同学都很熟悉，实现也比较简单。其中有两个地方需要注意，也是难点，即</p>
@@ -761,10 +997,10 @@
   
   <entry>
     <title><![CDATA[使用clang语法消除编译警告]]></title>
-    <link href="http://yoursite.com/2015/11/24/%E4%BD%BF%E7%94%A8clang%E8%AF%AD%E6%B3%95%E6%B6%88%E9%99%A4%E7%BC%96%E8%AF%91%E8%AD%A6%E5%91%8A/"/>
-    <id>http://yoursite.com/2015/11/24/使用clang语法消除编译警告/</id>
-    <published>2015-11-24T04:51:33.000Z</published>
-    <updated>2016-01-30T09:27:00.000Z</updated>
+    <link href="http://yoursite.com/2015/09/06/%E4%BD%BF%E7%94%A8clang%E8%AF%AD%E6%B3%95%E6%B6%88%E9%99%A4%E7%BC%96%E8%AF%91%E8%AD%A6%E5%91%8A/"/>
+    <id>http://yoursite.com/2015/09/06/使用clang语法消除编译警告/</id>
+    <published>2015-09-05T16:00:00.000Z</published>
+    <updated>2016-02-06T06:59:12.000Z</updated>
     <content type="html"><![CDATA[<p>自己总结了一些常用的clang语法用于消除Xcode警告</p>
 <p><em>用法</em></p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic push</span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic ignored <span class="string">"-Wundeclared-selector"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// your code</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic pop</span></span><br></pre></td></tr></table></figure>
@@ -827,6 +1063,62 @@
     <![CDATA[<p>自己总结了一些常用的clang语法用于消除Xcode警告</p>
 <p><em>用法</em></p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[创建私有Pod（from车牛）]]></title>
+    <link href="http://yoursite.com/2015/07/03/%E5%88%9B%E5%BB%BA%E7%A7%81%E6%9C%89pod/"/>
+    <id>http://yoursite.com/2015/07/03/创建私有pod/</id>
+    <published>2015-07-02T16:00:00.000Z</published>
+    <updated>2016-02-06T05:56:14.000Z</updated>
+    <content type="html"><![CDATA[<p>##Private Pod</p>
+<p>参考文档：<a href="http://blog.wtlucky.com/blog/2015/02/26/create-private-podspec/" target="_blank" rel="external">使用Cocoapods创建私有podspec</a> <a href="https://guides.cocoapods.org/" target="_blank" rel="external">CocoaPods Guides</a></p>
+<p>###建立私有Spec Repo</p>
+<p>车牛Private Spec Repo已经托管在我们自己的gitlab上。可以直接使用<a href="http://git.souche.com/geliang/cheniu_pod.git" target="_blank" rel="external">cheniu_pod</a>，调用下面的命令即可：</p>
+<pre><code>pod repo add cheniu_pod <span class="string">http:</span><span class="comment">//git.souche.com/geliang/cheniu_pod.git</span>
+</code></pre><p>在<code>~/.cocoapods/repos</code>目录下可以看到<code>cheniu_pod</code>目录。</p>
+<p><strong><em>ps:由于使用的是http方式添加的cheniu_pod，所以添加的时候需要输入用户名和密码。</em></strong></p>
+<p>###创建Pod项目</p>
+<p>这里只讲从0开始创建Pod项目，对已经存在的项目Pod化，根据文档自己研究下。创建Pod项目直接在对应的的目录下调用一下命令：</p>
+<pre><code>pod <span class="class"><span class="keyword">lib</span> <span class="title">create</span> <span class="title">cheniuTestPod</span></span>
+</code></pre><p>然后根据提示回答几个简单的设置问题就可以。<strong><em>前缀选择CNN，测试框架随便，反正也不会去用。</em></strong>创建完成之后可以在<code>cheniuTestPod/Pod/Classes 和 Assets</code>下面添加对应的类或者资源文件。在项目的<code>Pods/DevelopmentPods/...</code>中添加进来即可。</p>
+<p>框架写好之后，可以在项目的<code>cheniuTestPod/Example for cheniuTestPod/...</code>中写一下简单的测试代码。</p>
+<p>测试通过之后，在gitlab上面创建自己的repo并把自己的代码提交到远程库中。<strong><em>必须创建tag</em></strong></p>
+<pre><code>git add -A
+git <span class="operator"><span class="keyword">commit</span> -<span class="keyword">m</span> <span class="string">'xxxxxx'</span>
+git remote <span class="keyword">add</span> origin xxxxx
+git tag -<span class="keyword">m</span> <span class="string">'xxxxx'</span> <span class="number">0.1</span><span class="number">.0</span>
+git push -u origin <span class="keyword">master</span> <span class="comment">--tags</span></span>
+</code></pre><p>修改<code>podspec</code>文件，将多余的注释和字段删除。<strong><em>如果你的pod不需要资源文件一定要删掉<code>s.resource_bundles</code>字段，其他字段根据实际情况填写即可。</em></strong> 修改好之后可以做一次简单的验证<code>pod lib lint</code>,当看到</p>
+<pre><code>-&gt; cheniuTestPod (<span class="number">0.1</span><span class="number">.0</span>)
+cheniuTestPod passed validation
+</code></pre><p>时，说明验证是通过的。<strong><em>这里不验证其实也没关系，在你将这个podspec提交到私有Spec Repo中时也会做验证的</em></strong></p>
+<p>###向Spec Repo提交podspec</p>
+<p>按照习惯提交之前要做两件事情</p>
+<ul>
+<li>删除podspec中的多余注释！</li>
+<li>做一次上面提到的验证工作。</li>
+</ul>
+<p>然后使用下面的命令：</p>
+<pre><code><span class="label">pod</span> repo <span class="keyword">push </span>cheniu_pod cheniuTestPod.podspec
+</code></pre><p>完成之后我们可以到<code>~/.cocoapods/repos/cheniu_pod/Specs</code>中找到我们提交的spec，并且可以通过<code>pod search</code>查到我们提交的库。</p>
+<p>###使用私有Pod</p>
+<p>直接在我们自己的<code>Podfile</code>中加入</p>
+<pre><code><span class="title">pod</span> <span class="string">'cheniuTestPod'</span>, <span class="string">'~&gt; 0.1.0'</span>
+</code></pre><p>和source源</p>
+<pre><code><span class="built_in">source</span> <span class="string">'http://git.souche.com/geliang/cheniu_pod.git'</span>
+<span class="built_in">source</span> <span class="string">'https://github.com/CocoaPods/Specs.git'</span>
+</code></pre><p>就可以了。<strong><em>加source非常重要，不然调用<code>pod install</code>时会找不到我们自己的私有库的。</em></strong></p>
+<p>###podspec升级，维护</p>
+<p>维护podsepc，或者采用<code>subspec</code>新功能，参考文档自己摸索。</p>
+<p>###私有的Spec Repo维护</p>
+<p>同样参考文档吧！</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>##Private Pod</p>
+<p>参考文档：<a href="http://blog.wtlucky.com/blog/2015/02/26/create-private-podspec/" target="_blank" rel="external">使用Coco]]>
     </summary>
     
   </entry>

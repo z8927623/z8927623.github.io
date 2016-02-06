@@ -180,6 +180,11 @@
 
     
     
+      
+      
+
+      
+    
 
     
       
@@ -203,8 +208,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/01/15/iOS的事件响应机制/" itemprop="url">
-                  iOS的事件响应机制
+                <a class="post-title-link" href="/2015/12/25/记一次Code_Review/" itemprop="url">
+                  记一次Code Review
                 </a>
               
             
@@ -214,8 +219,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-01-15T00:00:00+08:00" content="2016-01-15">
-              2016-01-15
+            <time itemprop="dateCreated" datetime="2015-12-25T00:00:00+08:00" content="2015-12-25">
+              2015-12-25
             </time>
           </span>
 
@@ -225,8 +230,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/01/15/iOS的事件响应机制/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/15/iOS的事件响应机制/" itemprop="commentsCount"></span>
+                <a href="/2015/12/25/记一次Code_Review/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/25/记一次Code_Review/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -248,70 +253,77 @@
         
           <span itemprop="articleBody">
             
-              <p>学习iOS事件响应机制时候，经常会听到一个词，即<code>hit-testing</code>或者<code>hit-test</code>视图，字面意思理解为敲打测试，实际上，<code>hit-testing</code>是一个过程，是iOS用来确定用户点击的部分在屏幕哪个部位的一个方法，而点击部分所在的视图就是<code>hit-test</code>视图。</p>
-<p>那么当用户触摸屏幕时，iOS是如何确定<code>hit-testing</code>并且最终找到这个<code>hit-testing</code>视图的呢。</p>
-<p>当用户触摸屏幕即响应的事件发生时，<code>UIKit</code>首先会生成一个<code>UIEvent</code>对象，这个对象包含着事件的一些基本信息，包括事件类型、事件发生的时间，然后会将它放入<code>event queue</code>里面。接下来，就是事件从底部向上到顶部找到<code>hit-test</code>视图的过程了。</p>
+              <ul>
+<li><p>首先是代码规范，我理解的代码规范，也就是代码风格吧，除了可读性强以外，最重要的就是代码看起来要大方，所谓”人靠衣装”，代码也是有颜值的，因为可能以后维护代码的人就不是你了，人家见代码如见人，万一看到个很小气的代码，可能会觉得写代码的人都和代码一样”小气”了。代码规范主要有以下几点：</p>
 <ul>
-<li><code>UIApplication</code>对象从<code>event queue</code>中取出event，然后将它分发给其他对象处理。</li>
-<li>然后<code>UIApplication</code>会先将event发送给<code>UIWindow</code>对象，接下来由window将事件传递到事件发生的那个视图。</li>
-<li>那么window是怎么做的呢，它会自下而上遍历它的子视图，对每个视图调用<code>-hitTest:withEvent:</code>，而该方法会触发<code>-pointInside:withEvent:</code>检查触摸区域是否在该视图边界内，<ul>
-<li>如果在则返回<code>YES</code>，并且<code>-hitTest:withEvent:</code>返回该视图自身，表示当前查找的这个视图是<code>hit-testing</code>视图；</li>
-<li>否则为<code>NO</code>，<code>hitTest:withEvent:</code>返回<code>nil</code>，表示触摸事件并不发生在那个视图上面，那么该视图被抛弃，其所有子视图的<code>hitTest:withEvent:</code>也都返回<code>nil</code>，进而检查其他视图。</li>
-</ul>
-</li>
-<li>如果触摸发生在相关视图上（即<code>pointInside:withEvent:</code>返回<code>YES</code>），那么该视图会再次遍历它的子视图（逆序），对每个子视图调用<code>-hitTest:withEvent:</code>做同样一遍查找过程，直到该视图没有子视图，最终确定那个视图为<code>hit-testing</code>视图，查找<code>hit-testing</code>视图的这个过程就叫做<code>hit-testing</code>。</li>
-</ul>
-<p>找到<code>hit-testing</code>视图之后，它就有机会去处理该事件，如果它不能处理，则事件会沿着响应链继续传递，每个响应者都有机会决定是否去处理事件或者继续传递给下一个响应者，直到找到一个可以处理它的对象或者被丢弃。</p>
+<li><p><strong>空格</strong>，该空的空，不该空的不要空，这是最重要的一点，也是写出漂亮代码最重要的一个点。具体如下</p>
 <ul>
-<li><code>hit-testing</code>视图是第一个可以处理事件的，如果它不能处理，则它会将事件传递给它的父视图</li>
-<li>父视图如果不能处理，则它会再次传递给它的父视图</li>
-<li>直到传到最顶端的视图，即直接添加到<code>UIWindow</code>上的那个视图，如果它还不能处理，则它会传递给它的视图控制器</li>
-<li>如果视图控制器也不能处理，那么只能最后传递给window对象了</li>
-<li>如果window对象无法处理，那么它会还给<code>UIApplication</code>对象</li>
-<li>如果<code>UIApplication</code>也不处理，那么该事件就只能被丢弃。</li>
+<li><code>#import &quot;filename.h&quot;</code>或者<code>#import &lt;framework/filename.h&gt;</code> import的右边必须空1格</li>
+<li><p><code>if else</code>。最佳的应该这样，左右花括号都得加空格</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">case</span>) &#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (other <span class="keyword">case</span>) &#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>方法名。左括号旁需要加一个空格</p>
+  <figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby"> (void)myFoo</span><br><span class="line"></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  而不是这样或其他变种</p>
+  <figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby">(void) myFoo</span><br><span class="line"></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>属性声明。左右括号和逗号旁星号前面都是一个空格<br><code>@property (nonatomic, strong) NSString *name;</code></p>
+</li>
+<li>协议定义。协议名左右两边都得有空格<br><code>@protocol MyProtocol &lt;NSObject&gt;</code></li>
 </ul>
-<p>从以上可以看出，查找<code>hit-test</code>视图的过程是<strong>从下往上</strong>的，而找到之后查找响应者的过程是<strong>自下而上</strong>的。</p>
-<p>接下来通过一个实例来说明一下。</p>
-<p>这个图是苹果文档里的一个图，我用实验证明了一下</p>
-<p><img src="/images/hit-test_1.png" alt="hit-test_1"></p>
-<p>我点击在视图D上面，查看控制台的输出如下</p>
-<p><img src="/images/hit-test_2.png" alt="hit-test_2"></p>
-<p>从图中我们可以看到</p>
-<ol>
-<li><p>由<code>UIApplication</code>分发给<code>UIWindow</code>之后，首先调用<code>UIWindow</code>的<code>-hitTest:withEvent:</code>，进而调用<code>-pointInside:withEvent:</code>，发现触摸在window之内，因此返回<code>YES</code>,<code>-hitTest:withEvent:</code>返回window自身，表示当前<code>hit-test</code>视图是window。</p>
 </li>
-<li><p>遍历window上面的视图，由于window的子视图只有View A，因此调用View A的<code>-pointInside:withEvent:</code>，发现触摸在window之内，因此返回<code>YES</code>,<code>-hitTest:withEvent:</code>返回View A，表示当前<code>hit-test</code>视图是View A。</p>
-</li>
-<li><p>遍历View A上面的视图，这里要注意，ViewA的子视图有两个，分别是View B和View C，通过测试我发现调用的顺序是子视图逆序，即View C是在View B之后加的，</p>
+<li><p><strong>换行</strong>，一个部分写完了，最好用两个回车隔开或者使用<code>#pragma mark -</code>或者我个人比较喜欢的<code>////////////</code>，这样一个文件内部各个代码的功能就比较清楚了。具体如下：</p>
 <ul>
-<li>因此这里先调用View C的<code>-pointInside:withEvent:</code>，发现触摸在View C之内，因此返回<code>YES</code>,<code>-hitTest:withEvent:</code>返回View C，表示当前<code>hit-test</code>视图是View C，因此View B则被忽略。</li>
-<li>倘若这里View B加在View C之后，则会先调用View B</li>
+<li>头文件下至少空一行</li>
+<li><code>extension</code>和实现之间空一行</li>
+<li>第一个方法和<code>@implementation</code>之间空一行</li>
+<li>最后一个方法和<code>@end</code>之间空一行</li>
+<li>各个函数之间至少空一行</li>
+</ul>
+<p>综上写个示例</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">"filename.h"</span></span></span><br><span class="line">	</span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyClass</span> ()</span></span><br><span class="line">	</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyClass</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)firstFoo</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)lastFoo</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>#import &lt;framework/filename.h&gt;</code>与<code>#import &quot;filename.h&quot;</code>，系统、<code>CocoaPod</code>、第三方库的头文件，要用<code>#import &lt;framework/filename.h&gt;</code>或者<code>#import &lt;pods_name/filename.h&gt;</code>，这样人家一眼就看出来了你这个文件是自己加的还是外部引入的。</p>
+</li>
+<li>空函数，去掉多余的函数，比如Xcode自动为我们生成的<code>- drawRect:</code>、<code>- didReceiveMemoryWarning</code>等等，如果没用到，确保删掉，尽量做到写的代码都是有用的。</li>
 </ul>
 </li>
-<li><p>接着遍历View C上面的视图，同样的道理，</p>
+</ul>
 <ul>
-<li>先测试View E，发现触摸不在上面，即View E的<code>pointInside:withEvent:</code>返回<code>NO</code>，所以View E的<code>-hitTest:withEvent:</code>返回<code>nil</code></li>
-<li>再测试View D，发现触摸在上面，<code>pointInside:withEvent:</code>返回<code>YES</code>，<code>-hitTest:withEvent:</code>返回View D，表示当前<code>hit-test</code>视图是View D。</li>
+<li><p>VC自定义初始化方法时不要传太多参数，如果必须，最好封装成一个数据结构，字典或者数组都行。比如在<code>CNNLSelectTypesViewController</code>中的</p>
+  <figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-(instancetype)initWithType:(<span class="type">SelectType</span>) <span class="typedef"><span class="keyword">type</span> brand:<span class="container">(<span class="type">NSString</span> *)</span>brand series:<span class="container">(<span class="type">NSString</span> *)</span>series callBack:<span class="container">(<span class="type">SelectCallBack</span>)</span>callback defaultSelect:<span class="container">(<span class="type">NSInteger</span>)</span>defaultSelect withTitle:<span class="container">(<span class="type">NSString</span> *)</span>title;</span></span><br></pre></td></tr></table></figure>
+<p>  一下子传了6个参数，既不美观又不方便外部调用，对于这种，可以改成这样，将所有参数放在字典里再传入</p>
+  <figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="pp">- <span class="params">(instancetype)</span>initWithDataSource:<span class="params">(<span class="variable">NSDictionary</span> *)</span>dataSource callBack:<span class="params">(<span class="variable">SelectCallBack</span>)</span>callback;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>之前我们为了分辨是外部方法还是内部私有方法，一般是使用<code>#pragma mark - Private</code>或者<code>#pragma mark - Public</code>等编译指令，这个确实蛮方便的，但是假如在一个方法内部调用了另一个方法，我们需要知道被调用的方法到底是私有的还是共有的，这个时候我们必须跳转到相应的方法来查看它的作用域。这样也行，但是有个更好的方法，就是在私有方法之前加个下划线前缀。</p>
+  <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">-</span> (void)<span class="tag">publicFoo</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr_selector">[self _privateFoo]</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">-</span> (void)<span class="tag">_privateFoo</span></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  这样既避免了写编译指令带来的麻烦，而且可以非常直观的查看每个方法的作用域。而这个也恰恰是苹果所做的，比如下面这个UIViewController的头文件</p>
+<p>  <img src="/images/codereview_1.png" alt="codereview_1"></p>
+</li>
+<li><p>应对64位造成的warning。自从5S发布之后，苹果系列产品跨入了64位时代，然后速度变快了，你的Xcode的warning也变多了。最明显的地方，就是<code>%d</code>,<code>%f</code>了，为了让你的代码在64和32通吃，建议使用NSNumber也就是使用<code>@()</code>指令。比如下面这行代码，来自<code>CNNLCityListView</code></p>
+  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="keyword">self</span><span class="variable">.selectIndexAry</span> removeObject:[<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%d~0-0"</span>, <span class="keyword">self</span><span class="variable">.currentProvinceIndex</span><span class="variable">.row</span>]];</span><br></pre></td></tr></table></figure>
+<p>  当我在5上编译运行时候是没问题的，但是在6上就会有warning了，提示转换成<code>%ld</code>。如果我们改成这样</p>
+  <figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="collection">[self.selectIndexAry removeObject:<span class="collection">[NSString stringWithFormat:@<span class="string">"%@~0-0"</span>, @<span class="list">(<span class="keyword">self.currentProvinceIndex.row</span>)</span>]</span>]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>  则不管在5和6上都不会有warning了，因为类型转换交给系统去处理了而不需要我们自己关心。类似的还有以下建议</p>
+<ul>
+<li><code>int</code> -&gt; <code>NSInteger</code></li>
+<li><code>unsigned</code> -&gt; <code>NSUInteger</code></li>
+<li><code>float</code> -&gt; <code>CGFloat</code></li>
+<li><code>NSLog(@&quot;value: %d&quot;, i)</code> -&gt; <code>NSLog(@&quot;value: %@&quot;, @(i))</code></li>
+<li>枚举，使用<code>NS_ENUM</code>指定类型而不是传统的<code>enum</code></li>
 </ul>
 </li>
-<li><p>再次遍历View D上面的子视图，发现已经没有子视图，因此此次点击最终的<code>hit-test</code>视图是View D</p>
+<li><p><code>autolayout</code>的正确使用。关于约束的更新，根据autolayout官方文档，当view更新约束的时候，它会自动调用<code>- updateConstraints</code>，</p>
+<blockquote>
+<p>Override this to adjust your special constraints during a constraints update pass</p>
+</blockquote>
+<p>  因此，我们需要覆写<code>- updateConstraints</code>，然后在需要更新的地方调用</p>
+  <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">[self setNeedsUpdateConstraints]</span><span class="comment">;</span></span><br><span class="line"><span class="title">[self updateConstraintsIfNeeded]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>  表示马上更新约束。</p>
+<p>  例子：</p>
+  <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">-</span> (void)<span class="tag">updateConstraints</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr_selector">[self.detectLevelLabel mas_updateConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line"></span><br><span class="line">    &#125;]</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attr_selector">[super updateConstraints]</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">-</span> (void)<span class="tag">configureSomething</span>:(id)<span class="tag">item</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// code ...</span></span><br><span class="line">  <span class="comment">// need update constraints</span></span><br><span class="line"></span><br><span class="line">  <span class="attr_selector">[self setNeedsUpdateConstraints]</span>;</span><br><span class="line">  <span class="attr_selector">[self updateConstraintsIfNeeded]</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-</ol>
-<p>不知道大家有没有注意到那个图，<code>hit-testing</code>过程执行了两遍，至于为什么会执行两遍，目前还不清楚。</p>
-<p>了解了<code>hit-testing</code>过程之后，这就很好理解，有时候我们添加一个button在view上面，点击之后无法响应事件的原因了。</p>
-<p>如图，我在View B上添加了一个button，查看button的响应情况</p>
-<p><img src="/images/hit-test_3.png" alt="hit-test_3"></p>
-<p>首先，我点击在button右侧，注意点击的部位必须在View B之内，查看输出情况。</p>
-<p><img src="/images/hit-test_4.png" alt="hit-test_4"></p>
-<p>可以看到，查找View B之后，发现在View B上，然后查找button，发现也在button之上，因此，正常的响应了事件。</p>
-<p>然后，我点击在button左侧，点击在View B之外</p>
-<p><img src="/images/hit-test_5.png" alt="hit-test_5"></p>
-<p>可以看到，View B在检测的时候，发现点击在View B之外，因此<code>-pointInside:withEvent</code>直接返回<code>NO</code>，接着<code>-hitTest:withEvent:</code>返回<code>nil</code>，表示触摸事件并不发生在那个视图上面，则它的所有子视图的<code>-hitTest:withEvent:</code>全部返回<code>nil</code>，因此button并不会响应我们的点击事件。</p>
-<p>这种情况尤其要注意，尤其是我们设置了<code>clipsToBounds</code>为<code>NO</code>的时候。</p>
-<p>那么假如我们想要button继续响应事件呢，只需要在<code>-hitTest:withEvent:</code>方法里修改即可</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ [-hitTest:withEvent:]"</span>, <span class="keyword">self</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将点击的点转化为button自身的坐标</span></span><br><span class="line">    <span class="built_in">CGPoint</span> touchPointInButton = [<span class="keyword">self</span><span class="variable">.button</span> convertPoint:point fromView:<span class="keyword">self</span>];</span><br><span class="line">    <span class="comment">// 如果点击的点在button之内，则返回</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">CGRectContainsPoint</span>(<span class="keyword">self</span><span class="variable">.button</span><span class="variable">.bounds</span>, touchPointInButton)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span><span class="variable">.button</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> [<span class="keyword">super</span> hitTest:point withEvent:event];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们所做的就是判断点击的点是否在button之内，如果是，则返回button为<code>hit-test</code>视图，否则，调用super处理。</p>
-<p>因此，通过<code>hit-testing</code>我们可以改变事件的分发，可以完成诸如点击A而让B响应的特殊情况，进而满足一些特殊的需求。</p>
+</ul>
 
             
           </span>
@@ -354,8 +366,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/01/14/iOS_Method_Swizzling/" itemprop="url">
-                  iOS Method Swizzling
+                <a class="post-title-link" href="/2015/11/28/你必须了解的Xcode调试技巧/" itemprop="url">
+                  你必须了解的Xcode调试技巧
                 </a>
               
             
@@ -365,8 +377,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-01-14T00:00:00+08:00" content="2016-01-14">
-              2016-01-14
+            <time itemprop="dateCreated" datetime="2015-11-28T00:00:00+08:00" content="2015-11-28">
+              2015-11-28
             </time>
           </span>
 
@@ -376,8 +388,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/01/14/iOS_Method_Swizzling/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/14/iOS_Method_Swizzling/" itemprop="commentsCount"></span>
+                <a href="/2015/11/28/你必须了解的Xcode调试技巧/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/28/你必须了解的Xcode调试技巧/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -399,30 +411,48 @@
         
           <span itemprop="articleBody">
             
-              <p>先来看下面这段代码</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">+ (void)load &#123;</span><br><span class="line">    static dispatch_once_t onceToken;</span><br><span class="line">    dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">        Class <span class="class"><span class="keyword">class</span> = [<span class="title">self</span> <span class="title">class</span>];</span></span><br><span class="line"></span><br><span class="line">        SEL oldSelector = @selector(viewDidLoad);</span><br><span class="line">        SEL newSelector = @selector(xxx_viewDidLoad);</span><br><span class="line"></span><br><span class="line">        Method oldMethod = class_getInstanceMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">oldSelector);</span></span></span><br><span class="line">        Method newMethod = class_getInstanceMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">newSelector);</span></span></span><br><span class="line"></span><br><span class="line">        IMP oldIMP = method_getImplementation(oldMethod);</span><br><span class="line">        IMP newIMP = method_getImplementation(newMethod);</span><br><span class="line"></span><br><span class="line">        const char *oldMethodType = method_getTypeEncoding(oldMethod);</span><br><span class="line">        const char *newMethodType = method_getTypeEncoding(newMethod);</span><br><span class="line"></span><br><span class="line">        BOOL didAddMethod = class_addMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">oldSelector</span>, <span class="typename">newIMP</span>, <span class="typename">newMethodType);</span></span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (didAddMethod) &#123;</span><br><span class="line">            class_replaceMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">newSelector</span>, <span class="typename">oldIMP</span>, <span class="typename">oldMethodType);</span></span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            method_exchangeImplementations(oldMethod, newMethod);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)xxx_viewDidLoad</span><br><span class="line">&#123;</span><br><span class="line">    [self xxx_viewDidLoad];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这段代码想必只要我们学习过<code>method swizzle</code>的同学都很熟悉，实现也比较简单。其中有两个地方需要注意，也是难点，即</p>
-<p><code>BOOL didAddMethod = class_addMethod(class, oldSelector, newIMP, newMethodType);</code></p>
-<p>和</p>
-<p><code>[self xxx_viewDidLoad];</code></p>
-<p>讲解第一点之前，必须先了解一下<code>class_getInstanceMethod</code>函数的功能。</p>
-<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">定义：<span class="function"><span class="keyword">Method</span> <span class="title">class_getInstanceMethod</span><span class="params">(<span class="keyword">Class</span> aClass, SEL aSelector)</span></span><br><span class="line"></span><br><span class="line">说明：指定类和方法选择器返回对应的实例方法，即<span class="title">Method</span>；如果不存在，则返回<span class="title">NULL</span>。</span></span><br></pre></td></tr></table></figure>
-<p>其中有个需要注意的地方，官方文档描述该方法如下</p>
-<blockquote>
-<p><strong>Discussion</strong></p>
-<p>Note that this function searches superclasses for implementations, whereas class_copyMethodList does not.</p>
-</blockquote>
-<p>从中可以看到，该函数会搜索父类的实现，如果该选择器没有在本类实现，则它会查找父类的实现，如果父类实现了，则返回；而<code>class_copyMethodList</code>并不会返回父类的方法。</p>
-<p>因此我们回到刚才那个问题，假如我们要替换的方法在本类中并没有实现而父类实现了，则<code>class_getInstanceMethod</code>返回了父类的实现，我们再使用<code>method_exchangeImplementations</code>交换实现，这样的结果是什么呢？就是我们替换了我们想要替换的类的父类的方法，这并不是我们想要的。</p>
-<p>因此先用<code>class_addMethod</code>这个方法<code>Hit-Testing</code>一下本类有没有实现这个方法，</p>
+              <p>我们开发iOS或者OSX程序时候，调试是避免不了的，而调试最大的一个利器就是断点。接下来我介绍一下Xcode一些常用的和不常用的技巧。</p>
+<h4 id="条件断点">条件断点</h4><p>如下图，这是个最基本的断点，我们写了一个0到10000的循环，需要在循环到5000的时候打个断点。</p>
+<p><img src="/images/debug_1.png" alt="debug_1"></p>
+<p>我们在Condition里填写我们的条件，这样当idx=5000的时候程序就会停在这里。</p>
+<h4 id="高级log术">高级log术</h4><p>经常在调试程序的时候，我们需要在程序里面打印一些东西，最常用的就是NSLog，但是NSLog有几个缺点</p>
 <ul>
-<li>如果本类已经实现了该方法，则会添加失败，那么我们开开心心的<code>method_exchangeImplementations</code>就好了；</li>
-<li>但是假如本类没有实现呢，那么该方法会自动为该类添加该方法，并且指向我们的新实现，然后我们再使用<code>class_replaceMethod</code>将新方法指向老的实现。实际上因为<code>class_addMethod</code>已经成功，即已经<code>oldSelector --&gt; newIMP</code>，所以我们只需要<code>newSelector --&gt; oldIMP</code>即可，因此<code>class_replaceMethod</code>可以被替换成<code>method_setImplementation(swizzledSelector, method_getImplementation(originalMethod));</code>，直接将新方法指向老实现。</li>
+<li>NSLog会拖慢运行速度，效率低</li>
+<li>大量log导致代码混乱</li>
+<li>最重要的一点，假如我们在程序运行的时候想要打印某些信息，这个时候我们可能会想到使用<code>po</code>，这个在打印单个信息的时候很有用，但是比如在上面我们的循环里面，我需要知道每次偶数的时候的idx是多少，那就不得不在编写完后重新编译运行，很麻烦。</li>
 </ul>
-<p>可能有些同学会被绕晕，我举个实例。</p>
-<p>比如我想要替换掉<code>UITableViewController</code>的<code>viewDidLoad</code>的实现，由于<code>UITableViewController</code>的<code>viewDidLoad</code>是在其父类<code>UIViewController</code>中实现的（<code>class-dump</code>出来看到的），因此<code>class_addMethod</code>会添加成功；如果直接交换实现的话，就把它的父类<code>UIViewController</code>的<code>viewDidLoad</code>的实现替换了，这就不是我们的初衷了。</p>
-<p>接下来讲一下为什么要调用老方法，或者我们不调用老方法那它真的就没调用了吗。</p>
-<p>顾名思义，系统调用老方法的时候，由于它的实现被指向了我自己的实现，我们实现自己的逻辑之后，当然要调用原来的方法，不然就像隐藏了一个定时炸弹，指定什么时候出现什么奇怪的问题。比如我自己为了测试，hook了<code>UIView</code>的<code>-setBackgroundColor:</code>方法，假如我不调用老方法，则不管我将view设置成什么颜色，它将都是黑色，这说明了的确老方法的实现被我们绕过了。因此，为了安全起见，我们在自己的方法里面一定要调用原来的方法。</p>
+<p>那么怎么办呢，还是在条件断点里面设置</p>
+<p><img src="/images/debug_2.png" alt="debug_2"></p>
+<p>我们首先设置条件为偶数，然后再在Action里面选择<code>Debug Command</code>，这和允许我们直接使用<code>lldb</code>或者<code>gdb</code>的命令进行调试，这里我们使用<code>po idx</code>打印出idx的值，表示当满足偶数条件的时候打印。接下来最重要的就是勾选下面那个<code>Automatically continue after evaluating</code>选项，表示在执行动作之后不暂停程序继续运行。</p>
+<p><img src="/images/debug_3.png" alt="debug_3"></p>
+<p>可以看到，Xcode乖乖地打印除了0到10000的偶数。</p>
+<p>假如我们需要输出一些信息，也好办，点击Action右边的加号，添加动作，这次我们选择<code>Log Message</code>，这里可以写下我们需要输出的信息，可以选择在控制台输出或者语音播放，或者也可以再添加一个动作，选择<code>Sound</code>，内置丰富的声音，在您调试的时候也能够享受美妙的交响乐。</p>
+<p><img src="/images/debug_4.png" alt="debug_4"></p>
+<p>查看输出，同时伴有frog的叫声</p>
+<p><img src="/images/debug_5.png" alt="debug_5"> </p>
+<h4 id="高级log术的其他用途">高级log术的其他用途</h4><p>平时我们查看调用堆栈的时候都是打个断点然后在Xcode左侧的Debug栏查看，或者在命令行输入lldb命令<code>bt</code>，但是有时候我们不想要程序暂停，这个时候我们就可以使用条件断点的<code>Automatically continue after evaluating</code>，同样，在Action里选择<code>Debug Command</code>，然后输入<code>bt</code>或者<code>bt 10</code>，表示只输出10个frame的调用堆栈。</p>
+<p><img src="/images/debug_6.png" alt="debug_6"></p>
+<p><code>-viewWillAppear:</code>的调用堆栈如下（只输出了10个frame）</p>
+<p><img src="/images/debug_7.png" alt="debug_7"></p>
+<p>也可以使用<code>dis -f</code>显示运行时的反汇编代码</p>
+<p><img src="/images/debug_8.png" alt="debug_8"></p>
+<h4 id="符号断点（Symbolic_BreakPoints）">符号断点（Symbolic BreakPoints）</h4><p><code>Symbolic BreakPoints</code>我们可能用得比较少，但其实它是个神器，用于我们想要在某个方法触发的时候打断点，尤其是当我们使用了第三方库或者framework等我们无法直接在方法里打断点的情况。</p>
+<p>好了，假如我们想要在每个<code>-viewDidLoad:</code>执行的时候，打断点，要怎么做呢，首先我们得见一个符号断点</p>
+<p><img src="/images/debug_9.png" alt="debug_9"></p>
+<p>然后在<code>Symbol</code>里填写我们要追踪的方法，这里填写<code>-[UIViewController viewWillAppear:]</code>。这样，当每次执行到的时候，都会停下来，便于我们分析调试。</p>
+<p><img src="/images/debug_10.png" alt="debug_10"></p>
+<p>Xcode停留在了第一个断点处</p>
+<p><img src="/images/debug_11.png" alt="debug_11"></p>
+<p>或者，我们直接输入<code>viewDidLoad</code>，运行，观察Xcode的反应</p>
+<p><img src="/images/debug_12.png" alt="debug_12"></p>
+<p>执行之后Xcode断点下</p>
+<p><img src="/images/debug_13.png" alt="debug_13"></p>
+<p>从上图中可以看到，Xcode将程序运行时候所有类中执行到该方法的地方都标记了断点，其中有很多系统类，等于自动<code>class_dump</code>出来了。</p>
+<h4 id="全局断点，捕捉程序运行时候的全部异常。">全局断点，捕捉程序运行时候的全部异常。</h4><p>添加断点的时候选择选择<code>Add Exception Breakpoint</code></p>
+<p><img src="/images/debug_14.png" alt="debug_14"></p>
+<p>然后在编辑的时候我们可以选择捕捉全部或者Objective-C或者C++的异常，一般情况下我们保持默认，这样当出现crash的时候就会停留在相应的代码处了。</p>
+<p><img src="/images/debug_15.png" alt="debug_15"></p>
+<p>开发程序时，巧妙地利用Xcode强大的调试技巧，可以达到事半功倍的效果。</p>
 
             
           </span>
@@ -449,7 +479,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -490,7 +520,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">13</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
