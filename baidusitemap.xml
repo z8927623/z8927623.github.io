@@ -4,6 +4,21 @@
 
     
   <url>
+    <loc>http://yoursite.com/2016/02/04/Objective-C%20Runtime%E4%B9%8B%E5%AE%9E%E7%8E%B0/</loc>
+    <lastmod>2016-02-06T04:16:21.000Z</lastmod>
+    <data>
+        <display>
+        <title>Objective-C Runtime之实现</title>
+        <pubTime>2016-02-04T14:10:00.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://yoursite.com/2016/01/19/NSOperation%E5%92%8CNSOperationQueue/</loc>
     <lastmod>2016-02-05T12:50:23.000Z</lastmod>
     <data>
@@ -25,21 +40,6 @@
         <display>
         <title>Objective-C Runtime之消息</title>
         <pubTime>2016-02-02T16:00:00.000Z</pubTime>
-        
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>http://yoursite.com/2016/02/04/Objective-C%20Runtime%E4%B9%8B%E5%AE%9E%E7%8E%B0/</loc>
-    <lastmod>2016-02-05T10:58:25.000Z</lastmod>
-    <data>
-        <display>
-        <title>Objective-C Runtime之实现</title>
-        <pubTime>2016-02-03T16:00:00.000Z</pubTime>
         
          
            
