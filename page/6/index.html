@@ -180,11 +180,6 @@
 
     
     
-      
-      
-
-      
-    
 
     
       
@@ -208,8 +203,8 @@
             
               
                 
-                <a class="post-title-link" href="/2015/09/20/iOS_Method_Swizzling/" itemprop="url">
-                  iOS Method Swizzling
+                <a class="post-title-link" href="/2015/07/03/创建私有pod/" itemprop="url">
+                  创建私有Pod（from车牛）
                 </a>
               
             
@@ -219,8 +214,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2015-09-20T00:00:00+08:00" content="2015-09-20">
-              2015-09-20
+            <time itemprop="dateCreated" datetime="2015-07-03T00:00:00+08:00" content="2015-07-03">
+              2015-07-03
             </time>
           </span>
 
@@ -230,8 +225,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/09/20/iOS_Method_Swizzling/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/20/iOS_Method_Swizzling/" itemprop="commentsCount"></span>
+                <a href="/2015/07/03/创建私有pod/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/07/03/创建私有pod/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -253,174 +248,48 @@
         
           <span itemprop="articleBody">
             
-              <p>先来看下面这段代码</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">+ (void)load &#123;</span><br><span class="line">    static dispatch_once_t onceToken;</span><br><span class="line">    dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">        Class <span class="class"><span class="keyword">class</span> = [<span class="title">self</span> <span class="title">class</span>];</span></span><br><span class="line"></span><br><span class="line">        SEL oldSelector = @selector(viewDidLoad);</span><br><span class="line">        SEL newSelector = @selector(xxx_viewDidLoad);</span><br><span class="line"></span><br><span class="line">        Method oldMethod = class_getInstanceMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">oldSelector);</span></span></span><br><span class="line">        Method newMethod = class_getInstanceMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">newSelector);</span></span></span><br><span class="line"></span><br><span class="line">        IMP oldIMP = method_getImplementation(oldMethod);</span><br><span class="line">        IMP newIMP = method_getImplementation(newMethod);</span><br><span class="line"></span><br><span class="line">        const char *oldMethodType = method_getTypeEncoding(oldMethod);</span><br><span class="line">        const char *newMethodType = method_getTypeEncoding(newMethod);</span><br><span class="line"></span><br><span class="line">        BOOL didAddMethod = class_addMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">oldSelector</span>, <span class="typename">newIMP</span>, <span class="typename">newMethodType);</span></span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (didAddMethod) &#123;</span><br><span class="line">            class_replaceMethod(<span class="class"><span class="keyword">class</span>, <span class="typename">newSelector</span>, <span class="typename">oldIMP</span>, <span class="typename">oldMethodType);</span></span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            method_exchangeImplementations(oldMethod, newMethod);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)xxx_viewDidLoad</span><br><span class="line">&#123;</span><br><span class="line">    [self xxx_viewDidLoad];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这段代码想必只要我们学习过<code>method swizzle</code>的同学都很熟悉，实现也比较简单。其中有两个地方需要注意，也是难点，即</p>
-<p><code>BOOL didAddMethod = class_addMethod(class, oldSelector, newIMP, newMethodType);</code></p>
-<p>和</p>
-<p><code>[self xxx_viewDidLoad];</code></p>
-<p>讲解第一点之前，必须先了解一下<code>class_getInstanceMethod</code>函数的功能。</p>
-<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">定义：<span class="function"><span class="keyword">Method</span> <span class="title">class_getInstanceMethod</span><span class="params">(<span class="keyword">Class</span> aClass, SEL aSelector)</span></span><br><span class="line"></span><br><span class="line">说明：指定类和方法选择器返回对应的实例方法，即<span class="title">Method</span>；如果不存在，则返回<span class="title">NULL</span>。</span></span><br></pre></td></tr></table></figure>
-<p>其中有个需要注意的地方，官方文档描述该方法如下</p>
-<blockquote>
-<p><strong>Discussion</strong></p>
-<p>Note that this function searches superclasses for implementations, whereas class_copyMethodList does not.</p>
-</blockquote>
-<p>从中可以看到，该函数会搜索父类的实现，如果该选择器没有在本类实现，则它会查找父类的实现，如果父类实现了，则返回；而<code>class_copyMethodList</code>并不会返回父类的方法。</p>
-<p>因此我们回到刚才那个问题，假如我们要替换的方法在本类中并没有实现而父类实现了，则<code>class_getInstanceMethod</code>返回了父类的实现，我们再使用<code>method_exchangeImplementations</code>交换实现，这样的结果是什么呢？就是我们替换了我们想要替换的类的父类的方法，这并不是我们想要的。</p>
-<p>因此先用<code>class_addMethod</code>这个方法<code>Hit-Testing</code>一下本类有没有实现这个方法，</p>
+              <p>##Private Pod</p>
+<p>参考文档：<a href="http://blog.wtlucky.com/blog/2015/02/26/create-private-podspec/" target="_blank" rel="external">使用Cocoapods创建私有podspec</a> <a href="https://guides.cocoapods.org/" target="_blank" rel="external">CocoaPods Guides</a></p>
+<p>###建立私有Spec Repo</p>
+<p>车牛Private Spec Repo已经托管在我们自己的gitlab上。可以直接使用<a href="http://git.souche.com/geliang/cheniu_pod.git" target="_blank" rel="external">cheniu_pod</a>，调用下面的命令即可：</p>
+<pre><code>pod repo add cheniu_pod <span class="string">http:</span><span class="comment">//git.souche.com/geliang/cheniu_pod.git</span>
+</code></pre><p>在<code>~/.cocoapods/repos</code>目录下可以看到<code>cheniu_pod</code>目录。</p>
+<p><strong><em>ps:由于使用的是http方式添加的cheniu_pod，所以添加的时候需要输入用户名和密码。</em></strong></p>
+<p>###创建Pod项目</p>
+<p>这里只讲从0开始创建Pod项目，对已经存在的项目Pod化，根据文档自己研究下。创建Pod项目直接在对应的的目录下调用一下命令：</p>
+<pre><code>pod <span class="class"><span class="keyword">lib</span> <span class="title">create</span> <span class="title">cheniuTestPod</span></span>
+</code></pre><p>然后根据提示回答几个简单的设置问题就可以。<strong><em>前缀选择CNN，测试框架随便，反正也不会去用。</em></strong>创建完成之后可以在<code>cheniuTestPod/Pod/Classes 和 Assets</code>下面添加对应的类或者资源文件。在项目的<code>Pods/DevelopmentPods/...</code>中添加进来即可。</p>
+<p>框架写好之后，可以在项目的<code>cheniuTestPod/Example for cheniuTestPod/...</code>中写一下简单的测试代码。</p>
+<p>测试通过之后，在gitlab上面创建自己的repo并把自己的代码提交到远程库中。<strong><em>必须创建tag</em></strong></p>
+<pre><code>git add -A
+git <span class="operator"><span class="keyword">commit</span> -<span class="keyword">m</span> <span class="string">'xxxxxx'</span>
+git remote <span class="keyword">add</span> origin xxxxx
+git tag -<span class="keyword">m</span> <span class="string">'xxxxx'</span> <span class="number">0.1</span><span class="number">.0</span>
+git push -u origin <span class="keyword">master</span> <span class="comment">--tags</span></span>
+</code></pre><p>修改<code>podspec</code>文件，将多余的注释和字段删除。<strong><em>如果你的pod不需要资源文件一定要删掉<code>s.resource_bundles</code>字段，其他字段根据实际情况填写即可。</em></strong> 修改好之后可以做一次简单的验证<code>pod lib lint</code>,当看到</p>
+<pre><code>-&gt; cheniuTestPod (<span class="number">0.1</span><span class="number">.0</span>)
+cheniuTestPod passed validation
+</code></pre><p>时，说明验证是通过的。<strong><em>这里不验证其实也没关系，在你将这个podspec提交到私有Spec Repo中时也会做验证的</em></strong></p>
+<p>###向Spec Repo提交podspec</p>
+<p>按照习惯提交之前要做两件事情</p>
 <ul>
-<li>如果本类已经实现了该方法，则会添加失败，那么我们开开心心的<code>method_exchangeImplementations</code>就好了；</li>
-<li>但是假如本类没有实现呢，那么该方法会自动为该类添加该方法，并且指向我们的新实现，然后我们再使用<code>class_replaceMethod</code>将新方法指向老的实现。实际上因为<code>class_addMethod</code>已经成功，即已经<code>oldSelector --&gt; newIMP</code>，所以我们只需要<code>newSelector --&gt; oldIMP</code>即可，因此<code>class_replaceMethod</code>可以被替换成<code>method_setImplementation(swizzledSelector, method_getImplementation(originalMethod));</code>，直接将新方法指向老实现。</li>
+<li>删除podspec中的多余注释！</li>
+<li>做一次上面提到的验证工作。</li>
 </ul>
-<p>可能有些同学会被绕晕，我举个实例。</p>
-<p>比如我想要替换掉<code>UITableViewController</code>的<code>viewDidLoad</code>的实现，由于<code>UITableViewController</code>的<code>viewDidLoad</code>是在其父类<code>UIViewController</code>中实现的（<code>class-dump</code>出来看到的），因此<code>class_addMethod</code>会添加成功；如果直接交换实现的话，就把它的父类<code>UIViewController</code>的<code>viewDidLoad</code>的实现替换了，这就不是我们的初衷了。</p>
-<p>接下来讲一下为什么要调用老方法，或者我们不调用老方法那它真的就没调用了吗。</p>
-<p>顾名思义，系统调用老方法的时候，由于它的实现被指向了我自己的实现，我们实现自己的逻辑之后，当然要调用原来的方法，不然就像隐藏了一个定时炸弹，指定什么时候出现什么奇怪的问题。比如我自己为了测试，hook了<code>UIView</code>的<code>-setBackgroundColor:</code>方法，假如我不调用老方法，则不管我将view设置成什么颜色，它将都是黑色，这说明了的确老方法的实现被我们绕过了。因此，为了安全起见，我们在自己的方法里面一定要调用原来的方法。</p>
-
-            
-          </span>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2015/09/06/使用clang语法消除编译警告/" itemprop="url">
-                  使用clang语法消除编译警告
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2015-09-06T00:00:00+08:00" content="2015-09-06">
-              2015-09-06
-            </time>
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2015/09/06/使用clang语法消除编译警告/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/06/使用clang语法消除编译警告/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <span itemprop="articleBody">
-            
-              <p>自己总结了一些常用的clang语法用于消除Xcode警告</p>
-<p><em>用法</em></p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic push</span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic ignored <span class="string">"-Wundeclared-selector"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// your code</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic pop</span></span><br></pre></td></tr></table></figure>
-<table>
-<thead>
-<tr>
-<th>Warning</th>
-<th style="text-align:left">Message</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-Warc-performSelector-leaks</code></td>
-<td style="text-align:left"><code>performSelector</code>可能会造成内存泄露因为无法知道具体的selector</td>
-</tr>
-<tr>
-<td><code>-Wunreachable-code&quot;</code></td>
-<td style="text-align:left">无法执行到的代码</td>
-</tr>
-<tr>
-<td><code>-Wunused-function</code></td>
-<td style="text-align:left">没有使用的函数</td>
-</tr>
-<tr>
-<td><code>-Wdeprecated-implementations</code></td>
-<td style="text-align:left">标记为已经废弃的方法</td>
-</tr>
-<tr>
-<td><code>-Wdeprecated-declarations</code></td>
-<td style="text-align:left">消除使用废弃方法警告</td>
-</tr>
-<tr>
-<td><code>-Wreceiver-is-weak</code>和<code>-Warc-repeated-use-of-weak</code></td>
-<td style="text-align:left">接受者是weak属性</td>
-</tr>
-<tr>
-<td><code>-Wundeclared-selector</code></td>
-<td style="text-align:left">未定义的selector</td>
-</tr>
-<tr>
-<td><code>-Wgnu</code></td>
-<td style="text-align:left">未知</td>
-</tr>
-<tr>
-<td><code>-Wreturn-type</code></td>
-<td style="text-align:left">control reaches end of non-void function</td>
-</tr>
-<tr>
-<td><code>-Wimplicit-function-declaration</code></td>
-<td style="text-align:left">implicit declaration of function</td>
-</tr>
-<tr>
-<td><code>-Wconversion</code></td>
-<td style="text-align:left">消除精度丢失warning</td>
-</tr>
-</tbody>
-</table>
+<p>然后使用下面的命令：</p>
+<pre><code><span class="label">pod</span> repo <span class="keyword">push </span>cheniu_pod cheniuTestPod.podspec
+</code></pre><p>完成之后我们可以到<code>~/.cocoapods/repos/cheniu_pod/Specs</code>中找到我们提交的spec，并且可以通过<code>pod search</code>查到我们提交的库。</p>
+<p>###使用私有Pod</p>
+<p>直接在我们自己的<code>Podfile</code>中加入</p>
+<pre><code><span class="title">pod</span> <span class="string">'cheniuTestPod'</span>, <span class="string">'~&gt; 0.1.0'</span>
+</code></pre><p>和source源</p>
+<pre><code><span class="built_in">source</span> <span class="string">'http://git.souche.com/geliang/cheniu_pod.git'</span>
+<span class="built_in">source</span> <span class="string">'https://github.com/CocoaPods/Specs.git'</span>
+</code></pre><p>就可以了。<strong><em>加source非常重要，不然调用<code>pod install</code>时会找不到我们自己的私有库的。</em></strong></p>
+<p>###podspec升级，维护</p>
+<p>维护podsepc，或者采用<code>subspec</code>新功能，参考文档自己摸索。</p>
+<p>###私有的Spec Repo维护</p>
+<p>同样参考文档吧！</p>
 
             
           </span>
@@ -447,7 +316,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span>
   </nav>
 
 
@@ -488,7 +357,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-count">11</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

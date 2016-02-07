@@ -180,15 +180,6 @@
 
     
     
-      
-      
-        
-        
-        
-      
-
-      
-    
 
     
       
@@ -212,8 +203,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/02/05/额...runloop/" itemprop="url">
-                  额...runloop
+                <a class="post-title-link" href="/2016/02/05/Objective-C Runtime之实现/" itemprop="url">
+                  Objective-C Runtime之实现
                 </a>
               
             
@@ -234,8 +225,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/02/05/额...runloop/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/05/额...runloop/" itemprop="commentsCount"></span>
+                <a href="/2016/02/05/Objective-C Runtime之实现/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/05/Objective-C Runtime之实现/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -257,60 +248,251 @@
         
           <span itemprop="articleBody">
             
-              <p>run loop的目的是让我们的线程保持繁忙，同时当线程没事儿可做的时候使之休眠。</p>
-<p>主线程的run loop已经在程序启动的时候作为启动进程运行，而子线程，我们需要手动使run loop运行。</p>
-<p>run loop就像它的名字一样，是个循环，那它是什么循环呢，和线程有关，线程利用它去响应事件的</p>
-<p>run loop接收两种类型的事件源：  </p>
+              <h3 id="id">id</h3><p>首先从<code>id</code>说起，Objective-C中id是个可以指向任何OC对象的指针，我们来看看它的结构</p>
+<figure class="highlight thrift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">objc_object</span> </span>&#123;</span><br><span class="line">    Class isa;</span><br><span class="line">&#125; *id;</span><br></pre></td></tr></table></figure>
+<p>可知，<code>id</code>是一个指向<code>objec_object</code>结构的C指针，而<code>objec_object</code>又包含了一个<code>isa</code>指针，该指针指向名为<code>Class</code>的变量，因此，每个OC对象都有个<code>Class</code>，那么<code>Class</code>又是什么呢？</p>
+<h3 id="Class">Class</h3><p><code>typedef struct objc_class *Class;</code></p>
+<p><code>Class</code>是一个指向<code>objc_class</code>结构的C指针，我们再来看看<code>objc_class</code>：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> objc_class &#123;</span><br><span class="line">    Class isa;</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#if !__OBJC2__</span></span><br><span class="line">    Class super_class                                        OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *name                                         OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">    <span class="keyword">long</span> version                                             OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">    <span class="keyword">long</span> info                                                OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">    <span class="keyword">long</span> instance_size                                       OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">    <span class="keyword">struct</span> objc_ivar_list *ivars                             OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">    <span class="keyword">struct</span> objc_method_list **methodLists                    OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">    <span class="keyword">struct</span> objc_cache *cache                                 OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">    <span class="keyword">struct</span> objc_protocol_list *protocols                     OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line"><span class="preprocessor">#endif</span></span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line"><span class="comment">/* Use `Class` instead of `struct objc_class *` */</span></span><br></pre></td></tr></table></figure>
+<p>我们来看看它的每个成员</p>
+<p><strong>isa</strong></p>
+<p>我们看到，<code>objc_class</code>也包含一个指向<code>Class</code>的<code>isa</code>指针，这个<code>Class</code>就是<code>Meta-Class</code>，也就是元类，实际上元类也有个<code>isa</code>指针，元类的<code>isa</code>指针都指向了根元类。</p>
+<p>因此，不仅<code>objc_object</code>是个对象，它的类<code>object_class</code>也是个对象，他们都有各自的类，<code>objc_object</code>的类是普通类，这个类存储了实例变量和实例方法列表；<code>object_class</code>的类是元类，元类它存储了类方法列表。当我们发送一个消息给一个对象的时候，runtime会从它的类的方法列表中查找消息。当发送给一个类的时候，runtime会从它的元类的方法列表中查找消息。</p>
+<p>概括一下，普通的OC对象都有个<code>isa</code>指针，指向它们所属的类；而它们所属的类也有个<code>isa</code>指针，指向它们的元类；最后，它们的元类也有个<code>isa</code>指针，指向根元类。</p>
+<p><strong>super_class</strong></p>
+<p>指向父类，如果当前类是诸如NSObject或者NSProxy的根类，那么它的<code>super_class</code>为NULL</p>
+<p><strong>name</strong></p>
+<p>类名，可以根据这个信息获取类，如<code>objc_getClass</code></p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span> objc_getClass(<span class="keyword">const</span> <span class="keyword">char</span> *aClassName)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (!aClassName) <span class="keyword">return</span> Nil;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// NO unconnected, YES class handler</span></span><br><span class="line">    <span class="keyword">return</span> look_up_class(aClassName, <span class="literal">NO</span>, <span class="literal">YES</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>version</strong></p>
+<p>版本信息</p>
+<p><strong>info</strong></p>
+<p>runtime需要的一些信息</p>
+<p><strong>instance_size</strong></p>
+<p>该类实例变量大小，可以通过<code>class_getInstanceSize</code>获取</p>
+<p><strong>ivars</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> objc_ivar_list &#123;</span><br><span class="line">    <span class="keyword">int</span> ivar_count                                           OBJC2_UNAVAILABLE;</span><br><span class="line"><span class="preprocessor">#<span class="keyword">ifdef</span> __LP64__</span></span><br><span class="line">    <span class="keyword">int</span> space                                                OBJC2_UNAVAILABLE;</span><br><span class="line"><span class="preprocessor">#<span class="keyword">endif</span></span></span><br><span class="line">    <span class="comment">/* variable length structure */</span></span><br><span class="line">    <span class="keyword">struct</span> objc_ivar ivar_list[<span class="number">1</span>]                            OBJC2_UNAVAILABLE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>变量列表，可以通过<code>class_copyIvarList</code>获取</p>
+<p><strong>methodLists</strong></p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> objc_method_list &#123;</span><br><span class="line">	<span class="keyword">struct</span> objc_method_list *obsolete                        OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> method_count                                         OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line"><span class="preprocessor">#ifdef __LP64__</span></span><br><span class="line">	<span class="keyword">int</span> space                                                OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line"><span class="preprocessor">#endif</span></span><br><span class="line">	<span class="comment">/* variable length structure */</span></span><br><span class="line">	<span class="keyword">struct</span> objc_method method_list[<span class="number">1</span>]                        OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">&#125;                                                            OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br></pre></td></tr></table></figure>
+<p>方法列表，可以通过<code>class_copyMethodList</code>获取。<br>如下示例代码：我们获取了该类的方法列表，存入数组中并返回。</p>
+<figure class="highlight nimrod"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">NSArray</span> *)methodsArray &#123;</span><br><span class="line">    <span class="type">NSMutableArray</span> *<span class="type">array</span> = [<span class="type">NSMutableArray</span> <span class="type">array</span>];</span><br><span class="line">    </span><br><span class="line">    unsigned <span class="type">int</span> outCount;</span><br><span class="line">    <span class="type">Method</span> *methods = class_copyMethodList([self class], &amp;outCount);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">NSInteger</span> i = <span class="number">0</span>; i &lt; outCount; i++) &#123;</span><br><span class="line">        <span class="type">Method</span> <span class="keyword">method</span> = methods[i];</span><br><span class="line">        <span class="type">SEL</span> selector = method_getName(<span class="keyword">method</span>);</span><br><span class="line">        <span class="type">NSString</span> *methodName = <span class="type">NSStringFromSelector</span>(selector);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> ([methodName isEqualToString:@<span class="string">".cxx_destruct"</span>]) &#123;</span><br><span class="line">            <span class="keyword">continue</span>; // 跳过这次循环，因为所有<span class="type">NSObjct</span>都含有该方法，runtime用于销毁C++对象的</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (methodName) &#123;</span><br><span class="line">            [<span class="type">array</span> addObject:methodName];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    free(methods);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> [<span class="type">array</span> copy];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>objc_cache</strong></p>
+<p>之前说过runtime为了加快方法调用的速度，会将selector和imp存储起来，而负责这个任务的数据结构就是<code>Cache</code>，而<code>Cache</code>是一个指向<code>objc_cache</code>结构的C指针</p>
+<p><code>typedef struct objc_cache *Cache;</code></p>
+<p><code>objc_cache</code>的结构如下：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> objc_cache &#123;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> mask <span class="comment">/* total = mask + 1 */</span>                 OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> occupied                                    OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">	Method buckets[<span class="number">1</span>]                                        OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">&#125; <span class="comment">/* GrP fixme should be OBJC2_UNAVAILABLE, but isn't because of spurious warnings in [super ...] calls */</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>protocols</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> objc_protocol_list &#123;</span><br><span class="line">    <span class="keyword">struct</span> objc_protocol_list *next;</span><br><span class="line">    <span class="keyword">long</span> count;</span><br><span class="line">    Protocol *<span class="built_in">list</span>[<span class="number">1</span>];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>协议列表，可以通过<code>class_copyProtocolList</code>获取</p>
+<h3 id="Method">Method</h3><p><code>typedef struct objc_method *Method;</code></p>
+<p><code>Method</code>是一个指向<code>objc_method</code>结构的C指针，即<strong>方法</strong>。那么<code>objc_method</code>又是什么呢？</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> objc_method &#123;</span><br><span class="line">    SEL method_name                                          OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">    <span class="keyword">char</span> *method_types                                       OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">    IMP method_imp                                           OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br><span class="line">&#125;                                                            OBJC2_UN<span class="built_in">AVAILABLE</span>;</span><br></pre></td></tr></table></figure>
+<p>从结构体可以看到，<code>objc_method</code>有三个成员列表，分别是<strong>方法名</strong>（<code>method_name</code>）、<strong>方法类型</strong>（<code>method_types</code>）和<strong>方法实现</strong>（<code>method_imp</code>）。方法名是一个<code>SEL</code>类型用于描述方法的名字，方法类型描述了方法参数的数据类型，方法实现是一个<code>IMP</code>类型，提供了函数实现的地址，当方法被调用的时候，执行的就是IMP函数内的代码。</p>
+<h3 id="SEL">SEL</h3><p><code>typedef struct objc_selector *SEL;</code></p>
+<p>一个指向<code>objc_selector</code>结构的C指针，用于表示方法选择器selector的类型。方法选择器selector代表<code>Method</code>的名字，其实它就是一个C字符串，由编译器生成，运行时在类加载的时候被自动映射到方法实现，也就是<code>IMP</code>。</p>
+<p>我们可以使用<code>sel_registerName</code>在运行时添加新的selector，如果selector已经存在，则会返回存在的selector。除了<code>sel_registerName</code>，也可以通过OC编译器指令<code>@selector()</code>来获取，但是不能直接从C字符串强转过来。</p>
+<h3 id="IMP">IMP</h3><p><code>typedef id (*IMP)(id, SEL, ...);</code></p>
+<p><code>IMP</code>是一个函数指针，指向<code>Method</code>的实现，<code>Method</code>的实现是个C函数，因此确切地说是指向C函数的地址。它有两个固定参数，分别是<code>id</code>和<code>方法选择器SEL</code>，以及可变参数，并且返回一个<code>id</code>类型的对象。</p>
+<h3 id="继承层次图">继承层次图</h3><p>了解了以上概念后，我们再来看看OC的继承层次图，其中实线表示<code>superclass</code>，虚线表示<code>isa</code>指针。</p>
+<p><img src="/images/runtime_8.png" alt="runtime_8"></p>
+<h3 id="实例">实例</h3><p><strong>例子1</strong>：结合class和object和结构，以<code>[@&quot;呵呵&quot; stringByAppendingString:@&quot;哒&quot;];</code>为例子，说明整个消息发送过程：</p>
+<p>首先@”呵呵”是个对象，runtime系统根据对象的<code>isa</code>指针发现它的类（<code>Class</code>）是<code>NSString</code>，首先查找它的缓存（<code>cache</code>），如果找到了直接调用IMP，否则查看它的方法列表（<code>methodLists</code>），如果本类找不到，则查找父类（<code>super_class</code>），最后找到了匹配的方法选择器selector<code>-stringByAppendingString:</code>，然后取出和selector一起存储在<code>objc_method</code>中的IMP，触发。</p>
+<p><strong>例子2</strong>：OC类的继承关系</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">"MyClass.h"</span></span></span><br><span class="line"><span class="preprocessor">#import <span class="title">&lt;objc/runtime.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyClass</span></span></span><br><span class="line"></span><br><span class="line">- (instancetype)init</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">        func(<span class="keyword">self</span>, <span class="keyword">@selector</span>(function), <span class="string">@"呵呵哒"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> func(<span class="keyword">id</span> <span class="keyword">self</span>, SEL _cmd, <span class="built_in">NSString</span> *str)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"str = %@"</span>, str);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 主要走实线</span></span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"\n🙈This object is %p\n🙈This object's class is %@(%p)\n🙈%@'s super class is %@(%p)\n🙈%@'s super class is %@(%p)\n🙈%@'s meta class is %@(%p)\n🙈Meta class's super class is %@(%p)"</span>, <span class="keyword">self</span>, [<span class="keyword">self</span> class], [<span class="keyword">self</span> class],</span><br><span class="line">        [<span class="keyword">self</span> class], [<span class="keyword">self</span> superclass], [<span class="keyword">self</span> superclass],</span><br><span class="line">        [<span class="keyword">self</span> superclass], [[<span class="keyword">self</span> superclass] superclass], [[<span class="keyword">self</span> superclass] superclass],</span><br><span class="line">        [<span class="keyword">self</span> superclass], object_getClass([<span class="keyword">self</span> superclass]), object_getClass([<span class="keyword">self</span> superclass]), [object_getClass([<span class="keyword">self</span> superclass]) superclass], [object_getClass([<span class="keyword">self</span> superclass]) superclass]);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 走虚线</span></span><br><span class="line">    Class currentClass = [<span class="keyword">self</span> class];</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *name = class_getName(currentClass);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"\n🙉🙊Following the isa pointer %d times's class is %s(%p)"</span>, i, name, currentClass);</span><br><span class="line">        currentClass = object_getClass(currentClass);</span><br><span class="line">        name = class_getName(currentClass);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<p><img src="/images/runtime_9.png" alt="runtime_9"></p>
 <ul>
-<li>输入源（<code>Input sources</code>）：投递异步事件，通常是从另一个线程或者另一个app过来的。</li>
-<li>Timer源（<code>Timer sources</code>）：投递同步事件，通常出现在timer运行的时候</li>
+<li>self是个object，地址为<code>0x10020dbe0</code>x</li>
+<li>self的类是MyClass，地址为<code>0x100004640</code></li>
+<li>MyClass的父类是NSObject，地址为<code>0x7fff7542c0f0</code></li>
+<li>NSObject的父类是nil</li>
+<li>NSObject的元类是NSObject，地址为<code>0x7fff7542c118</code></li>
+<li>NSObject的元类的父类是NSObject，地址为    <code>0x7fff7542c0f0</code></li>
+<li>MyClass的元类是MyClass，地址为<code>0x100004668</code></li>
+<li>MyClass的元类的父类是NSObject，地址为<code>0x7fff7542c118</code></li>
+<li>MyClass的元类的元类是NSObject，地址为<code>0x7fff7542c118</code></li>
 </ul>
-<p>下面这张图是run loop的运行状态图</p>
-<p><img src="../images/runloop_1.png" alt="runloop_1"></p>
-<p>Input sources投递异步事件去响应handlers，并且使<code>runUntilDate:</code>方法退出<br>Timer sources投递timer事件处理但是不会造成run loop退出</p>
-<p>除了处理输入源，run loop也可以对自己的行为生成通知，我们可以注册<code>run-loop observers</code>，然后我们就可以收到这些通知，然后在线程上做一些自己的事情，我们可以使用<code>Core Foundation</code>去安装观察者在我们的线程上。</p>
-<h3 id="Run_Loop_Modes">Run Loop Modes</h3><p>当我们显式或者隐式运行run loop，都必须指定一个<code>model</code>，当指定mode之后，只有和该mode相关的事件源才能被投递到线程去处理，其他不相关的事件源只能被挂起，直到run loop回到和该事件源相关的mode。</p>
-<table>
-<thead>
-<tr>
-<th>Mode</th>
-<th style="text-align:left">Name</th>
-<th style="text-align:left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Default</code></td>
-<td style="text-align:left"><code>NSDefaultRunLoopMode</code>(Cocoa)  <code>kCFRunLoopDefaultMode</code>(Core Foundation)</td>
-<td style="text-align:left">默认模式，大部分情况我们使用这个模式就OK了</td>
-</tr>
-<tr>
-<td><code>Connection</code></td>
-<td style="text-align:left"><code>NSConnectionReplyMode</code>(Cocoa)</td>
-<td style="text-align:left">这个模式是给NSConnection处理网络回调用的，我们几乎用不到</td>
-</tr>
-<tr>
-<td><code>Modal</code></td>
-<td style="text-align:left"><code>NSModalPanelRunLoopMode</code>(Cocoa)</td>
-<td style="text-align:left">模态模式，Cocoa使用这个模式给模态视图投递事件</td>
-</tr>
-<tr>
-<td><code>Event tracking</code></td>
-<td style="text-align:left"><code>NSEventTrackingRunLoopMode</code>(Cocoa)</td>
-<td style="text-align:left">这个模式和iOS的流畅不无关系，当我们拖动鼠标或者滑动scrollView的时候，处于这个模式下的run loop会限制其他事件</td>
-</tr>
-<tr>
-<td><code>Common modes</code></td>
-<td style="text-align:left"><code>NSRunLoopCommonModes</code>(Cocoa)  <code>kCFRunLoopCommonModes</code>(Core Foundation)</td>
-<td style="text-align:left">通用模式，如果run loop运行在这个模式下，等于运行在以上所有模式下</td>
-</tr>
-</tbody>
-</table>
-<h3 id="Input_Sources">Input Sources</h3><p>input sources异步投递事件到线程，</p>
-<p>当我们在子线程上执行例如<code>-performSelector:withObject:afterDelay:</code>等方法时，该线程必须有一个活跃的run loop，因为这是我们自己创建的，我们必须手动去启动线程</p>
-<p>run loop会在每次循环的时候处理全部入队列的selector calls，而不是在每个循环只处理一个</p>
-<h3 id="Timer_Sources">Timer Sources</h3><p>timer关联到run loop的模式，当timer不再它所安排运行的那个mode时，它并不会被触发直到run loop运行在自己安排的那个线程。相似的，如果timer在一个run loop执行但还没有执行完的时候触发，那么它必须等到下次run loop循环重新触发，如果run loop根本没有运行，那么timer就不会被触发</p>
-<h3 id="Run_Loop_Observers">Run Loop Observers</h3>
+<p>是不是绕晕了，用图表示一下：</p>
+<p><img src="/images/runtime_10.png" alt="runtime_10"></p>
+<p>好了，下一篇来讲讲runtime的应用。</p>
+
+            
+          </span>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/02/03/Objective-C Runtime之消息/" itemprop="url">
+                  Objective-C Runtime之消息
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-02-03T00:00:00+08:00" content="2016-02-03">
+              2016-02-03
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/02/03/Objective-C Runtime之消息/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/03/Objective-C Runtime之消息/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <span itemprop="articleBody">
+            
+              <h3 id="Method&amp;Message">Method&amp;Message</h3><p>什么是Method？  </p>
+<p>方法就是一个类中有名字的一串代码，平常我们写的<br><code>- (int)func:(NString *)str { ... }</code>就是一个方法，但是它在编译的时候会被转换成C函数调用，<br><code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>，也就是说，所谓的方法实际上就是C函数。</p>
+<p>从<code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>就可以明白为什么我们可以使用<code>self</code>和<code>_cmd</code>，因为他们在源码中是隐藏的，self代表着receiver，_cmd代表调用选择器selector。</p>
+<p>什么是Message？  </p>
+<p>消息是Objective-C中的核心，必须借助于runtime系统才能完成。当我们不了解runtime的时候，一个简单的<code>[receiver message]</code>往往会被认为是函数调用，实际上它仅仅是在编译期间确定了要向receiver这个接收者发送message消息，而receiver如何响应这条消息，编译阶段是无法知晓的，这个要到运行的时候来判断了。</p>
+<p>平常我们调用的<code>[self func:@&quot;呵呵哒&quot;];</code>会在编译期间被转化为<code>objc_msgSend(self, @selector(func:), @&quot;呵呵哒&quot;;</code>，也就是说，OC中发送消息会被转化为<code>objc_msgSend</code>。  </p>
+<p>那么，我们是否可以直接调用<code>objc_msgSend</code>来发送消息呢？理论上是可以的，虽然苹果极力不推荐。实际上编译器为了更好地进行错误判断，会执行严格的类型检查，也就是说，如果我们直接编写以上代码，会通不过编译，假如我们非要这么做，可以将编译选项<em>Enable Strict Checking of objc_msgSend Calls</em>设置为<em>NO</em>，或者将代码修改为<code>((int (*)(id, SEL, NSString *))objc_msgSend)(self, @selector(func:), @&quot;呵呵哒&quot;;</code>，就可以了。</p>
+<p>好了，无图无真相，下面就让我们用实验证明一下。</p>
+<p>首先我们新建了一个<code>Command Line Tool</code> Application，然后新建了一个名为MyClass的类，填写以下代码：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">"MyClass.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyClass</span></span></span><br><span class="line"></span><br><span class="line">- (instancetype)init</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">        [<span class="keyword">self</span> func:<span class="string">@"呵呵哒"</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">int</span>)func:(<span class="built_in">NSString</span> *)str</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, str);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>然后我们使用<code>clang -rewrite-objc MyClass.m</code>命令将OC代码转换为C++代码，这会在同目录下生成<code>MyClass.cpp</code>的C++文件，用vim打开打开，跳转到10万行左右，可以看到</p>
+<p><img src="/images/runtime_2.png" alt="runtime_2"></p>
+<p><code>[self func:@&quot;呵呵哒&quot;];</code>的确被转换成了<code>static int _I_MyClass_func_(MyClass * self, SEL _cmd, NSString *func)</code>。</p>
+<h3 id="objc_msgSend">objc_msgSend</h3><p>objc_msgSend可能是iOS app运行时被调用的最多的函数了，那么它都干了什么？很可惜，为了提高调用速度，它是用汇编实现的。不过我们仍然可以通过源码来窥知一二。我们打开runtime源码然后搜索.s，.s是汇编文件的后缀</p>
+<p><img src="/images/runtime_3.png" alt="runtime_3"></p>
+<p>可以看到，不同平台msg的实现是不一样的，这里我们选择X86_64的，扎到objc_msgSend的实现如下：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">/<span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span></span><br><span class="line"> <span class="keyword">*</span></span><br><span class="line"> <span class="keyword">*</span> id objc_msgSend(id self, SEL	_cmd,...);</span><br><span class="line"> <span class="keyword">*</span></span><br><span class="line"> <span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span>/</span><br><span class="line">	</span><br><span class="line">	ENTRY	_objc_msgSend</span><br><span class="line">	DW_START _objc_msgSend</span><br><span class="line"></span><br><span class="line">// check whether selector is ignored</span><br><span class="line">// 检查selector是否可以忽略</span><br><span class="line">	cmpq    $ kIgnore, %a2</span><br><span class="line">	// 如果可以忽略，直接返回self</span><br><span class="line">	je      LMsgSendReturnSelf	// ignore and return self</span><br><span class="line"></span><br><span class="line">// check whether receiver is nil </span><br><span class="line">// 检查消息接收者是否是nil</span><br><span class="line">	testq	%a1, %a1</span><br><span class="line">	// 跳转响应的处理</span><br><span class="line">	je	LMsgSendNilSelf</span><br><span class="line"></span><br><span class="line">// receiver (in %a1) is non-nil: search the cache</span><br><span class="line">// 如果接收者不是nil，则查找这个selector，先从缓存中找</span><br><span class="line"></span><br><span class="line">// 缓存命中</span><br><span class="line">LMsgSendReceiverOk:</span><br><span class="line">	// 获取它的isa指针，确定它的类</span><br><span class="line">	movq	isa(%a1), %r11		// class = self-&gt;isa</span><br><span class="line">	CacheLookup %a2, _objc_msgSend</span><br><span class="line">	// CacheLookup placed method in r11</span><br><span class="line">	movq	method_imp(%r11), %r11</span><br><span class="line">	cmp	%r11, %r11		// set nonstret (eq) for </span><br><span class="line">forwarding</span><br><span class="line">	// 找到了selector，跳转到函数实现去执行</span><br><span class="line">	jmp	<span class="keyword">*</span>%r11			// goto <span class="keyword">*</span>imp</span><br><span class="line"></span><br><span class="line">// cache miss: go search the method lists</span><br><span class="line">// 缓存没有找到，搜索方法列表</span><br><span class="line">LCacheMiss_objc_msgSend:</span><br><span class="line">	MethodTableLookup isa(%a1), %a2, _objc_msgSend</span><br><span class="line">	// MethodTableLookup placed IMP in r11</span><br><span class="line">	cmp	%r11, %r11		// set nonstret (eq) for </span><br><span class="line">// 在方法列表中找到了selector，跳转到函数实现去执行</span><br><span class="line">forwarding</span><br><span class="line">	jmp	<span class="keyword">*</span>%r11			// goto <span class="keyword">*</span>imp</span><br><span class="line"></span><br><span class="line">// message sent to nil: redirect to nil receiver, if any</span><br><span class="line">// 消息是否发送给nil及之后的处理</span><br><span class="line">LMsgSendNilSelf:</span><br><span class="line">	movq	__objc_nilReceiver(%rip), %a1</span><br><span class="line">	// 接收者不是nil</span><br><span class="line">	testq	%a1, %a1		// if (receiver != nil)</span><br><span class="line">	// 跳转到之后的处理</span><br><span class="line">	jne	LMsgSendReceiverOk	//   send to new receiver</span><br><span class="line"></span><br><span class="line">	// message sent to nil - return 0</span><br><span class="line">	// 接收者是nil，直接返回0</span><br><span class="line">	movq	$0, %rax</span><br><span class="line">	movq	$0, %rdx</span><br><span class="line">	xorps	%xmm0, %xmm0</span><br><span class="line">	xorps	%xmm1, %xmm1</span><br><span class="line">	ret</span><br><span class="line">	</span><br><span class="line">LMsgSendReturnSelf:</span><br><span class="line">	movq	%a1, %rax</span><br><span class="line">	ret</span><br><span class="line"></span><br><span class="line">LMsgSendExit:</span><br><span class="line">	DW_END 		_objc_msgSend</span><br><span class="line">	END_ENTRY	_objc_msgSend</span><br></pre></td></tr></table></figure>
+<p>通过汇编大致可以知道objc_msgSend的具体步骤：</p>
+<ol>
+<li>检查selector是否可以忽略<ul>
+<li>可以忽略，返回self</li>
+<li>不可以忽略，跳转到2</li>
+</ul>
+</li>
+<li>检查消息接收者是否是nil<ul>
+<li>不是nil，跳转到3</li>
+<li>是nil，直接返回0</li>
+</ul>
+</li>
+<li>手先从缓存中查找selector  <ul>
+<li>如果缓存命中，则执行它的imp</li>
+<li>如果没有找到缓存，跳转到4</li>
+</ul>
+</li>
+<li>先从本类的方法列表中找（或者<code>dispatch table</code>即分发表）<ul>
+<li>如果找到，则执行它的imp，同时以selector为key，imp的地址为value存入缓存</li>
+<li>如果没找到，则通过isa指针继续查找其父类的分发表直到根类NSObject</li>
+</ul>
+</li>
+<li>如果到NSObject还没有找到，则执行<strong>动态方法决议</strong></li>
+<li>动态方法决议是个很重要的流程，接下来会重点讲</li>
+</ol>
+<p>整个过程可用下图表示</p>
+<p><img src="/images/runtime_4_1.png" alt="runtime_4_1"></p>
+<h3 id="动态方法决议（Dynamic_Method_Resolution）">动态方法决议（Dynamic Method Resolution）</h3><p>上面提到了，当到NSObject还没有找到selector的时候，就进入了<strong>动态方法决议</strong>，简单的说就是当我们无法找到匹配的方法实现时，runtime允许我们在运行期间动态地添加一个方法。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="built_in">BOOL</span>)resolveInstanceMethod:(SEL)aSEL &#123;</span><br><span class="line">    <span class="keyword">if</span> (aSEL == <span class="keyword">@selector</span>(resolveThisMethodDynamically)) &#123;</span><br><span class="line">    	class_addMethod([<span class="keyword">self</span> class], aSEL, (IMP)dynamicMethodIMP, <span class="string">"v@:"</span>);</span><br><span class="line">    	<span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> [<span class="keyword">super</span> resolveInstanceMethod:aSEL];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> dynamicMethodIMP(<span class="keyword">id</span> <span class="keyword">self</span>, SEL _cmd) &#123;</span><br><span class="line">    <span class="comment">// implementation ....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们主要做了以下几件事</p>
+<ul>
+<li>实现<code>+resolveInstanceMethod:</code>或者<code>+resolveClassMethod:</code></li>
+<li>检查selector是不是我们想要处理的方法  <ul>
+<li>匹配，则通过<code>class_addMethod</code>添加一个方法并返回YES，可以看到添加的方法是一个简单的C函数</li>
+<li>不匹配，调用super处理 </li>
+</ul>
+</li>
+<li>注意如果我们不提供一个实现直接返回会抛出<code>NSInvalidArgumentException</code>异常</li>
+</ul>
+<h3 id="消息转发（Message_Forwarding）">消息转发（Message Forwarding）</h3><p>如果动态方法决议还没有解决，则进入了消息转发流程，可分为快速转发和标准转发。</p>
+<h4 id="快速转发（Fast_Forwarding）">快速转发（Fast Forwarding）</h4><p>通过快速转发我们可以将消息快速地转发给另一个对象，或者忽略，但是我们无法在快速转发中改写消息。</p>
+<p>下面是一个简单的示例</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- (id)<span class="string">forwardingTargetForSelector:</span>(SEL)aSelector &#123;</span><br><span class="line">    <span class="keyword">if</span> (aSelector == <span class="annotation">@selector</span>(<span class="string">foo:</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> anotherObject;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> [<span class="keyword">super</span> <span class="string">forwardingTargetForSelector:</span>aSelector];;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们主要做了以下三件事：</p>
+<ul>
+<li>实现<code>-forwardingTargetForSelector:</code></li>
+<li>检查selector是否是我们想要处理的方法<ul>
+<li>匹配，转发给能够处理该消息的对象</li>
+<li>不匹配，调用super处理</li>
+</ul>
+</li>
+</ul>
+<h4 id="标准转发（Normal_Forwarding）">标准转发（Normal Forwarding）</h4><p>快速转发之后就是标准转发，通过标准转发我们可以完整的实现转发流程，在错误之前给了我们最后一次机会。</p>
+<p>runtime系统首先会调用<code>-methodSignatureForSelector:</code>去获取方法签名，然后使用方法签名去创建<code>NSInvocation</code>对象，它封装了原始消息和参数；接着<code>-forwardInvocation:</code>被调用，使用新创建的NSInvocation作为参数，默认的<code>-forwardInvocation:</code>会发送<code>-doesNotRecognizeSelector</code>消息抛出异常，因此我们必须覆写<code>-forwardInvocation:</code>，同时也要覆写<code>-methodSignatureForSelector:</code>去生成一个方法签名。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">- (NSMethodSignature *)<span class="string">methodSignatureForSelector:</span>(SEL)selector &#123;</span><br><span class="line">    NSMethodSignature *signature = [<span class="keyword">super</span> <span class="string">methodSignatureForSelector:</span>selector];</span><br><span class="line">    <span class="keyword">if</span> (!signature) &#123;</span><br><span class="line">        signature = [anotherObject <span class="string">methodSignatureForSelector:</span>selector];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> signature;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="typename">void</span>)<span class="string">forwardInvocation:</span>(NSInvocation *)anInvocation &#123;</span><br><span class="line">    <span class="keyword">if</span> ([anotherObject <span class="string">respondsToSelector:</span></span><br><span class="line">         [anInvocation selector]]) &#123;</span><br><span class="line">        [anInvocation <span class="string">invokeWithTarget:</span>anotherObject];</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        [<span class="keyword">super</span> <span class="string">forwardInvocation:</span>anInvocation];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="错误">错误</h3><p>如果动态方法决议和消息转发都没有解决，那只好抛出异常。runtime会发送<code>-doesNotRecognizeSelector:</code>消息，接着抛出<code>NSInvalidArgumentException</code>异常，整个过程也就结束了。</p>
+<p>下面我们用实验证明一下。</p>
+<p>我们调用了MyClass的foo方法，而foo声明了之后并没有实现，然后我们在可能发送异常的地方打个断点，运行到断点处的时候，我们在控制台输入<code>call (void)instrumentObjcMessageSends(YES)</code>，表示我们要记录之后发送的消息：</p>
+<p><img src="/images/runtime_5.png" alt="runtime_5"></p>
+<p>接着继续执行，程序会抛出异常，然后打开<code>/private/tmp</code>目录，打开最新的以<code>msgSends-pid</code>命名的文件</p>
+<p><img src="/images/runtime_6.png" alt="runtime_6"></p>
+<p>可以看到，依次按照以下顺序发送消息</p>
+<ul>
+<li><code>-resolveInstanceMethod:</code></li>
+<li><code>-forwardingTargetForSelector:</code></li>
+<li><code>-methodSignatureForSelector:</code></li>
+<li><code>-forwardInvocation:</code></li>
+<li><code>-doesNotRecognizeSelector:</code></li>
+</ul>
+<p>这里由于<code>-methodSignatureForSelector:</code>没有获取到有效签名，因此<code>-forwardInvocation:</code>消息并没有发送。</p>
+<p>综上，可以用如下这张图来描述整个过程</p>
+<p><img src="/images/runtime_7.png" alt="runtime_7"></p>
+
             
           </span>
         
@@ -336,7 +518,7 @@
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -377,7 +559,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-count">11</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

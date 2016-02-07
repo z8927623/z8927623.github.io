@@ -208,158 +208,7 @@
             
               
                 
-                <a class="post-title-link" href="/2016/01/19/iOS事件响应机制/" itemprop="url">
-                  iOS事件响应机制
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2016-01-19T00:00:00+08:00" content="2016-01-19">
-              2016-01-19
-            </time>
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/01/19/iOS事件响应机制/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/19/iOS事件响应机制/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <span itemprop="articleBody">
-            
-              <p>学习iOS事件响应机制时候，经常会听到一个词，即<code>hit-testing</code>或者<code>hit-test</code>视图，字面意思理解为敲打测试，实际上，<code>hit-testing</code>是一个过程，是iOS用来确定用户点击的部分在屏幕哪个部位的一个方法，而点击部分所在的视图就是<code>hit-test</code>视图。</p>
-<p>那么当用户触摸屏幕时，iOS是如何确定<code>hit-testing</code>并且最终找到这个<code>hit-testing</code>视图的呢。</p>
-<p>当用户触摸屏幕即响应的事件发生时，<code>UIKit</code>首先会生成一个<code>UIEvent</code>对象，这个对象包含着事件的一些基本信息，包括事件类型、事件发生的时间，然后会将它放入<code>event queue</code>里面。接下来，就是事件从底部向上到顶部找到<code>hit-test</code>视图的过程了。</p>
-<ul>
-<li><code>UIApplication</code>对象从<code>event queue</code>中取出event，然后将它分发给其他对象处理。</li>
-<li>然后<code>UIApplication</code>会先将event发送给<code>UIWindow</code>对象，接下来由window将事件传递到事件发生的那个视图。</li>
-<li>那么window是怎么做的呢，它会自下而上遍历它的子视图，对每个视图调用<code>-hitTest:withEvent:</code>，而该方法会触发<code>-pointInside:withEvent:</code>检查触摸区域是否在该视图边界内，<ul>
-<li>如果在则返回<code>YES</code>，并且<code>-hitTest:withEvent:</code>返回该视图自身，表示当前查找的这个视图是<code>hit-testing</code>视图；</li>
-<li>否则为<code>NO</code>，<code>hitTest:withEvent:</code>返回<code>nil</code>，表示触摸事件并不发生在那个视图上面，那么该视图被抛弃，其所有子视图的<code>hitTest:withEvent:</code>也都返回<code>nil</code>，进而检查其他视图。</li>
-</ul>
-</li>
-<li>如果触摸发生在相关视图上（即<code>pointInside:withEvent:</code>返回<code>YES</code>），那么该视图会再次遍历它的子视图（逆序），对每个子视图调用<code>-hitTest:withEvent:</code>做同样一遍查找过程，直到该视图没有子视图，最终确定那个视图为<code>hit-testing</code>视图，查找<code>hit-testing</code>视图的这个过程就叫做<code>hit-testing</code>。</li>
-</ul>
-<p>找到<code>hit-testing</code>视图之后，它就有机会去处理该事件，如果它不能处理，则事件会沿着响应链继续传递，每个响应者都有机会决定是否去处理事件或者继续传递给下一个响应者，直到找到一个可以处理它的对象或者被丢弃。</p>
-<ul>
-<li><code>hit-testing</code>视图是第一个可以处理事件的，如果它不能处理，则它会将事件传递给它的父视图</li>
-<li>父视图如果不能处理，则它会再次传递给它的父视图</li>
-<li>直到传到最顶端的视图，即直接添加到<code>UIWindow</code>上的那个视图，如果它还不能处理，则它会传递给它的视图控制器</li>
-<li>如果视图控制器也不能处理，那么只能最后传递给window对象了</li>
-<li>如果window对象无法处理，那么它会还给<code>UIApplication</code>对象</li>
-<li>如果<code>UIApplication</code>也不处理，那么该事件就只能被丢弃。</li>
-</ul>
-<p>从以上可以看出，查找<code>hit-test</code>视图的过程是<strong>从下往上</strong>的，而找到之后查找响应者的过程是<strong>自下而上</strong>的。</p>
-<p>接下来通过一个实例来说明一下。</p>
-<p>这个图是苹果文档里的一个图，我用实验证明了一下</p>
-<p><img src="/images/hit-test_1.png" alt="hit-test_1"></p>
-<p>我点击在视图D上面，查看控制台的输出如下</p>
-<p><img src="/images/hit-test_2.png" alt="hit-test_2"></p>
-<p>从图中我们可以看到</p>
-<ol>
-<li><p>由<code>UIApplication</code>分发给<code>UIWindow</code>之后，首先调用<code>UIWindow</code>的<code>-hitTest:withEvent:</code>，进而调用<code>-pointInside:withEvent:</code>，发现触摸在window之内，因此返回<code>YES</code>,<code>-hitTest:withEvent:</code>返回window自身，表示当前<code>hit-test</code>视图是window。</p>
-</li>
-<li><p>遍历window上面的视图，由于window的子视图只有View A，因此调用View A的<code>-pointInside:withEvent:</code>，发现触摸在window之内，因此返回<code>YES</code>,<code>-hitTest:withEvent:</code>返回View A，表示当前<code>hit-test</code>视图是View A。</p>
-</li>
-<li><p>遍历View A上面的视图，这里要注意，ViewA的子视图有两个，分别是View B和View C，通过测试我发现调用的顺序是子视图逆序，即View C是在View B之后加的，</p>
-<ul>
-<li>因此这里先调用View C的<code>-pointInside:withEvent:</code>，发现触摸在View C之内，因此返回<code>YES</code>,<code>-hitTest:withEvent:</code>返回View C，表示当前<code>hit-test</code>视图是View C，因此View B则被忽略。</li>
-<li>倘若这里View B加在View C之后，则会先调用View B</li>
-</ul>
-</li>
-<li><p>接着遍历View C上面的视图，同样的道理，</p>
-<ul>
-<li>先测试View E，发现触摸不在上面，即View E的<code>pointInside:withEvent:</code>返回<code>NO</code>，所以View E的<code>-hitTest:withEvent:</code>返回<code>nil</code></li>
-<li>再测试View D，发现触摸在上面，<code>pointInside:withEvent:</code>返回<code>YES</code>，<code>-hitTest:withEvent:</code>返回View D，表示当前<code>hit-test</code>视图是View D。</li>
-</ul>
-</li>
-<li><p>再次遍历View D上面的子视图，发现已经没有子视图，因此此次点击最终的<code>hit-test</code>视图是View D</p>
-</li>
-</ol>
-<p>不知道大家有没有注意到那个图，<code>hit-testing</code>过程执行了两遍，至于为什么会执行两遍，目前还不清楚。</p>
-<p>了解了<code>hit-testing</code>过程之后，这就很好理解，有时候我们添加一个button在view上面，点击之后无法响应事件的原因了。</p>
-<p>如图，我在View B上添加了一个button，查看button的响应情况</p>
-<p><img src="/images/hit-test_3.png" alt="hit-test_3"></p>
-<p>首先，我点击在button右侧，注意点击的部位必须在View B之内，查看输出情况。</p>
-<p><img src="/images/hit-test_4.png" alt="hit-test_4"></p>
-<p>可以看到，查找View B之后，发现在View B上，然后查找button，发现也在button之上，因此，正常的响应了事件。</p>
-<p>然后，我点击在button左侧，点击在View B之外</p>
-<p><img src="/images/hit-test_5.png" alt="hit-test_5"></p>
-<p>可以看到，View B在检测的时候，发现点击在View B之外，因此<code>-pointInside:withEvent</code>直接返回<code>NO</code>，接着<code>-hitTest:withEvent:</code>返回<code>nil</code>，表示触摸事件并不发生在那个视图上面，则它的所有子视图的<code>-hitTest:withEvent:</code>全部返回<code>nil</code>，因此button并不会响应我们的点击事件。</p>
-<p>这种情况尤其要注意，尤其是我们设置了<code>clipsToBounds</code>为<code>NO</code>的时候。</p>
-<p>那么假如我们想要button继续响应事件呢，只需要在<code>-hitTest:withEvent:</code>方法里修改即可</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ [-hitTest:withEvent:]"</span>, <span class="keyword">self</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将点击的点转化为button自身的坐标</span></span><br><span class="line">    <span class="built_in">CGPoint</span> touchPointInButton = [<span class="keyword">self</span><span class="variable">.button</span> convertPoint:point fromView:<span class="keyword">self</span>];</span><br><span class="line">    <span class="comment">// 如果点击的点在button之内，则返回</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">CGRectContainsPoint</span>(<span class="keyword">self</span><span class="variable">.button</span><span class="variable">.bounds</span>, touchPointInButton)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span><span class="variable">.button</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> [<span class="keyword">super</span> hitTest:point withEvent:event];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们所做的就是判断点击的点是否在button之内，如果是，则返回button为<code>hit-test</code>视图，否则，调用super处理。</p>
-<p>因此，通过<code>hit-testing</code>我们可以改变事件的分发，可以完成诸如点击A而让B响应的特殊情况，进而满足一些特殊的需求。</p>
-
-            
-          </span>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2015/12/25/记一次Code Review/" itemprop="url">
+                <a class="post-title-link" href="/2015/12/25/记一次Code_Review/" itemprop="url">
                   记一次Code Review
                 </a>
               
@@ -381,8 +230,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/12/25/记一次Code Review/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/25/记一次Code Review/" itemprop="commentsCount"></span>
+                <a href="/2015/12/25/记一次Code_Review/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/25/记一次Code_Review/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -501,7 +350,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -542,7 +391,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-count">11</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

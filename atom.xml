@@ -4,7 +4,7 @@
   <subtitle><![CDATA[野瑶瑶的技术博客]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com/"/>
-  <updated>2016-02-06T07:13:34.000Z</updated>
+  <updated>2016-02-06T16:34:51.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -13,74 +13,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title><![CDATA[额...runloop]]></title>
-    <link href="http://yoursite.com/2016/02/05/%E9%A2%9D...runloop/"/>
-    <id>http://yoursite.com/2016/02/05/额...runloop/</id>
-    <published>2016-02-04T16:00:00.000Z</published>
-    <updated>2016-02-06T07:13:34.000Z</updated>
-    <content type="html"><![CDATA[<p>run loop的目的是让我们的线程保持繁忙，同时当线程没事儿可做的时候使之休眠。</p>
-<p>主线程的run loop已经在程序启动的时候作为启动进程运行，而子线程，我们需要手动使run loop运行。</p>
-<p>run loop就像它的名字一样，是个循环，那它是什么循环呢，和线程有关，线程利用它去响应事件的</p>
-<p>run loop接收两种类型的事件源：  </p>
-<ul>
-<li>输入源（<code>Input sources</code>）：投递异步事件，通常是从另一个线程或者另一个app过来的。</li>
-<li>Timer源（<code>Timer sources</code>）：投递同步事件，通常出现在timer运行的时候</li>
-</ul>
-<p>下面这张图是run loop的运行状态图</p>
-<p><img src="../images/runloop_1.png" alt="runloop_1"></p>
-<p>Input sources投递异步事件去响应handlers，并且使<code>runUntilDate:</code>方法退出<br>Timer sources投递timer事件处理但是不会造成run loop退出</p>
-<p>除了处理输入源，run loop也可以对自己的行为生成通知，我们可以注册<code>run-loop observers</code>，然后我们就可以收到这些通知，然后在线程上做一些自己的事情，我们可以使用<code>Core Foundation</code>去安装观察者在我们的线程上。</p>
-<h3 id="Run_Loop_Modes">Run Loop Modes</h3><p>当我们显式或者隐式运行run loop，都必须指定一个<code>model</code>，当指定mode之后，只有和该mode相关的事件源才能被投递到线程去处理，其他不相关的事件源只能被挂起，直到run loop回到和该事件源相关的mode。</p>
-<table>
-<thead>
-<tr>
-<th>Mode</th>
-<th style="text-align:left">Name</th>
-<th style="text-align:left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Default</code></td>
-<td style="text-align:left"><code>NSDefaultRunLoopMode</code>(Cocoa)  <code>kCFRunLoopDefaultMode</code>(Core Foundation)</td>
-<td style="text-align:left">默认模式，大部分情况我们使用这个模式就OK了</td>
-</tr>
-<tr>
-<td><code>Connection</code></td>
-<td style="text-align:left"><code>NSConnectionReplyMode</code>(Cocoa)</td>
-<td style="text-align:left">这个模式是给NSConnection处理网络回调用的，我们几乎用不到</td>
-</tr>
-<tr>
-<td><code>Modal</code></td>
-<td style="text-align:left"><code>NSModalPanelRunLoopMode</code>(Cocoa)</td>
-<td style="text-align:left">模态模式，Cocoa使用这个模式给模态视图投递事件</td>
-</tr>
-<tr>
-<td><code>Event tracking</code></td>
-<td style="text-align:left"><code>NSEventTrackingRunLoopMode</code>(Cocoa)</td>
-<td style="text-align:left">这个模式和iOS的流畅不无关系，当我们拖动鼠标或者滑动scrollView的时候，处于这个模式下的run loop会限制其他事件</td>
-</tr>
-<tr>
-<td><code>Common modes</code></td>
-<td style="text-align:left"><code>NSRunLoopCommonModes</code>(Cocoa)  <code>kCFRunLoopCommonModes</code>(Core Foundation)</td>
-<td style="text-align:left">通用模式，如果run loop运行在这个模式下，等于运行在以上所有模式下</td>
-</tr>
-</tbody>
-</table>
-<h3 id="Input_Sources">Input Sources</h3><p>input sources异步投递事件到线程，</p>
-<p>当我们在子线程上执行例如<code>-performSelector:withObject:afterDelay:</code>等方法时，该线程必须有一个活跃的run loop，因为这是我们自己创建的，我们必须手动去启动线程</p>
-<p>run loop会在每次循环的时候处理全部入队列的selector calls，而不是在每个循环只处理一个</p>
-<h3 id="Timer_Sources">Timer Sources</h3><p>timer关联到run loop的模式，当timer不再它所安排运行的那个mode时，它并不会被触发直到run loop运行在自己安排的那个线程。相似的，如果timer在一个run loop执行但还没有执行完的时候触发，那么它必须等到下次run loop循环重新触发，如果run loop根本没有运行，那么timer就不会被触发</p>
-<h3 id="Run_Loop_Observers">Run Loop Observers</h3>]]></content>
-    <summary type="html">
-    <![CDATA[<p>run loop的目的是让我们的线程保持繁忙，同时当线程没事儿可做的时候使之休眠。</p>
-<p>主线程的run loop已经在程序启动的时候作为启动进程运行，而子线程，我们需要手动使run loop运行。</p>
-<p>run loop就像它的名字一样，是个循环，那它是什]]>
-    </summary>
-    
-  </entry>
   
   <entry>
     <title><![CDATA[Objective-C Runtime之实现]]></title>
@@ -402,91 +334,6 @@
   
   <entry>
     <title><![CDATA[记一次Code Review]]></title>
-    <link href="http://yoursite.com/2015/12/25/%E8%AE%B0%E4%B8%80%E6%AC%A1Code%20Review/"/>
-    <id>http://yoursite.com/2015/12/25/记一次Code Review/</id>
-    <published>2015-12-24T16:00:00.000Z</published>
-    <updated>2016-02-06T06:47:31.000Z</updated>
-    <content type="html"><![CDATA[<ul>
-<li><p>首先是代码规范，我理解的代码规范，也就是代码风格吧，除了可读性强以外，最重要的就是代码看起来要大方，所谓”人靠衣装”，代码也是有颜值的，因为可能以后维护代码的人就不是你了，人家见代码如见人，万一看到个很小气的代码，可能会觉得写代码的人都和代码一样”小气”了。代码规范主要有以下几点：</p>
-<ul>
-<li><p><strong>空格</strong>，该空的空，不该空的不要空，这是最重要的一点，也是写出漂亮代码最重要的一个点。具体如下</p>
-<ul>
-<li><code>#import &quot;filename.h&quot;</code>或者<code>#import &lt;framework/filename.h&gt;</code> import的右边必须空1格</li>
-<li><p><code>if else</code>。最佳的应该这样，左右花括号都得加空格</p>
-<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">case</span>) &#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (other <span class="keyword">case</span>) &#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>方法名。左括号旁需要加一个空格</p>
-  <figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby"> (void)myFoo</span><br><span class="line"></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  而不是这样或其他变种</p>
-  <figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby">(void) myFoo</span><br><span class="line"></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>属性声明。左右括号和逗号旁星号前面都是一个空格<br><code>@property (nonatomic, strong) NSString *name;</code></p>
-</li>
-<li>协议定义。协议名左右两边都得有空格<br><code>@protocol MyProtocol &lt;NSObject&gt;</code></li>
-</ul>
-</li>
-<li><p><strong>换行</strong>，一个部分写完了，最好用两个回车隔开或者使用<code>#pragma mark -</code>或者我个人比较喜欢的<code>////////////</code>，这样一个文件内部各个代码的功能就比较清楚了。具体如下：</p>
-<ul>
-<li>头文件下至少空一行</li>
-<li><code>extension</code>和实现之间空一行</li>
-<li>第一个方法和<code>@implementation</code>之间空一行</li>
-<li>最后一个方法和<code>@end</code>之间空一行</li>
-<li>各个函数之间至少空一行</li>
-</ul>
-<p>综上写个示例</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">"filename.h"</span></span></span><br><span class="line">	</span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyClass</span> ()</span></span><br><span class="line">	</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyClass</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)firstFoo</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)lastFoo</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>#import &lt;framework/filename.h&gt;</code>与<code>#import &quot;filename.h&quot;</code>，系统、<code>CocoaPod</code>、第三方库的头文件，要用<code>#import &lt;framework/filename.h&gt;</code>或者<code>#import &lt;pods_name/filename.h&gt;</code>，这样人家一眼就看出来了你这个文件是自己加的还是外部引入的。</p>
-</li>
-<li>空函数，去掉多余的函数，比如Xcode自动为我们生成的<code>- drawRect:</code>、<code>- didReceiveMemoryWarning</code>等等，如果没用到，确保删掉，尽量做到写的代码都是有用的。</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>VC自定义初始化方法时不要传太多参数，如果必须，最好封装成一个数据结构，字典或者数组都行。比如在<code>CNNLSelectTypesViewController</code>中的</p>
-  <figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-(instancetype)initWithType:(<span class="type">SelectType</span>) <span class="typedef"><span class="keyword">type</span> brand:<span class="container">(<span class="type">NSString</span> *)</span>brand series:<span class="container">(<span class="type">NSString</span> *)</span>series callBack:<span class="container">(<span class="type">SelectCallBack</span>)</span>callback defaultSelect:<span class="container">(<span class="type">NSInteger</span>)</span>defaultSelect withTitle:<span class="container">(<span class="type">NSString</span> *)</span>title;</span></span><br></pre></td></tr></table></figure>
-<p>  一下子传了6个参数，既不美观又不方便外部调用，对于这种，可以改成这样，将所有参数放在字典里再传入</p>
-  <figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="pp">- <span class="params">(instancetype)</span>initWithDataSource:<span class="params">(<span class="variable">NSDictionary</span> *)</span>dataSource callBack:<span class="params">(<span class="variable">SelectCallBack</span>)</span>callback;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>之前我们为了分辨是外部方法还是内部私有方法，一般是使用<code>#pragma mark - Private</code>或者<code>#pragma mark - Public</code>等编译指令，这个确实蛮方便的，但是假如在一个方法内部调用了另一个方法，我们需要知道被调用的方法到底是私有的还是共有的，这个时候我们必须跳转到相应的方法来查看它的作用域。这样也行，但是有个更好的方法，就是在私有方法之前加个下划线前缀。</p>
-  <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">-</span> (void)<span class="tag">publicFoo</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr_selector">[self _privateFoo]</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">-</span> (void)<span class="tag">_privateFoo</span></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  这样既避免了写编译指令带来的麻烦，而且可以非常直观的查看每个方法的作用域。而这个也恰恰是苹果所做的，比如下面这个UIViewController的头文件</p>
-<p>  <img src="/images/codereview_1.png" alt="codereview_1"></p>
-</li>
-<li><p>应对64位造成的warning。自从5S发布之后，苹果系列产品跨入了64位时代，然后速度变快了，你的Xcode的warning也变多了。最明显的地方，就是<code>%d</code>,<code>%f</code>了，为了让你的代码在64和32通吃，建议使用NSNumber也就是使用<code>@()</code>指令。比如下面这行代码，来自<code>CNNLCityListView</code></p>
-  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="keyword">self</span><span class="variable">.selectIndexAry</span> removeObject:[<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%d~0-0"</span>, <span class="keyword">self</span><span class="variable">.currentProvinceIndex</span><span class="variable">.row</span>]];</span><br></pre></td></tr></table></figure>
-<p>  当我在5上编译运行时候是没问题的，但是在6上就会有warning了，提示转换成<code>%ld</code>。如果我们改成这样</p>
-  <figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="collection">[self.selectIndexAry removeObject:<span class="collection">[NSString stringWithFormat:@<span class="string">"%@~0-0"</span>, @<span class="list">(<span class="keyword">self.currentProvinceIndex.row</span>)</span>]</span>]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
-<p>  则不管在5和6上都不会有warning了，因为类型转换交给系统去处理了而不需要我们自己关心。类似的还有以下建议</p>
-<ul>
-<li><code>int</code> -&gt; <code>NSInteger</code></li>
-<li><code>unsigned</code> -&gt; <code>NSUInteger</code></li>
-<li><code>float</code> -&gt; <code>CGFloat</code></li>
-<li><code>NSLog(@&quot;value: %d&quot;, i)</code> -&gt; <code>NSLog(@&quot;value: %@&quot;, @(i))</code></li>
-<li>枚举，使用<code>NS_ENUM</code>指定类型而不是传统的<code>enum</code></li>
-</ul>
-</li>
-<li><p><code>autolayout</code>的正确使用。关于约束的更新，根据autolayout官方文档，当view更新约束的时候，它会自动调用<code>- updateConstraints</code>，</p>
-<blockquote>
-<p>Override this to adjust your special constraints during a constraints update pass</p>
-</blockquote>
-<p>  因此，我们需要覆写<code>- updateConstraints</code>，然后在需要更新的地方调用</p>
-  <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">[self setNeedsUpdateConstraints]</span><span class="comment">;</span></span><br><span class="line"><span class="title">[self updateConstraintsIfNeeded]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
-<p>  表示马上更新约束。</p>
-<p>  例子：</p>
-  <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">-</span> (void)<span class="tag">updateConstraints</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr_selector">[self.detectLevelLabel mas_updateConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line"></span><br><span class="line">    &#125;]</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attr_selector">[super updateConstraints]</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">-</span> (void)<span class="tag">configureSomething</span>:(id)<span class="tag">item</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// code ...</span></span><br><span class="line">  <span class="comment">// need update constraints</span></span><br><span class="line"></span><br><span class="line">  <span class="attr_selector">[self setNeedsUpdateConstraints]</span>;</span><br><span class="line">  <span class="attr_selector">[self updateConstraintsIfNeeded]</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-]]></content>
-    <summary type="html">
-    <![CDATA[<ul>
-<li><p>首先是代码规范，我理解的代码规范，也就是代码风格吧，除了可读性强以外，最重要的就是代码看起来要大方，所谓”人靠衣装”，代码也是有颜值的，因为可能以后维护代码的人就不是你了，人家见代码如见人，万一看到个很小气的代码，可能会觉得写代码的人都和代码一样”小气”了]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[记一次Code Review]]></title>
     <link href="http://yoursite.com/2015/12/25/%E8%AE%B0%E4%B8%80%E6%AC%A1Code_Review/"/>
     <id>http://yoursite.com/2015/12/25/记一次Code_Review/</id>
     <published>2015-12-24T16:00:00.000Z</published>
@@ -575,7 +422,7 @@
     <link href="http://yoursite.com/2015/11/28/%E4%BD%A0%E5%BF%85%E9%A1%BB%E4%BA%86%E8%A7%A3%E7%9A%84Xcode%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/"/>
     <id>http://yoursite.com/2015/11/28/你必须了解的Xcode调试技巧/</id>
     <published>2015-11-27T16:00:00.000Z</published>
-    <updated>2016-02-06T06:54:59.000Z</updated>
+    <updated>2016-02-06T06:55:00.000Z</updated>
     <content type="html"><![CDATA[<p>我们开发iOS或者OSX程序时候，调试是避免不了的，而调试最大的一个利器就是断点。接下来我介绍一下Xcode一些常用的和不常用的技巧。</p>
 <h4 id="条件断点">条件断点</h4><p>如下图，这是个最基本的断点，我们写了一个0到10000的循环，需要在循环到5000的时候打个断点。</p>
 <p><img src="/images/debug_1.png" alt="debug_1"></p>
