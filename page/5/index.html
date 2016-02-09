@@ -314,8 +314,8 @@
             
               
                 
-                <a class="post-title-link" href="/2015/09/06/使用clang语法消除编译警告/" itemprop="url">
-                  使用clang语法消除编译警告
+                <a class="post-title-link" href="/2015/09/07/关于NSURLCache/" itemprop="url">
+                  关于NSURLCache
                 </a>
               
             
@@ -325,8 +325,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2015-09-06T00:00:00+08:00" content="2015-09-06">
-              2015-09-06
+            <time itemprop="dateCreated" datetime="2015-09-07T00:00:00+08:00" content="2015-09-07">
+              2015-09-07
             </time>
           </span>
 
@@ -336,8 +336,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/09/06/使用clang语法消除编译警告/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/06/使用clang语法消除编译警告/" itemprop="commentsCount"></span>
+                <a href="/2015/09/07/关于NSURLCache/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/07/关于NSURLCache/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -359,63 +359,32 @@
         
           <span itemprop="articleBody">
             
-              <p>自己总结了一些常用的clang语法用于消除Xcode警告</p>
-<p><em>用法</em></p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic push</span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic ignored <span class="string">"-Wundeclared-selector"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// your code</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic pop</span></span><br></pre></td></tr></table></figure>
-<table>
-<thead>
-<tr>
-<th>Warning</th>
-<th style="text-align:left">Message</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-Warc-performSelector-leaks</code></td>
-<td style="text-align:left"><code>performSelector</code>可能会造成内存泄露因为无法知道具体的selector</td>
-</tr>
-<tr>
-<td><code>-Wunreachable-code&quot;</code></td>
-<td style="text-align:left">无法执行到的代码</td>
-</tr>
-<tr>
-<td><code>-Wunused-function</code></td>
-<td style="text-align:left">没有使用的函数</td>
-</tr>
-<tr>
-<td><code>-Wdeprecated-implementations</code></td>
-<td style="text-align:left">标记为已经废弃的方法</td>
-</tr>
-<tr>
-<td><code>-Wdeprecated-declarations</code></td>
-<td style="text-align:left">消除使用废弃方法警告</td>
-</tr>
-<tr>
-<td><code>-Wreceiver-is-weak</code>和<code>-Warc-repeated-use-of-weak</code></td>
-<td style="text-align:left">接受者是weak属性</td>
-</tr>
-<tr>
-<td><code>-Wundeclared-selector</code></td>
-<td style="text-align:left">未定义的selector</td>
-</tr>
-<tr>
-<td><code>-Wgnu</code></td>
-<td style="text-align:left">未知</td>
-</tr>
-<tr>
-<td><code>-Wreturn-type</code></td>
-<td style="text-align:left">control reaches end of non-void function</td>
-</tr>
-<tr>
-<td><code>-Wimplicit-function-declaration</code></td>
-<td style="text-align:left">implicit declaration of function</td>
-</tr>
-<tr>
-<td><code>-Wconversion</code></td>
-<td style="text-align:left">消除精度丢失warning</td>
-</tr>
-</tbody>
-</table>
+              <p>NSURLCache每次请求的时候，按以下步骤进行</p>
+<ol>
+<li><code>connection:willSendRequest:redirectResponse:</code>将要发送请求</li>
+<li>依照缓存政策来决定<ul>
+<li>如果响应的缓存政策允许，即需要从缓存中获取数据，比如<code>NSURLRequestUseProtocolCachePolicy</code>、<code>NSURLRequestReturnCacheDataElseLoad</code>、会触发<code>NSURLCache</code>的<code>cachedResponseForRequest:</code>方法查找该请求对应的缓存，到<em>第3步</em></li>
+<li>如果缓存政策为不需要缓存，只需要从原始地址加载，如<code>NSURLRequestReloadIgnoringLocalCacheData</code>，则不会触发<code>NSURLCache</code>的<code>cachedResponseForRequest:</code>，直接跳到<em>第4步</em></li>
+</ul>
+</li>
+<li>如果找到了缓存数据，则不请求网络直接返回本地数据。接下来依次<ul>
+<li><code>connection:didReceiveResponse:</code></li>
+<li><code>connection:didReceiveData</code></li>
+<li><code>connectionDidFinishLoading:</code></li>
+</ul>
+</li>
+<li>如果没找到，则从网络请求。接下来依次<ul>
+<li><code>connection:didReceiveResponse:</code></li>
+<li><code>connection:didReceiveData</code></li>
+<li>依照响应头部字段来决定<ul>
+<li>如果响应头部有缓存相关的字段，如<code>cache-control</code>，则会调用<code>connection:willCacheResponse:</code>，然后<code>NSURLCache</code>的<code>storeCachedResponse:forRequest:</code>方法存储缓存</li>
+<li>如果没有相关字段，<code>connection:willCacheResponse:</code>不会调用</li>
+</ul>
+</li>
+<li><code>connectionDidFinishLoading:</code>或者<code>connection:didFailWithError:</code></li>
+</ul>
+</li>
+</ol>
 
             
           </span>
@@ -483,7 +452,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

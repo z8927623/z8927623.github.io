@@ -203,6 +203,150 @@
             
               
                 
+                <a class="post-title-link" href="/2015/09/06/使用clang语法消除编译警告/" itemprop="url">
+                  使用clang语法消除编译警告
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-09-06T00:00:00+08:00" content="2015-09-06">
+              2015-09-06
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/09/06/使用clang语法消除编译警告/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/06/使用clang语法消除编译警告/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <span itemprop="articleBody">
+            
+              <p>自己总结了一些常用的clang语法用于消除Xcode警告</p>
+<p><em>用法</em></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic push</span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic ignored <span class="string">"-Wundeclared-selector"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// your code</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic pop</span></span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>Warning</th>
+<th style="text-align:left">Message</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-Warc-performSelector-leaks</code></td>
+<td style="text-align:left"><code>performSelector</code>可能会造成内存泄露因为无法知道具体的selector</td>
+</tr>
+<tr>
+<td><code>-Wunreachable-code&quot;</code></td>
+<td style="text-align:left">无法执行到的代码</td>
+</tr>
+<tr>
+<td><code>-Wunused-function</code></td>
+<td style="text-align:left">没有使用的函数</td>
+</tr>
+<tr>
+<td><code>-Wdeprecated-implementations</code></td>
+<td style="text-align:left">标记为已经废弃的方法</td>
+</tr>
+<tr>
+<td><code>-Wdeprecated-declarations</code></td>
+<td style="text-align:left">消除使用废弃方法警告</td>
+</tr>
+<tr>
+<td><code>-Wreceiver-is-weak</code>和<code>-Warc-repeated-use-of-weak</code></td>
+<td style="text-align:left">接受者是weak属性</td>
+</tr>
+<tr>
+<td><code>-Wundeclared-selector</code></td>
+<td style="text-align:left">未定义的selector</td>
+</tr>
+<tr>
+<td><code>-Wgnu</code></td>
+<td style="text-align:left">未知</td>
+</tr>
+<tr>
+<td><code>-Wreturn-type</code></td>
+<td style="text-align:left">control reaches end of non-void function</td>
+</tr>
+<tr>
+<td><code>-Wimplicit-function-declaration</code></td>
+<td style="text-align:left">implicit declaration of function</td>
+</tr>
+<tr>
+<td><code>-Wconversion</code></td>
+<td style="text-align:left">消除精度丢失warning</td>
+</tr>
+</tbody>
+</table>
+
+            
+          </span>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2015/07/03/创建私有pod/" itemprop="url">
                   创建私有Pod（from车牛）
                 </a>
@@ -357,7 +501,7 @@ cheniuTestPod passed validation
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
