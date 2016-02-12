@@ -69,7 +69,7 @@
 <meta property="og:image" content="http://yoursite.com/images/runloop_1.png">
 <meta property="og:image" content="http://yoursite.com/images/runloop_2.png">
 <meta property="og:image" content="http://yoursite.com/images/runloop_3.png">
-<meta property="og:updated_time" content="2016-02-12T15:29:36.000Z">
+<meta property="og:updated_time" content="2016-02-12T15:53:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="额...runloop">
 <meta name="twitter:description" content="啥是run looprun loop就是当我们线程有任务的时候唤醒它，然后将任务分配给它去处理；当没有任务的时候，使线程沉睡，节省资源。
@@ -278,39 +278,39 @@
 <table>
 <thead>
 <tr>
-<th>Mode</th>
+<th style="text-align:left">Mode</th>
 <th style="text-align:left">Name</th>
 <th style="text-align:left">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>Initialization</code></td>
+<td style="text-align:left"><code>Initialization</code></td>
 <td style="text-align:left"><code>UIInitializationRunLoopMode</code></td>
 <td style="text-align:left">启动时候的mode</td>
 </tr>
 <tr>
-<td><code>Default</code></td>
+<td style="text-align:left"><code>Default</code></td>
 <td style="text-align:left"><code>NSDefaultRunLoopMode</code>(Cocoa或Cocoa Touch)  <code>kCFRunLoopDefaultMode</code>(Core Foundation)</td>
 <td style="text-align:left">默认模式，该mode处理输入源（网络事件除外），大部分情况我们使用这个模式就OK了</td>
 </tr>
 <tr>
-<td><code>Connection</code></td>
+<td style="text-align:left"><code>Connection</code></td>
 <td style="text-align:left"><code>NSConnectionReplyMode</code>(Cocoa)</td>
 <td style="text-align:left">这个模式是给NSConnection处理网络回调用的</td>
 </tr>
 <tr>
-<td><code>Event tracking</code></td>
+<td style="text-align:left"><code>Event tracking</code></td>
 <td style="text-align:left"><code>NSEventTrackingRunLoopMode</code>(Cocoa) <code>UITrackingRunLoopMode</code>(Cocoa Touch)</td>
 <td style="text-align:left">这个模式和iOS的流畅不无关系，当我们滑动scrollView的时候，处于这个模式下的run loop会挂起其他事件而只处理滚动相关事件</td>
 </tr>
 <tr>
-<td><code>Modal</code></td>
+<td style="text-align:left"><code>Modal</code></td>
 <td style="text-align:left"><code>NSModalPanelRunLoopMode</code>(Cocoa)</td>
 <td style="text-align:left">模态模式，Cocoa使用这个模式给模态视图投递事件</td>
 </tr>
 <tr>
-<td><code>Common modes</code></td>
+<td style="text-align:left"><code>Common modes</code></td>
 <td style="text-align:left"><code>NSRunLoopCommonModes</code>(Cocoa或Cocoa Touch)  <code>kCFRunLoopCommonModes</code>(Core Foundation)</td>
 <td style="text-align:left">通用模式，如果run loop运行在这个模式下，等于运行在以上所有模式下</td>
 </tr>

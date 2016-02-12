@@ -103,7 +103,7 @@
     <link href="http://yoursite.com/2016/02/03/Objective-C%20Runtime%E4%B9%8B%E6%B6%88%E6%81%AF/"/>
     <id>http://yoursite.com/2016/02/03/Objective-C Runtime之消息/</id>
     <published>2016-02-02T16:00:00.000Z</published>
-    <updated>2016-02-12T15:51:34.000Z</updated>
+    <updated>2016-02-12T15:52:30.000Z</updated>
     <content type="html"><![CDATA[<h3 id="Method&amp;Message">Method&amp;Message</h3><p>什么是Method？  </p>
 <p>方法就是一个类中有名字的一串代码，平常我们写的<br><code>- (int)func:(NString *)str { ... }</code>就是一个方法，但是它在编译的时候会被转换成C函数调用，<br><code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>，也就是说，所谓的方法实际上就是C函数。</p>
 <p>从<code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>就可以明白为什么我们可以使用<code>self</code>和<code>_cmd</code>，因为他们在源码中是隐藏的，self代表着receiver，_cmd代表调用选择器selector。</p>
@@ -193,8 +193,8 @@
 <p>这里由于<code>-methodSignatureForSelector:</code>没有获取到有效签名，因此<code>-forwardInvocation:</code>消息并没有发送。</p>
 <p>综上，可以用如下这张图来描述整个过程</p>
 <p><img src="/images/runtime_7.png" alt="runtime_7"></p>
-<h3 id="参考链接">参考链接</h3><p><em>Objective-C Runtime Programming Guide</em>: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html</a></p>
-<p><em>Objective-C Runtime Reference</em>: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/</a></p>
+<h3 id="参考链接">参考链接</h3><p>Objective-C Runtime Programming Guide: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html</a></p>
+<p>Objective-C Runtime Reference: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/</a></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<h3 id="Method&amp;Message">Method&amp;Message</h3><p>什么是Method？  </p>
@@ -905,60 +905,60 @@
     <link href="http://yoursite.com/2015/09/06/%E4%BD%BF%E7%94%A8clang%E8%AF%AD%E6%B3%95%E6%B6%88%E9%99%A4%E7%BC%96%E8%AF%91%E8%AD%A6%E5%91%8A/"/>
     <id>http://yoursite.com/2015/09/06/使用clang语法消除编译警告/</id>
     <published>2015-09-05T16:00:00.000Z</published>
-    <updated>2016-02-06T06:59:12.000Z</updated>
+    <updated>2016-02-12T15:54:13.000Z</updated>
     <content type="html"><![CDATA[<p>自己总结了一些常用的clang语法用于消除Xcode警告</p>
 <p><em>用法</em></p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic push</span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic ignored <span class="string">"-Wundeclared-selector"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// your code</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#<span class="keyword">pragma</span> clang diagnostic pop</span></span><br></pre></td></tr></table></figure>
 <table>
 <thead>
 <tr>
-<th>Warning</th>
+<th style="text-align:left">Warning</th>
 <th style="text-align:left">Message</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>-Warc-performSelector-leaks</code></td>
+<td style="text-align:left"><code>-Warc-performSelector-leaks</code></td>
 <td style="text-align:left"><code>performSelector</code>可能会造成内存泄露因为无法知道具体的selector</td>
 </tr>
 <tr>
-<td><code>-Wunreachable-code&quot;</code></td>
+<td style="text-align:left"><code>-Wunreachable-code&quot;</code></td>
 <td style="text-align:left">无法执行到的代码</td>
 </tr>
 <tr>
-<td><code>-Wunused-function</code></td>
+<td style="text-align:left"><code>-Wunused-function</code></td>
 <td style="text-align:left">没有使用的函数</td>
 </tr>
 <tr>
-<td><code>-Wdeprecated-implementations</code></td>
+<td style="text-align:left"><code>-Wdeprecated-implementations</code></td>
 <td style="text-align:left">标记为已经废弃的方法</td>
 </tr>
 <tr>
-<td><code>-Wdeprecated-declarations</code></td>
+<td style="text-align:left"><code>-Wdeprecated-declarations</code></td>
 <td style="text-align:left">消除使用废弃方法警告</td>
 </tr>
 <tr>
-<td><code>-Wreceiver-is-weak</code>和<code>-Warc-repeated-use-of-weak</code></td>
+<td style="text-align:left"><code>-Wreceiver-is-weak</code>和<code>-Warc-repeated-use-of-weak</code></td>
 <td style="text-align:left">接受者是weak属性</td>
 </tr>
 <tr>
-<td><code>-Wundeclared-selector</code></td>
+<td style="text-align:left"><code>-Wundeclared-selector</code></td>
 <td style="text-align:left">未定义的selector</td>
 </tr>
 <tr>
-<td><code>-Wgnu</code></td>
+<td style="text-align:left"><code>-Wgnu</code></td>
 <td style="text-align:left">未知</td>
 </tr>
 <tr>
-<td><code>-Wreturn-type</code></td>
+<td style="text-align:left"><code>-Wreturn-type</code></td>
 <td style="text-align:left">control reaches end of non-void function</td>
 </tr>
 <tr>
-<td><code>-Wimplicit-function-declaration</code></td>
+<td style="text-align:left"><code>-Wimplicit-function-declaration</code></td>
 <td style="text-align:left">implicit declaration of function</td>
 </tr>
 <tr>
-<td><code>-Wconversion</code></td>
+<td style="text-align:left"><code>-Wconversion</code></td>
 <td style="text-align:left">消除精度丢失warning</td>
 </tr>
 </tbody>
@@ -977,7 +977,7 @@
     <link href="http://yoursite.com/2015/07/18/%E9%A2%9D...runloop/"/>
     <id>http://yoursite.com/2015/07/18/额...runloop/</id>
     <published>2015-07-17T16:00:00.000Z</published>
-    <updated>2016-02-12T15:29:36.000Z</updated>
+    <updated>2016-02-12T15:53:56.000Z</updated>
     <content type="html"><![CDATA[<h3 id="啥是run_loop">啥是run loop</h3><p>run loop就是当我们线程有任务的时候唤醒它，然后将任务分配给它去处理；当没有任务的时候，使线程沉睡，节省资源。</p>
 <p>每个线程都已经自动关联了run loop，我们不需要去创建它们。但是，并不是每个线程的run loop都是已经运行着的：</p>
 <ul>
@@ -1006,39 +1006,39 @@
 <table>
 <thead>
 <tr>
-<th>Mode</th>
+<th style="text-align:left">Mode</th>
 <th style="text-align:left">Name</th>
 <th style="text-align:left">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>Initialization</code></td>
+<td style="text-align:left"><code>Initialization</code></td>
 <td style="text-align:left"><code>UIInitializationRunLoopMode</code></td>
 <td style="text-align:left">启动时候的mode</td>
 </tr>
 <tr>
-<td><code>Default</code></td>
+<td style="text-align:left"><code>Default</code></td>
 <td style="text-align:left"><code>NSDefaultRunLoopMode</code>(Cocoa或Cocoa Touch)  <code>kCFRunLoopDefaultMode</code>(Core Foundation)</td>
 <td style="text-align:left">默认模式，该mode处理输入源（网络事件除外），大部分情况我们使用这个模式就OK了</td>
 </tr>
 <tr>
-<td><code>Connection</code></td>
+<td style="text-align:left"><code>Connection</code></td>
 <td style="text-align:left"><code>NSConnectionReplyMode</code>(Cocoa)</td>
 <td style="text-align:left">这个模式是给NSConnection处理网络回调用的</td>
 </tr>
 <tr>
-<td><code>Event tracking</code></td>
+<td style="text-align:left"><code>Event tracking</code></td>
 <td style="text-align:left"><code>NSEventTrackingRunLoopMode</code>(Cocoa) <code>UITrackingRunLoopMode</code>(Cocoa Touch)</td>
 <td style="text-align:left">这个模式和iOS的流畅不无关系，当我们滑动scrollView的时候，处于这个模式下的run loop会挂起其他事件而只处理滚动相关事件</td>
 </tr>
 <tr>
-<td><code>Modal</code></td>
+<td style="text-align:left"><code>Modal</code></td>
 <td style="text-align:left"><code>NSModalPanelRunLoopMode</code>(Cocoa)</td>
 <td style="text-align:left">模态模式，Cocoa使用这个模式给模态视图投递事件</td>
 </tr>
 <tr>
-<td><code>Common modes</code></td>
+<td style="text-align:left"><code>Common modes</code></td>
 <td style="text-align:left"><code>NSRunLoopCommonModes</code>(Cocoa或Cocoa Touch)  <code>kCFRunLoopCommonModes</code>(Core Foundation)</td>
 <td style="text-align:left">通用模式，如果run loop运行在这个模式下，等于运行在以上所有模式下</td>
 </tr>
