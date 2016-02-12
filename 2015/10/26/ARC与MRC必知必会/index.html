@@ -62,7 +62,7 @@ Autorelease pool会自动管理对象的生命周期，每个发送autorelease�
 <meta property="og:description" content="我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫ɑ:k，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。
 ARC下的autorelease poolARC下最明显的就是对autorelease pool的改进。
 Autorelease pool会自动管理对象的生命周期，每个发送autorelease消息的对象不会马上被释放，它们会被加入到NSAutoreleas">
-<meta property="og:updated_time" content="2016-02-12T15:49:43.000Z">
+<meta property="og:updated_time" content="2016-02-12T15:51:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ARC与MRC必知必会">
 <meta name="twitter:description" content="我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫ɑ:k，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。
@@ -358,10 +358,10 @@ Autorelease pool会自动管理对象的生命周期，每个发送autorelease�
 <li>系统的一些诸如动画之类的block，原因同上</li>
 </ul>
 <h4 id="关于ARC下__block和__weak的区别">关于ARC下<code>__block</code>和<code>__weak</code>的区别</h4><p>ARC下的一些开源库中我们经常能看到<code>__block</code>和<code>__weak</code>一起修饰某个变量，他们两个属性各有各的作用，<code>__weak</code>是为了避免循环引用；<strong>而<code>__block</code>是为了可以修改外部的变量，不是避免循环引用，因为ARC下<code>__block</code>仍然可以retain变量</strong>，不要搞混淆了。</p>
-<h3 id="参考链接">参考链接</h3><p>Transitioning to ARC Release Notes:<a href="https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html</a></p>
-<p>Advanced Memory Management Programming Guide:<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html</a></p>
-<p>NSAutoreleasePool Class Reference:<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSAutoreleasePool_Class/" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSAutoreleasePool_Class/</a></p>
-<p>Objective-C Automatic Reference Counting (ARC):<a href="http://clang.llvm.org/docs/AutomaticReferenceCounting.html" target="_blank" rel="external">http://clang.llvm.org/docs/AutomaticReferenceCounting.html</a></p>
+<h3 id="参考链接">参考链接</h3><p>Transitioning to ARC Release Notes: <a href="https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html</a></p>
+<p>Advanced Memory Management Programming Guide: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html</a></p>
+<p>NSAutoreleasePool Class Reference: <a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSAutoreleasePool_Class/" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSAutoreleasePool_Class/</a></p>
+<p>Objective-C Automatic Reference Counting (ARC): <a href="http://clang.llvm.org/docs/AutomaticReferenceCounting.html" target="_blank" rel="external">http://clang.llvm.org/docs/AutomaticReferenceCounting.html</a></p>
 </span>
       
     </div>
