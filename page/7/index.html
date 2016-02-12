@@ -55,7 +55,7 @@
 <meta name="description">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Wild Yaoyao's blog">
-<meta property="og:url" content="http://yoursite.com/archives/2015/09/page/2/index.html">
+<meta property="og:url" content="http://yoursite.com/page/7/index.html">
 <meta property="og:site_name" content="Wild Yaoyao's blog">
 <meta property="og:description">
 <meta name="twitter:card" content="summary">
@@ -73,7 +73,7 @@
 </script>
 
 
-  <title> 归档 | Wild Yaoyao's blog </title>
+  <title> Wild Yaoyao's blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -94,7 +94,9 @@
 
 
 
-  <div class="container one-column  page-archive ">
+  <div class="container one-column 
+   page-home 
+">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -172,59 +174,140 @@
       <div class="main-inner">
         <div id="content" class="content">
           
-
-  <section id="posts" class="posts-collapse">
-    <span class="archive-move-on"></span>
-
-    <span class="archive-page-counter">
-      
-      
-      
-        
-      
-      嗯..! 目前共计 13 篇日志。 继续努力。
-    </span>
+  <section id="posts" class="posts-expand">
 
     
 
-      
-      
+    
+    
+
+    
       
 
-      
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
         
-        <div class="collection-title">
-          <h2 class="archive-year motion-element" id="archive-year-2015">2015</h2>
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2015/07/03/创建私有pod/" itemprop="url">
+                  创建私有Pod（from车牛）
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-07-03T00:00:00+08:00" content="2015-07-03">
+              2015-07-03
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/07/03/创建私有pod/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/07/03/创建私有pod/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
         </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
       
       
 
       
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
         
-            <a class="post-title-link" href="/2015/09/06/使用clang语法消除编译警告/" itemprop="url">
-              
-                <span itemprop="name">使用clang语法消除编译警告</span>
-              
-            </a>
+          <span itemprop="articleBody">
+            
+              <p>##Private Pod</p>
+<p>参考文档：<a href="http://blog.wtlucky.com/blog/2015/02/26/create-private-podspec/" target="_blank" rel="external">使用Cocoapods创建私有podspec</a> <a href="https://guides.cocoapods.org/" target="_blank" rel="external">CocoaPods Guides</a></p>
+<p>###建立私有Spec Repo</p>
+<p>车牛Private Spec Repo已经托管在我们自己的gitlab上。可以直接使用<a href="http://git.souche.com/geliang/cheniu_pod.git" target="_blank" rel="external">cheniu_pod</a>，调用下面的命令即可：</p>
+<pre><code>pod repo add cheniu_pod <span class="string">http:</span><span class="comment">//git.souche.com/geliang/cheniu_pod.git</span>
+</code></pre><p>在<code>~/.cocoapods/repos</code>目录下可以看到<code>cheniu_pod</code>目录。</p>
+<p><strong><em>ps:由于使用的是http方式添加的cheniu_pod，所以添加的时候需要输入用户名和密码。</em></strong></p>
+<p>###创建Pod项目</p>
+<p>这里只讲从0开始创建Pod项目，对已经存在的项目Pod化，根据文档自己研究下。创建Pod项目直接在对应的的目录下调用一下命令：</p>
+<pre><code>pod <span class="class"><span class="keyword">lib</span> <span class="title">create</span> <span class="title">cheniuTestPod</span></span>
+</code></pre><p>然后根据提示回答几个简单的设置问题就可以。<strong><em>前缀选择CNN，测试框架随便，反正也不会去用。</em></strong>创建完成之后可以在<code>cheniuTestPod/Pod/Classes 和 Assets</code>下面添加对应的类或者资源文件。在项目的<code>Pods/DevelopmentPods/...</code>中添加进来即可。</p>
+<p>框架写好之后，可以在项目的<code>cheniuTestPod/Example for cheniuTestPod/...</code>中写一下简单的测试代码。</p>
+<p>测试通过之后，在gitlab上面创建自己的repo并把自己的代码提交到远程库中。<strong><em>必须创建tag</em></strong></p>
+<pre><code>git add -A
+git <span class="operator"><span class="keyword">commit</span> -<span class="keyword">m</span> <span class="string">'xxxxxx'</span>
+git remote <span class="keyword">add</span> origin xxxxx
+git tag -<span class="keyword">m</span> <span class="string">'xxxxx'</span> <span class="number">0.1</span><span class="number">.0</span>
+git push -u origin <span class="keyword">master</span> <span class="comment">--tags</span></span>
+</code></pre><p>修改<code>podspec</code>文件，将多余的注释和字段删除。<strong><em>如果你的pod不需要资源文件一定要删掉<code>s.resource_bundles</code>字段，其他字段根据实际情况填写即可。</em></strong> 修改好之后可以做一次简单的验证<code>pod lib lint</code>,当看到</p>
+<pre><code>-&gt; cheniuTestPod (<span class="number">0.1</span><span class="number">.0</span>)
+cheniuTestPod passed validation
+</code></pre><p>时，说明验证是通过的。<strong><em>这里不验证其实也没关系，在你将这个podspec提交到私有Spec Repo中时也会做验证的</em></strong></p>
+<p>###向Spec Repo提交podspec</p>
+<p>按照习惯提交之前要做两件事情</p>
+<ul>
+<li>删除podspec中的多余注释！</li>
+<li>做一次上面提到的验证工作。</li>
+</ul>
+<p>然后使用下面的命令：</p>
+<pre><code><span class="label">pod</span> repo <span class="keyword">push </span>cheniu_pod cheniuTestPod.podspec
+</code></pre><p>完成之后我们可以到<code>~/.cocoapods/repos/cheniu_pod/Specs</code>中找到我们提交的spec，并且可以通过<code>pod search</code>查到我们提交的库。</p>
+<p>###使用私有Pod</p>
+<p>直接在我们自己的<code>Podfile</code>中加入</p>
+<pre><code><span class="title">pod</span> <span class="string">'cheniuTestPod'</span>, <span class="string">'~&gt; 0.1.0'</span>
+</code></pre><p>和source源</p>
+<pre><code><span class="built_in">source</span> <span class="string">'http://git.souche.com/geliang/cheniu_pod.git'</span>
+<span class="built_in">source</span> <span class="string">'https://github.com/CocoaPods/Specs.git'</span>
+</code></pre><p>就可以了。<strong><em>加source非常重要，不然调用<code>pod install</code>时会找不到我们自己的私有库的。</em></strong></p>
+<p>###podspec升级，维护</p>
+<p>维护podsepc，或者采用<code>subspec</code>新功能，参考文档自己摸索。</p>
+<p>###私有的Spec Repo维护</p>
+<p>同样参考文档吧！</p>
+
+            
+          </span>
         
-      </h1>
+      
+    </div>
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2015-09-06T00:00:00+08:00"
-              content="2015-09-06" >
-          09-06
-        </time>
-      </div>
+    <footer class="post-footer">
+      
 
-    </header>
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
   </article>
-
 
 
     
@@ -233,9 +316,8 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/archives/2015/09/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/archives/2015/09/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span>
   </nav>
-
 
 
 
@@ -348,12 +430,6 @@
 
   
   
-  
-    <script type="text/javascript">
-      postMotionOptions = {stagger: 100, drag: true};
-    </script>
-  
-
 
   
     
@@ -397,12 +473,6 @@
   <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
 
   
-  
-    <script type="text/javascript" id="motion.page.archive">
-      $('.archive-year').velocity('transition.slideLeftIn');
-    </script>
-  
-
 
   <script type="text/javascript" src="/js/bootstrap.js"></script>
 

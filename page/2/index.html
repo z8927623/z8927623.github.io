@@ -291,6 +291,8 @@
 <li><code>- (BOOL)conformsToProtocol:(Protocol *)aProtocol;</code></li>
 <li><code>+ (BOOL)conformsToProtocol:(Protocol *)protocol;</code></li>
 </ul>
+<h3 id="参考链接">参考链接</h3><p>Objective-C Runtime Programming Guide: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html</a></p>
+<p>Objective-C Runtime Reference: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/</a></p>
 
             
           </span>
@@ -442,6 +444,7 @@
 <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ [-hitTest:withEvent:]"</span>, <span class="keyword">self</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将点击的点转化为button自身的坐标</span></span><br><span class="line">    <span class="built_in">CGPoint</span> touchPointInButton = [<span class="keyword">self</span><span class="variable">.button</span> convertPoint:point fromView:<span class="keyword">self</span>];</span><br><span class="line">    <span class="comment">// 如果点击的点在button之内，则返回</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">CGRectContainsPoint</span>(<span class="keyword">self</span><span class="variable">.button</span><span class="variable">.bounds</span>, touchPointInButton)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span><span class="variable">.button</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> [<span class="keyword">super</span> hitTest:point withEvent:event];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>我们所做的就是判断点击的点是否在button之内，如果是，则返回button为<code>hit-test</code>视图，否则，调用super处理。</p>
 <p>因此，通过<code>hit-testing</code>我们可以改变事件的分发，可以完成诸如点击A而让B响应的特殊情况，进而满足一些特殊的需求。</p>
+<h3 id="参考链接">参考链接</h3><p>Event Handling Guide for iOS: <a href="https://developer.apple.com/library/prerelease/ios/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/prerelease/ios/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/Introduction/Introduction.html</a></p>
 
             
           </span>
@@ -468,7 +471,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -509,7 +512,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-count">13</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

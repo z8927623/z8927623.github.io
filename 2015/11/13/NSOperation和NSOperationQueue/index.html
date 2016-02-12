@@ -64,7 +64,7 @@ NSInvoc">
 苹果已经默认给我们封装好了两个类，分别是NSInvocationOperation和NSBlockOperation
 
 NSInvoc">
-<meta property="og:updated_time" content="2016-02-06T06:52:17.000Z">
+<meta property="og:updated_time" content="2016-02-12T15:34:05.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NSOperation和NSOperationQueue">
 <meta name="twitter:description" content="NSOperation概述NSOperation是一个抽象的类，包装了处理单个任务所需要的一些数据，代表执行单个任务的一个独立单元。不过尽管它是个抽象类，但是它已经帮我们处理了繁杂的多线程问题，并且可以确保线程安全，因此我们在使用的时候，就可以更专注于自己的业务。
@@ -431,6 +431,8 @@ NSInvoc">
 <li><code>suspended</code></li>
 <li><code>name</code></li>
 </ul>
+<h3 id="参考链接">参考链接</h3><p>Concurrency Programming Guide: <a href="https://developer.apple.com/library/mac/documentation/General/Conceptual/ConcurrencyProgrammingGuide/OperationObjects/OperationObjects.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/General/Conceptual/ConcurrencyProgrammingGuide/OperationObjects/OperationObjects.html</a></p>
+<p>NSOperation Class Reference: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperation_class/" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperation_class/</a></p>
 </span>
       
     </div>
@@ -524,7 +526,7 @@ NSInvoc">
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-count">13</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -577,7 +579,7 @@ NSInvoc">
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#NSOperation"><span class="nav-number">1.</span> <span class="nav-text">NSOperation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">2.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#取消"><span class="nav-number">3.</span> <span class="nav-text">取消</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#完成"><span class="nav-number">3.1.</span> <span class="nav-text">完成</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖和优先级"><span class="nav-number">4.</span> <span class="nav-text">依赖和优先级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KVO"><span class="nav-number">5.</span> <span class="nav-text">KVO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSOperationQueue"><span class="nav-number">6.</span> <span class="nav-text">NSOperationQueue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#概述-1"><span class="nav-number">7.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#暂停和恢复"><span class="nav-number">8.</span> <span class="nav-text">暂停和恢复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发数"><span class="nav-number">9.</span> <span class="nav-text">并发数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#取消-1"><span class="nav-number">10.</span> <span class="nav-text">取消</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KVO-1"><span class="nav-number">11.</span> <span class="nav-text">KVO</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#NSOperation"><span class="nav-number">1.</span> <span class="nav-text">NSOperation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">2.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#取消"><span class="nav-number">3.</span> <span class="nav-text">取消</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#完成"><span class="nav-number">3.1.</span> <span class="nav-text">完成</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖和优先级"><span class="nav-number">4.</span> <span class="nav-text">依赖和优先级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KVO"><span class="nav-number">5.</span> <span class="nav-text">KVO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSOperationQueue"><span class="nav-number">6.</span> <span class="nav-text">NSOperationQueue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#概述-1"><span class="nav-number">7.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#暂停和恢复"><span class="nav-number">8.</span> <span class="nav-text">暂停和恢复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发数"><span class="nav-number">9.</span> <span class="nav-text">并发数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#取消-1"><span class="nav-number">10.</span> <span class="nav-text">取消</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KVO-1"><span class="nav-number">11.</span> <span class="nav-text">KVO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考链接"><span class="nav-number">12.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">

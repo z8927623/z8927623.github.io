@@ -4,7 +4,7 @@
   <subtitle><![CDATA[野瑶瑶的技术博客]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com/"/>
-  <updated>2016-02-06T16:34:51.000Z</updated>
+  <updated>2016-02-12T15:35:45.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://yoursite.com/2016/02/05/Objective-C%20Runtime%E4%B9%8B%E5%AE%9E%E7%8E%B0/"/>
     <id>http://yoursite.com/2016/02/05/Objective-C Runtime之实现/</id>
     <published>2016-02-04T16:00:00.000Z</published>
-    <updated>2016-02-06T16:34:51.000Z</updated>
+    <updated>2016-02-12T15:35:45.000Z</updated>
     <content type="html"><![CDATA[<h3 id="id">id</h3><p>首先从<code>id</code>说起，Objective-C中id是个可以指向任何OC对象的指针，我们来看看它的结构</p>
 <figure class="highlight thrift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">objc_object</span> </span>&#123;</span><br><span class="line">    Class isa;</span><br><span class="line">&#125; *id;</span><br></pre></td></tr></table></figure>
 <p>可知，<code>id</code>是一个指向<code>objec_object</code>结构的C指针，而<code>objec_object</code>又包含了一个<code>isa</code>指针，该指针指向名为<code>Class</code>的变量，因此，每个OC对象都有个<code>Class</code>，那么<code>Class</code>又是什么呢？</p>
@@ -88,6 +88,8 @@
 <p>是不是绕晕了，用图表示一下：</p>
 <p><img src="/images/runtime_10.png" alt="runtime_10"></p>
 <p>好了，下一篇来讲讲runtime的应用。</p>
+<h3 id="参考链接">参考链接</h3><p>Objective-C Runtime Programming Guide: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html</a></p>
+<p>Objective-C Runtime Reference: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/</a></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<h3 id="id">id</h3><p>首先从<code>id</code>说起，Objective-C中id是个可以指向任何OC对象的指针，我们来看看它的结构</p>
@@ -101,7 +103,7 @@
     <link href="http://yoursite.com/2016/02/03/Objective-C%20Runtime%E4%B9%8B%E6%B6%88%E6%81%AF/"/>
     <id>http://yoursite.com/2016/02/03/Objective-C Runtime之消息/</id>
     <published>2016-02-02T16:00:00.000Z</published>
-    <updated>2016-02-05T11:00:53.000Z</updated>
+    <updated>2016-02-12T15:35:59.000Z</updated>
     <content type="html"><![CDATA[<h3 id="Method&amp;Message">Method&amp;Message</h3><p>什么是Method？  </p>
 <p>方法就是一个类中有名字的一串代码，平常我们写的<br><code>- (int)func:(NString *)str { ... }</code>就是一个方法，但是它在编译的时候会被转换成C函数调用，<br><code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>，也就是说，所谓的方法实际上就是C函数。</p>
 <p>从<code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>就可以明白为什么我们可以使用<code>self</code>和<code>_cmd</code>，因为他们在源码中是隐藏的，self代表着receiver，_cmd代表调用选择器selector。</p>
@@ -191,6 +193,8 @@
 <p>这里由于<code>-methodSignatureForSelector:</code>没有获取到有效签名，因此<code>-forwardInvocation:</code>消息并没有发送。</p>
 <p>综上，可以用如下这张图来描述整个过程</p>
 <p><img src="/images/runtime_7.png" alt="runtime_7"></p>
+<h3 id="参考链接">参考链接</h3><p>Objective-C Runtime Programming Guide: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html</a></p>
+<p>Objective-C Runtime Reference: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/</a></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<h3 id="Method&amp;Message">Method&amp;Message</h3><p>什么是Method？  </p>
@@ -204,7 +208,7 @@
     <link href="http://yoursite.com/2016/02/01/Objective-C%20Runtime%E4%B9%8B%E6%A6%82%E8%A7%88/"/>
     <id>http://yoursite.com/2016/02/01/Objective-C Runtime之概览/</id>
     <published>2016-01-31T16:00:00.000Z</published>
-    <updated>2016-02-03T14:03:24.000Z</updated>
+    <updated>2016-02-12T15:36:14.000Z</updated>
     <content type="html"><![CDATA[<p>什么，你和我说runtime，大多数iOS程序员听到runtime的时候，脑子里第一反映便是，这货太特么抽象难理解了，而且工作中不常用到。的确，我也是这么认为的，Objective-C里两大最难的点当属Runtime和Runloop。然而，难虽难，这硬骨头还是要啃啊，不然理解不到这门语言的精髓呀。</p>
 <p>我们都知道，Objective-C这门语言是动态的，是扩充于C的面向对象语言，所谓动态的核心就是<code>Runtime</code>。平常写程序的时候，它被系统加载进去，然后在幕后默默工作着，我们甚至察觉不到它的存在。但是，假如没有它，OC就运行不了了。也就是说，<code>C + Runtime = Objctive-C</code>。</p>
 <h1 id="runtime-h">runtime.h</h1><p>runtime是开源的，我们可以在<a href="https://opensource.apple.com/tarballs/objc4/" target="_blank" rel="external">https://opensource.apple.com/tarballs/objc4/</a>下载。</p>
@@ -248,6 +252,8 @@
 <li><code>- (BOOL)conformsToProtocol:(Protocol *)aProtocol;</code></li>
 <li><code>+ (BOOL)conformsToProtocol:(Protocol *)protocol;</code></li>
 </ul>
+<h3 id="参考链接">参考链接</h3><p>Objective-C Runtime Programming Guide: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html</a></p>
+<p>Objective-C Runtime Reference: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/</a></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p>什么，你和我说runtime，大多数iOS程序员听到runtime的时候，脑子里第一反映便是，这货太特么抽象难理解了，而且工作中不常用到。的确，我也是这么认为的，Objective-C里两大最难的点当属Runtime和Runloop。然而，难虽难，这硬骨头还是要啃啊，不然理]]>
@@ -260,7 +266,7 @@
     <link href="http://yoursite.com/2016/01/19/iOS%E4%BA%8B%E4%BB%B6%E5%93%8D%E5%BA%94%E6%9C%BA%E5%88%B6/"/>
     <id>http://yoursite.com/2016/01/19/iOS事件响应机制/</id>
     <published>2016-01-18T16:00:00.000Z</published>
-    <updated>2016-02-06T06:51:09.000Z</updated>
+    <updated>2016-02-12T15:31:15.000Z</updated>
     <content type="html"><![CDATA[<p>学习iOS事件响应机制时候，经常会听到一个词，即<code>hit-testing</code>或者<code>hit-test</code>视图，字面意思理解为敲打测试，实际上，<code>hit-testing</code>是一个过程，是iOS用来确定用户点击的部分在屏幕哪个部位的一个方法，而点击部分所在的视图就是<code>hit-test</code>视图。</p>
 <p>那么当用户触摸屏幕时，iOS是如何确定<code>hit-testing</code>并且最终找到这个<code>hit-testing</code>视图的呢。</p>
 <p>当用户触摸屏幕即响应的事件发生时，<code>UIKit</code>首先会生成一个<code>UIEvent</code>对象，这个对象包含着事件的一些基本信息，包括事件类型、事件发生的时间，然后会将它放入<code>event queue</code>里面。接下来，就是事件从底部向上到顶部找到<code>hit-test</code>视图的过程了。</p>
@@ -325,6 +331,7 @@
 <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ [-hitTest:withEvent:]"</span>, <span class="keyword">self</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将点击的点转化为button自身的坐标</span></span><br><span class="line">    <span class="built_in">CGPoint</span> touchPointInButton = [<span class="keyword">self</span><span class="variable">.button</span> convertPoint:point fromView:<span class="keyword">self</span>];</span><br><span class="line">    <span class="comment">// 如果点击的点在button之内，则返回</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">CGRectContainsPoint</span>(<span class="keyword">self</span><span class="variable">.button</span><span class="variable">.bounds</span>, touchPointInButton)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span><span class="variable">.button</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> [<span class="keyword">super</span> hitTest:point withEvent:event];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>我们所做的就是判断点击的点是否在button之内，如果是，则返回button为<code>hit-test</code>视图，否则，调用super处理。</p>
 <p>因此，通过<code>hit-testing</code>我们可以改变事件的分发，可以完成诸如点击A而让B响应的特殊情况，进而满足一些特殊的需求。</p>
+<h3 id="参考链接">参考链接</h3><p>Event Handling Guide for iOS: <a href="https://developer.apple.com/library/prerelease/ios/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/prerelease/ios/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/Introduction/Introduction.html</a></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p>学习iOS事件响应机制时候，经常会听到一个词，即<code>hit-testing</code>或者<code>hit-test</code>视图，字面意思理解为敲打测试，实际上，<code>hit-testing</code>是一个过程，是iOS用来确定用户点击的部分在屏]]>
@@ -422,7 +429,7 @@
     <link href="http://yoursite.com/2015/11/28/%E4%BD%A0%E5%BF%85%E9%A1%BB%E4%BA%86%E8%A7%A3%E7%9A%84Xcode%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/"/>
     <id>http://yoursite.com/2015/11/28/你必须了解的Xcode调试技巧/</id>
     <published>2015-11-27T16:00:00.000Z</published>
-    <updated>2016-02-06T06:55:00.000Z</updated>
+    <updated>2016-02-12T15:42:36.000Z</updated>
     <content type="html"><![CDATA[<p>我们开发iOS或者OSX程序时候，调试是避免不了的，而调试最大的一个利器就是断点。接下来我介绍一下Xcode一些常用的和不常用的技巧。</p>
 <h4 id="条件断点">条件断点</h4><p>如下图，这是个最基本的断点，我们写了一个0到10000的循环，需要在循环到5000的时候打个断点。</p>
 <p><img src="/images/debug_1.png" alt="debug_1"></p>
@@ -465,6 +472,8 @@
 <p>然后在编辑的时候我们可以选择捕捉全部或者Objective-C或者C++的异常，一般情况下我们保持默认，这样当出现crash的时候就会停留在相应的代码处了。</p>
 <p><img src="/images/debug_15.png" alt="debug_15"></p>
 <p>开发程序时，巧妙地利用Xcode强大的调试技巧，可以达到事半功倍的效果。</p>
+<h3 id="参考链接">参考链接</h3><p>Debugging: <a href="https://developer.apple.com/support/debugging/" target="_blank" rel="external">https://developer.apple.com/support/debugging/</a></p>
+<p>Debugging with Xcode: <a href="https://developer.apple.com/library/ios/documentation/DeveloperTools/Conceptual/debugging_with_xcode/chapters/debugging_tools.html" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/DeveloperTools/Conceptual/debugging_with_xcode/chapters/debugging_tools.html</a></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p>我们开发iOS或者OSX程序时候，调试是避免不了的，而调试最大的一个利器就是断点。接下来我介绍一下Xcode一些常用的和不常用的技巧。</p>
@@ -478,7 +487,7 @@
     <link href="http://yoursite.com/2015/11/13/NSOperation%E5%92%8CNSOperationQueue/"/>
     <id>http://yoursite.com/2015/11/13/NSOperation和NSOperationQueue/</id>
     <published>2015-11-12T16:00:00.000Z</published>
-    <updated>2016-02-06T06:52:17.000Z</updated>
+    <updated>2016-02-12T15:34:05.000Z</updated>
     <content type="html"><![CDATA[<h3 id="NSOperation">NSOperation</h3><h3 id="概述">概述</h3><p><code>NSOperation</code>是一个抽象的类，包装了处理单个任务所需要的一些数据，代表执行单个任务的一个独立单元。不过尽管它是个抽象类，但是它已经帮我们处理了繁杂的多线程问题，并且可以确保线程安全，因此我们在使用的时候，就可以更专注于自己的业务。</p>
 <p>苹果已经默认给我们封装好了两个类，分别是<code>NSInvocationOperation</code>和<code>NSBlockOperation</code></p>
 <ul>
@@ -666,6 +675,8 @@
 <li><code>suspended</code></li>
 <li><code>name</code></li>
 </ul>
+<h3 id="参考链接">参考链接</h3><p>Concurrency Programming Guide: <a href="https://developer.apple.com/library/mac/documentation/General/Conceptual/ConcurrencyProgrammingGuide/OperationObjects/OperationObjects.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/General/Conceptual/ConcurrencyProgrammingGuide/OperationObjects/OperationObjects.html</a></p>
+<p>NSOperation Class Reference: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperation_class/" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperation_class/</a></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<h3 id="NSOperation">NSOperation</h3><h3 id="概述">概述</h3><p><code>NSOperation</code>是一个抽象的类，包装了处理单个任务所需要的一些数据，代表执行单个任务的一个独立单元。不过尽管它是个抽象类，但是它已]]>
@@ -678,7 +689,7 @@
     <link href="http://yoursite.com/2015/10/26/ARC%E4%B8%8EMRC%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/"/>
     <id>http://yoursite.com/2015/10/26/ARC与MRC必知必会/</id>
     <published>2015-10-25T16:00:00.000Z</published>
-    <updated>2016-02-06T06:54:13.000Z</updated>
+    <updated>2016-02-12T15:39:47.000Z</updated>
     <content type="html"><![CDATA[<p>我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫<code>ɑ:k</code>，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。</p>
 <h4 id="ARC下的autorelease_pool">ARC下的autorelease pool</h4><p>ARC下最明显的就是对autorelease pool的改进。</p>
 <p>Autorelease pool会自动管理对象的生命周期，每个发送<code>autorelease</code>消息的对象不会马上被释放，它们会被加入到NSAutoreleasePool中，当pool被drain的时候，它会依次给池子中的每个对象发送<code>release</code>消息。因此，使用autorelease管理内存的对象的生命周期被延长了。</p>
@@ -796,6 +807,10 @@
 <li>系统的一些诸如动画之类的block，原因同上</li>
 </ul>
 <h4 id="关于ARC下__block和__weak的区别">关于ARC下<code>__block</code>和<code>__weak</code>的区别</h4><p>ARC下的一些开源库中我们经常能看到<code>__block</code>和<code>__weak</code>一起修饰某个变量，他们两个属性各有各的作用，<code>__weak</code>是为了避免循环引用；<strong>而<code>__block</code>是为了可以修改外部的变量，不是避免循环引用，因为ARC下<code>__block</code>仍然可以retain变量</strong>，不要搞混淆了。</p>
+<h3 id="参考链接">参考链接</h3><p>Transitioning to ARC Release Notes: <a href="https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html</a></p>
+<p>Advanced Memory Management Programming Guide <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html</a></p>
+<p>NSAutoreleasePool Class Reference: <a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSAutoreleasePool_Class/" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSAutoreleasePool_Class/</a></p>
+<p>Objective-C Automatic Reference Counting (ARC): <a href="http://clang.llvm.org/docs/AutomaticReferenceCounting.html" target="_blank" rel="external">http://clang.llvm.org/docs/AutomaticReferenceCounting.html</a></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p>我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫<code>ɑ:k</code>，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。</p>
@@ -958,11 +973,150 @@
   </entry>
   
   <entry>
+    <title><![CDATA[额...runloop]]></title>
+    <link href="http://yoursite.com/2015/07/18/%E9%A2%9D...runloop/"/>
+    <id>http://yoursite.com/2015/07/18/额...runloop/</id>
+    <published>2015-07-17T16:00:00.000Z</published>
+    <updated>2016-02-12T15:29:36.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="啥是run_loop">啥是run loop</h3><p>run loop就是当我们线程有任务的时候唤醒它，然后将任务分配给它去处理；当没有任务的时候，使线程沉睡，节省资源。</p>
+<p>每个线程都已经自动关联了run loop，我们不需要去创建它们。但是，并不是每个线程的run loop都是已经运行着的：</p>
+<ul>
+<li><strong>主线程</strong>：主线程的run loop作为应用启动程序的一部分已经自动运行了</li>
+<li><strong>子线程</strong>：子线程的run loop是没有运行的，这个时候我们就需要手动开启。</li>
+</ul>
+<p>既然run loop有着唤醒线程并让它处理的任务，它就需要监听一些事件，run loop接收两种类型的事件源：  </p>
+<ul>
+<li><strong>输入源</strong>（<code>Input sources</code>）：除timer源外的其他事件源，分为<ul>
+<li><code>Port-Based Sources</code>：port相关输入源</li>
+<li><code>Custom Input Sources</code>：自定义输入源<ul>
+<li><code>Cocoa Perform Selector Sources</code>：我们常用的perform方法</li>
+<li><code>Other Custom Sources</code>：其他自定义输入源</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Timer源</strong>（<code>Timer sources</code>）：熟知的<code>NSTimer</code>，或者<code>CFRunLoopTimerRef</code></li>
+</ul>
+<p>下面这幅图表示了run loop的运行状态</p>
+<p><img src="/images/runloop_1.png" alt="runloop_1"></p>
+<p>在详细讲解事件源之前，先谈谈run loop mode。</p>
+<h3 id="Run_Loop_Modes">Run Loop Modes</h3><p>每个run loop可以有一个或者多个<code>mode</code>，但是run loop必须运行在一个mode下。比如主线程的run loop有<code>kCFRunLoopCommonModes</code>， <code>UIInitializationRunLoopMode</code>，<code>kCFRunLoopDefaultMode</code>，<code>GSEventReceiveRunLoopMode</code>，<code>UITrackingRunLoopMode</code>这么多mode，但是它在启动的时候运行在<code>UIInitializationRunLoopMode</code>，在滚动的时候运行在<code>UITrackingRunLoopMode</code>。</p>
+<p> 一般情况下子线程的run loop运行在默认mode下就OK了，也就是<code>NSDefaultRunLoopMode</code>或<code>kCFRunLoopDefaultMode</code>。我们可以自己设置mode，这些mode包括系统自带的也可以自定义mode。系统mode如下表。</p>
+<p>当我们指定mode之后，只有和该mode相关联的事件才能被处理，其他不相关的事件会被挂起，直到run loop回到和该事件对应的mode运行。举个例子，当我们滑动scrollView的时候，run loop是运行在<code>UITrackingRunLoopMode</code>下的，这个模式处理滑动有关的事件而挂起其他事件，如果这个时候恰巧有timer或者网络等事件过来的话，那么它们的回调就不会被处理，直到scrollView停止滚动，这时候run loop重新回到之前mode下，就可以处理这些事件了。  </p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th style="text-align:left">Name</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Initialization</code></td>
+<td style="text-align:left"><code>UIInitializationRunLoopMode</code></td>
+<td style="text-align:left">启动时候的mode</td>
+</tr>
+<tr>
+<td><code>Default</code></td>
+<td style="text-align:left"><code>NSDefaultRunLoopMode</code>(Cocoa或Cocoa Touch)  <code>kCFRunLoopDefaultMode</code>(Core Foundation)</td>
+<td style="text-align:left">默认模式，该mode处理输入源（网络事件除外），大部分情况我们使用这个模式就OK了</td>
+</tr>
+<tr>
+<td><code>Connection</code></td>
+<td style="text-align:left"><code>NSConnectionReplyMode</code>(Cocoa)</td>
+<td style="text-align:left">这个模式是给NSConnection处理网络回调用的</td>
+</tr>
+<tr>
+<td><code>Event tracking</code></td>
+<td style="text-align:left"><code>NSEventTrackingRunLoopMode</code>(Cocoa) <code>UITrackingRunLoopMode</code>(Cocoa Touch)</td>
+<td style="text-align:left">这个模式和iOS的流畅不无关系，当我们滑动scrollView的时候，处于这个模式下的run loop会挂起其他事件而只处理滚动相关事件</td>
+</tr>
+<tr>
+<td><code>Modal</code></td>
+<td style="text-align:left"><code>NSModalPanelRunLoopMode</code>(Cocoa)</td>
+<td style="text-align:left">模态模式，Cocoa使用这个模式给模态视图投递事件</td>
+</tr>
+<tr>
+<td><code>Common modes</code></td>
+<td style="text-align:left"><code>NSRunLoopCommonModes</code>(Cocoa或Cocoa Touch)  <code>kCFRunLoopCommonModes</code>(Core Foundation)</td>
+<td style="text-align:left">通用模式，如果run loop运行在这个模式下，等于运行在以上所有模式下</td>
+</tr>
+</tbody>
+</table>
+<p>注意，我们添加的输入源或者timer可以运行在<code>NSRunLoopCommonModes</code>，但是run loop无法运行在<code>NSRunLoopCommonModes</code>，也就是说，<code>[[NSRunLoop currentRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate distantFuture]];</code>这样的代码是没有真正运行了run loop的。因为，run loop一次只能运行在一个确切的mode下，而不是mode集合，但是我们可以标注事件被不同mode的run loop处理。</p>
+<h3 id="Input_Sources">Input Sources</h3><p><code>Input Sources</code>分为<code>Port-Based Sources</code>和<code>Custom Input Sources</code>，两者的不同之处在于它们如何被signaled，<code>Port-Based Sources</code>由内核自动signaled，<code>Custom Input Sources</code>必须手动地signaled。</p>
+<h4 id="Port-Based_Sources">Port-Based Sources</h4><p>主要是<code>NSPort</code>，我们只需要创建它并添加到run loop中就行。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr_selector">[[NSRunLoop currentRunLoop]</span> <span class="tag">addPort</span>:<span class="attr_selector">[NSMachPort port]</span> <span class="tag">forMode</span><span class="pseudo">:NSRunLoopCommonModes</span>];</span><br></pre></td></tr></table></figure>
+<p>移除的话同样</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr_selector">[[NSRunLoop currentRunLoop]</span> <span class="tag">removePort</span>:<span class="attr_selector">[NSMachPort port]</span> <span class="tag">forMode</span><span class="pseudo">:NSRunLoopCommonModes</span>];</span><br></pre></td></tr></table></figure>
+<h4 id="Custom_Input_Sources">Custom Input Sources</h4><h5 id="Cocoa_Perform_Selector_Sources">Cocoa Perform Selector Sources</h5><p>perform sources大家应该很熟悉，因为我们一直在用，它就是简单地将任务分配到目标线程上去执行。但是和port-based source不一样，它在执行完任务后，会自动从run loop中移除。</p>
+<p>perform任务到子线程时需要注意，因为子线程run loop默认是不运行的，如果我们想要进行持续持久的任务，或者在上面执行timer，就必须手动启动。</p>
+<p>比如以下代码，我们让run loop运行10秒后退出</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[self <span class="string">performSelectorInBackground:</span><span class="annotation">@selector</span>(<span class="string">doPerformTask:</span>) <span class="string">withObject:</span>@<span class="string">"heheda"</span>];</span><br><span class="line"></span><br><span class="line">- (<span class="typename">void</span>)<span class="string">doPerformTask:</span>(id)object</span><br><span class="line">&#123;</span><br><span class="line">    NSLog(@<span class="string">"object = %@"</span>, object);</span><br><span class="line">    </span><br><span class="line">    NSTimer *timer = [NSTimer <span class="string">timerWithTimeInterval:</span><span class="number">1.0</span> <span class="string">target:</span>self <span class="string">selector:</span><span class="annotation">@selector</span>(doTimerTask) <span class="string">userInfo:</span>nil <span class="string">repeats:</span>YES];</span><br><span class="line">    [[NSRunLoop currentRunLoop] <span class="string">addTimer:</span>timer <span class="string">forMode:</span>NSRunLoopCommonModes];</span><br><span class="line">    <span class="comment">// 这里必须开启run loop</span></span><br><span class="line">    [[NSRunLoop currentRunLoop] <span class="string">runMode:</span>NSDefaultRunLoopMode <span class="string">beforeDate:</span>[NSDate <span class="string">dateWithTimeIntervalSinceNow:</span><span class="number">10</span>]];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Other_Custom_Sources">Other Custom Sources</h5><p>如果我们想要纯自定输入源，就需要用到Core Foundation的方法了。如下是一个简单示例：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">CFRunLoopSourceContext</span> ctx = &#123;<span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>&#125;;</span><br><span class="line">ctx<span class="variable">.perform</span> = RunLoopCallback;</span><br><span class="line"><span class="built_in">CFRunLoopSourceRef</span> runLoopSource = <span class="built_in">CFRunLoopSourceCreate</span>(k<span class="built_in">CFAllocatorDefault</span>, <span class="number">0</span>, &amp;ctx);</span><br><span class="line"><span class="built_in">CFRunLoopAddSource</span>(<span class="built_in">CFRunLoopGetCurrent</span>(), runLoopSource, k<span class="built_in">CFRunLoopCommonModes</span>);</span><br><span class="line">    </span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> RunLoopCallback(<span class="keyword">void</span> *info)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"run loop source callback"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们定义并创建了<code>CFRunLoopSourceRef</code>类型的run loop source对象，然后设置了callback，然后将它添加到当前的run loop上。当事件来临时，我们需要去传递它，这时候可以调用<code>CFRunLoopSourceSignal</code>发送一个信号给事件源，然后使用<code>CFRunLoopWakeUp</code>唤醒等待的runloop对象去处理它。</p>
+<h4 id="Timer_Sources">Timer Sources</h4><p>timer source我们都知道，有一点需要注意，由于它是基于run loop的，因此它不是实时的，也就是说不是特别准确。</p>
+<p>比如我把timer关联到某个mode，这个时候run loop恰巧不在那个mode，那么timer并不会被触发直到run loop回到那个mode。典型的例子就是scrollView上的timer。</p>
+<p>相似的，假如这个run loop恰好在执行耗时任务但还没有执行完，这个时候timer事件触发了，那么它只有等到下次被触发才有可能执行，比如我安排timer在现在执行，每隔1秒触发，那么由于run loop执行耗时任务被延迟，可能是过2秒或者3秒之后才被执行。</p>
+<p>如果这个run loop压根没有运行，那么timer就不会被触发。例子如上去掉<code>[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:10]];</code>之后，timer事件就不会执行。</p>
+<h3 id="Run_Loop_Observers">Run Loop Observers</h3><p>既然我把我的任务交给run loop去分配了，那么我应该可以观察我的任务执行的怎么样了，或者说，我得知道run loop的状态吧。嗯，那就是run loop observers的作用了。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 添加run loop观察</span></span><br><span class="line"><span class="built_in">CFRunLoopObserverContext</span> context = &#123;<span class="number">0</span>, (__bridge <span class="keyword">void</span> *)(<span class="keyword">self</span>), <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>&#125;;</span><br><span class="line"><span class="comment">// 要观察的活动，kCFRunLoopEntry</span></span><br><span class="line"><span class="built_in">CFRunLoopObserverRef</span> observer = <span class="built_in">CFRunLoopObserverCreate</span>(k<span class="built_in">CFAllocatorDefault</span>, k<span class="built_in">CFRunLoopEntry</span>, <span class="literal">YES</span>, <span class="number">0</span>, &amp;mainRunLoopObserver, &amp;context);</span><br><span class="line"><span class="keyword">if</span> (observer) &#123;</span><br><span class="line">    <span class="built_in">CFRunLoopAddObserver</span>(<span class="built_in">CFRunLoopGetCurrent</span>(), observer, k<span class="built_in">CFRunLoopCommonModes</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> mainRunLoopObserver(<span class="built_in">CFRunLoopObserverRef</span> observer, <span class="built_in">CFRunLoopActivity</span> activity, <span class="keyword">void</span> *info) &#123;   </span><br><span class="line">    <span class="keyword">switch</span> (activity) &#123;</span><br><span class="line">        <span class="keyword">case</span> k<span class="built_in">CFRunLoopEntry</span>:</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"run loop entry"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> k<span class="built_in">CFRunLoopBeforeTimers</span>:</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"run loop before timers"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> k<span class="built_in">CFRunLoopBeforeSources</span>:</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"run loop before sources"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> k<span class="built_in">CFRunLoopBeforeWaiting</span>:</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"run loop before waiting"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> k<span class="built_in">CFRunLoopAfterWaiting</span>:</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"run loop after waiting"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> k<span class="built_in">CFRunLoopExit</span>:</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"run loop exit"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上代码，使用<code>CFRunLoopObserverCreate</code>创建一个run loop observer，然后添加到run loop，就可以实现对run loop运行情况的观察了。我们也可以使用<code>CFRunLoopObserverCreateWithHandler</code>创建，方便之处是将handler代码写在block里。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">CFRunLoopObserverRef</span> observer = <span class="built_in">CFRunLoopObserverCreateWithHandler</span>(k<span class="built_in">CFAllocatorDefault</span>, k<span class="built_in">CFRunLoopEntry</span>, <span class="literal">YES</span>, <span class="number">0</span>, ^(<span class="built_in">CFRunLoopObserverRef</span> observer, <span class="built_in">CFRunLoopActivity</span> activity) &#123;</span><br><span class="line">    <span class="keyword">switch</span> (activity) &#123;</span><br><span class="line">        <span class="keyword">case</span> k<span class="built_in">CFRunLoopEntry</span>:</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"run loop entry"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> k<span class="built_in">CFRunLoopBeforeTimers</span>:</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"run loop before timers"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> k<span class="built_in">CFRunLoopBeforeSources</span>:</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"run loop before sources"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> k<span class="built_in">CFRunLoopBeforeWaiting</span>:</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"run loop before waiting"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> k<span class="built_in">CFRunLoopAfterWaiting</span>:</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"run loop after waiting"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> k<span class="built_in">CFRunLoopExit</span>:</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"run loop exit"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> (observer) &#123;</span><br><span class="line">    <span class="built_in">CFRunLoopAddObserver</span>(<span class="built_in">CFRunLoopGetCurrent</span>(), observer, k<span class="built_in">CFRunLoopCommonModes</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="使用run_loop">使用run loop</h3><h4 id="何时使用run_loop">何时使用run loop</h4><ul>
+<li>使用ports或者其他输入源和其他线程沟通的时候</li>
+<li>在线程上使用timer</li>
+<li>使用<code>performSelector...</code>等方法</li>
+<li>在线程上执行周期性的任务</li>
+</ul>
+<h4 id="如何使用run_loop">如何使用run loop</h4><p>当且仅当在子线程的时候才有必要开启run loop。并且，<strong>一个run loop必须有至少一个输入源或者timer去监听</strong>，如果没有的话，run loop会立马退出。</p>
+<p>举个例子，假如我们继承NSThread并且在main中执行操作，我们的目的是想让线程不退出，因此开启run loop，但由于我们没有添加任何输入源或者timer，即使开启了run loop也没有用，线程会执行完代码后立刻退出，无法达到目的。</p>
+<p>有以下几种选项可以配置run loop</p>
+<ul>
+<li><p>没有限制条件</p>
+<p>  最简单，只需要调用<code>[[NSRunLoop currentRunLoop] run];</code>或者<code>CFRunLoopRun();</code>，但是不可靠，因为它会使线程陷入无限循环，只有强制退出run loop。当然我们可以添加或移除输入源或timer，但是无法自定义mode。</p>
+</li>
+<li><p>设置一个超时时间</p>
+<p>  比起啥都不设置，设置一个超时时间是个更好的选择，如<code>-runUntilDate:</code>，<code>-runMode:beforeDate:</code>等。我们设置超时时间之后，run loop会一直运行直到超时或者被强制退出，并且，超时后，我们可以重启run loop。</p>
+</li>
+<li><p>设定特定mode</p>
+<p>  指定mode，给了我们更多的控制权，NSRunLoop的<code>-runMode:beforeDate:</code>或者<code>CFRunLoopRunInMode</code>，我们可以指定mode运行run loop。</p>
+</li>
+</ul>
+<h4 id="如何退出run_loop">如何退出run loop</h4><p>两种方式</p>
+<ul>
+<li><p>设定一个超时时间</p>
+<p>  推荐，指定一个合适的超时时间，当任务完成之后，run loop会自动退出。如<code>-runUntilDate:</code>，<code>-runMode:beforeDate:</code>。</p>
+</li>
+<li><p>手动停止run loop</p>
+<p>  使用<code>CFRunLoopStop</code>手动停止run loop</p>
+</li>
+</ul>
+<p>我们是否可以通过移除输入源或者timer来使run loop退出呢，答案是肯定的，但不是很可靠的一个方法，因为有时候系统也会添加一些我们不知道的事件源去处理一些事情，那么我们可能无法全部移除事件源，也就退出失败了。</p>
+<h3 id="实例">实例</h3><p>1、查看主线程mode以及当前运行的run loop mode</p>
+<p>新建<code>Master-Detail Appliction</code>项目并在<code>viewDidLoad</code>里填写以下代码</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">CFStringRef</span> mode = <span class="built_in">CFRunLoopCopyCurrentMode</span>(<span class="built_in">CFRunLoopGetCurrent</span>());</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Now %@'s run loop mode: %@"</span>, [<span class="built_in">NSThread</span> currentThread], (__bridge <span class="built_in">NSString</span> *)mode);</span><br><span class="line"></span><br><span class="line"><span class="built_in">CFArrayRef</span> modeArray = <span class="built_in">CFRunLoopCopyAllModes</span>(<span class="built_in">CFRunLoopGetCurrent</span>());</span><br><span class="line"><span class="built_in">NSMutableArray</span> *modes = [<span class="built_in">NSMutableArray</span> array];</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">CFArrayGetCount</span>(modeArray) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> idx = <span class="number">0</span>; idx &lt; <span class="built_in">CFArrayGetCount</span>(modeArray); idx++) &#123;</span><br><span class="line">        <span class="built_in">CFStringRef</span> mode = <span class="built_in">CFArrayGetValueAtIndex</span>(modeArray, idx);</span><br><span class="line">        [modes addObject:(__bridge <span class="built_in">NSString</span> *)mode];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%@'s all run loop mode: %@"</span>, [<span class="built_in">NSThread</span> currentThread], modes);</span><br></pre></td></tr></table></figure>
+<p>查看输出结果</p>
+<p><img src="/images/runloop_2.png" alt="runloop_2"></p>
+<p>接着在<code>- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView { ... }</code>里填写以上代码，然后滑动scrollView，输出如下</p>
+<p><img src="/images/runloop_3.png" alt="runloop_3"></p>
+<h3 id="参考链接">参考链接</h3><p>Threading Programming Guide: <a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Multithreading/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Multithreading/Introduction/Introduction.html</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="啥是run_loop">啥是run loop</h3><p>run loop就是当我们线程有任务的时候唤醒它，然后将任务分配给它去处理；当没有任务的时候，使线程沉睡，节省资源。</p>
+<p>每个线程都已经自动关联了run loop，我们不需要去创建它们。但是，并]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[创建私有Pod（from车牛）]]></title>
     <link href="http://yoursite.com/2015/07/03/%E5%88%9B%E5%BB%BA%E7%A7%81%E6%9C%89pod/"/>
     <id>http://yoursite.com/2015/07/03/创建私有pod/</id>
     <published>2015-07-02T16:00:00.000Z</published>
-    <updated>2016-02-06T05:56:14.000Z</updated>
+    <updated>2016-02-12T11:11:05.000Z</updated>
     <content type="html"><![CDATA[<p>##Private Pod</p>
 <p>参考文档：<a href="http://blog.wtlucky.com/blog/2015/02/26/create-private-podspec/" target="_blank" rel="external">使用Cocoapods创建私有podspec</a> <a href="https://guides.cocoapods.org/" target="_blank" rel="external">CocoaPods Guides</a></p>
 <p>###建立私有Spec Repo</p>

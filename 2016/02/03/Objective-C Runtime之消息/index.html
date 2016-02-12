@@ -66,7 +66,7 @@
 <meta property="og:image" content="http://yoursite.com/images/runtime_5.png">
 <meta property="og:image" content="http://yoursite.com/images/runtime_6.png">
 <meta property="og:image" content="http://yoursite.com/images/runtime_7.png">
-<meta property="og:updated_time" content="2016-02-05T11:00:53.000Z">
+<meta property="og:updated_time" content="2016-02-12T15:35:59.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Objective-C Runtime之消息">
 <meta name="twitter:description" content="Method&amp;amp;Message什么是Method？  
@@ -333,6 +333,8 @@
 <p>这里由于<code>-methodSignatureForSelector:</code>没有获取到有效签名，因此<code>-forwardInvocation:</code>消息并没有发送。</p>
 <p>综上，可以用如下这张图来描述整个过程</p>
 <p><img src="/images/runtime_7.png" alt="runtime_7"></p>
+<h3 id="参考链接">参考链接</h3><p>Objective-C Runtime Programming Guide: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html</a></p>
+<p>Objective-C Runtime Reference: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/</a></p>
 </span>
       
     </div>
@@ -426,7 +428,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-count">13</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -479,7 +481,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Method&Message"><span class="nav-number">1.</span> <span class="nav-text">Method&Message</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#objc_msgSend"><span class="nav-number">2.</span> <span class="nav-text">objc_msgSend</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态方法决议（Dynamic_Method_Resolution）"><span class="nav-number">3.</span> <span class="nav-text">动态方法决议（Dynamic Method Resolution）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#消息转发（Message_Forwarding）"><span class="nav-number">4.</span> <span class="nav-text">消息转发（Message Forwarding）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#快速转发（Fast_Forwarding）"><span class="nav-number">4.1.</span> <span class="nav-text">快速转发（Fast Forwarding）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#标准转发（Normal_Forwarding）"><span class="nav-number">4.2.</span> <span class="nav-text">标准转发（Normal Forwarding）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#错误"><span class="nav-number">5.</span> <span class="nav-text">错误</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Method&Message"><span class="nav-number">1.</span> <span class="nav-text">Method&Message</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#objc_msgSend"><span class="nav-number">2.</span> <span class="nav-text">objc_msgSend</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态方法决议（Dynamic_Method_Resolution）"><span class="nav-number">3.</span> <span class="nav-text">动态方法决议（Dynamic Method Resolution）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#消息转发（Message_Forwarding）"><span class="nav-number">4.</span> <span class="nav-text">消息转发（Message Forwarding）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#快速转发（Fast_Forwarding）"><span class="nav-number">4.1.</span> <span class="nav-text">快速转发（Fast Forwarding）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#标准转发（Normal_Forwarding）"><span class="nav-number">4.2.</span> <span class="nav-text">标准转发（Normal Forwarding）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#错误"><span class="nav-number">5.</span> <span class="nav-text">错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考链接"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
