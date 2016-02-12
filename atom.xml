@@ -103,7 +103,7 @@
     <link href="http://yoursite.com/2016/02/03/Objective-C%20Runtime%E4%B9%8B%E6%B6%88%E6%81%AF/"/>
     <id>http://yoursite.com/2016/02/03/Objective-C Runtime之消息/</id>
     <published>2016-02-02T16:00:00.000Z</published>
-    <updated>2016-02-12T15:35:59.000Z</updated>
+    <updated>2016-02-12T15:48:44.000Z</updated>
     <content type="html"><![CDATA[<h3 id="Method&amp;Message">Method&amp;Message</h3><p>什么是Method？  </p>
 <p>方法就是一个类中有名字的一串代码，平常我们写的<br><code>- (int)func:(NString *)str { ... }</code>就是一个方法，但是它在编译的时候会被转换成C函数调用，<br><code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>，也就是说，所谓的方法实际上就是C函数。</p>
 <p>从<code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>就可以明白为什么我们可以使用<code>self</code>和<code>_cmd</code>，因为他们在源码中是隐藏的，self代表着receiver，_cmd代表调用选择器selector。</p>
@@ -429,7 +429,7 @@
     <link href="http://yoursite.com/2015/11/28/%E4%BD%A0%E5%BF%85%E9%A1%BB%E4%BA%86%E8%A7%A3%E7%9A%84Xcode%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/"/>
     <id>http://yoursite.com/2015/11/28/你必须了解的Xcode调试技巧/</id>
     <published>2015-11-27T16:00:00.000Z</published>
-    <updated>2016-02-12T15:42:36.000Z</updated>
+    <updated>2016-02-12T15:47:52.000Z</updated>
     <content type="html"><![CDATA[<p>我们开发iOS或者OSX程序时候，调试是避免不了的，而调试最大的一个利器就是断点。接下来我介绍一下Xcode一些常用的和不常用的技巧。</p>
 <h4 id="条件断点">条件断点</h4><p>如下图，这是个最基本的断点，我们写了一个0到10000的循环，需要在循环到5000的时候打个断点。</p>
 <p><img src="/images/debug_1.png" alt="debug_1"></p>
@@ -689,7 +689,7 @@
     <link href="http://yoursite.com/2015/10/26/ARC%E4%B8%8EMRC%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/"/>
     <id>http://yoursite.com/2015/10/26/ARC与MRC必知必会/</id>
     <published>2015-10-25T16:00:00.000Z</published>
-    <updated>2016-02-12T15:39:47.000Z</updated>
+    <updated>2016-02-12T15:48:56.000Z</updated>
     <content type="html"><![CDATA[<p>我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫<code>ɑ:k</code>，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。</p>
 <h4 id="ARC下的autorelease_pool">ARC下的autorelease pool</h4><p>ARC下最明显的就是对autorelease pool的改进。</p>
 <p>Autorelease pool会自动管理对象的生命周期，每个发送<code>autorelease</code>消息的对象不会马上被释放，它们会被加入到NSAutoreleasePool中，当pool被drain的时候，它会依次给池子中的每个对象发送<code>release</code>消息。因此，使用autorelease管理内存的对象的生命周期被延长了。</p>
