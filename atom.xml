@@ -103,7 +103,7 @@
     <link href="http://yoursite.com/2016/02/03/Objective-C%20Runtime%E4%B9%8B%E6%B6%88%E6%81%AF/"/>
     <id>http://yoursite.com/2016/02/03/Objective-C Runtime之消息/</id>
     <published>2016-02-02T16:00:00.000Z</published>
-    <updated>2016-02-12T15:48:44.000Z</updated>
+    <updated>2016-02-12T15:49:54.000Z</updated>
     <content type="html"><![CDATA[<h3 id="Method&amp;Message">Method&amp;Message</h3><p>什么是Method？  </p>
 <p>方法就是一个类中有名字的一串代码，平常我们写的<br><code>- (int)func:(NString *)str { ... }</code>就是一个方法，但是它在编译的时候会被转换成C函数调用，<br><code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>，也就是说，所谓的方法实际上就是C函数。</p>
 <p>从<code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>就可以明白为什么我们可以使用<code>self</code>和<code>_cmd</code>，因为他们在源码中是隐藏的，self代表着receiver，_cmd代表调用选择器selector。</p>
@@ -193,8 +193,8 @@
 <p>这里由于<code>-methodSignatureForSelector:</code>没有获取到有效签名，因此<code>-forwardInvocation:</code>消息并没有发送。</p>
 <p>综上，可以用如下这张图来描述整个过程</p>
 <p><img src="/images/runtime_7.png" alt="runtime_7"></p>
-<h3 id="参考链接">参考链接</h3><p>Objective-C Runtime Programming Guide: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html</a></p>
-<p>Objective-C Runtime Reference: <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/</a></p>
+<h3 id="参考链接">参考链接</h3><p>Objective-C Runtime Programming Guide:<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html</a></p>
+<p>Objective-C Runtime Reference:<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/</a></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<h3 id="Method&amp;Message">Method&amp;Message</h3><p>什么是Method？  </p>
@@ -689,7 +689,7 @@
     <link href="http://yoursite.com/2015/10/26/ARC%E4%B8%8EMRC%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/"/>
     <id>http://yoursite.com/2015/10/26/ARC与MRC必知必会/</id>
     <published>2015-10-25T16:00:00.000Z</published>
-    <updated>2016-02-12T15:48:56.000Z</updated>
+    <updated>2016-02-12T15:49:43.000Z</updated>
     <content type="html"><![CDATA[<p>我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫<code>ɑ:k</code>，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。</p>
 <h4 id="ARC下的autorelease_pool">ARC下的autorelease pool</h4><p>ARC下最明显的就是对autorelease pool的改进。</p>
 <p>Autorelease pool会自动管理对象的生命周期，每个发送<code>autorelease</code>消息的对象不会马上被释放，它们会被加入到NSAutoreleasePool中，当pool被drain的时候，它会依次给池子中的每个对象发送<code>release</code>消息。因此，使用autorelease管理内存的对象的生命周期被延长了。</p>
@@ -807,10 +807,10 @@
 <li>系统的一些诸如动画之类的block，原因同上</li>
 </ul>
 <h4 id="关于ARC下__block和__weak的区别">关于ARC下<code>__block</code>和<code>__weak</code>的区别</h4><p>ARC下的一些开源库中我们经常能看到<code>__block</code>和<code>__weak</code>一起修饰某个变量，他们两个属性各有各的作用，<code>__weak</code>是为了避免循环引用；<strong>而<code>__block</code>是为了可以修改外部的变量，不是避免循环引用，因为ARC下<code>__block</code>仍然可以retain变量</strong>，不要搞混淆了。</p>
-<h3 id="参考链接">参考链接</h3><p>Transitioning to ARC Release Notes: <a href="https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html</a></p>
-<p>Advanced Memory Management Programming Guide <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html</a></p>
-<p>NSAutoreleasePool Class Reference: <a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSAutoreleasePool_Class/" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSAutoreleasePool_Class/</a></p>
-<p>Objective-C Automatic Reference Counting (ARC): <a href="http://clang.llvm.org/docs/AutomaticReferenceCounting.html" target="_blank" rel="external">http://clang.llvm.org/docs/AutomaticReferenceCounting.html</a></p>
+<h3 id="参考链接">参考链接</h3><p>Transitioning to ARC Release Notes:<a href="https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html</a></p>
+<p>Advanced Memory Management Programming Guide:<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html</a></p>
+<p>NSAutoreleasePool Class Reference:<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSAutoreleasePool_Class/" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSAutoreleasePool_Class/</a></p>
+<p>Objective-C Automatic Reference Counting (ARC):<a href="http://clang.llvm.org/docs/AutomaticReferenceCounting.html" target="_blank" rel="external">http://clang.llvm.org/docs/AutomaticReferenceCounting.html</a></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p>我们习惯将ARC的每个字母分开读即读A R C，但是实际上正式的叫法叫<code>ɑ:k</code>，即啊克。好了，下面开始进入正题，谈谈ARC与MRC有什么不同。</p>
