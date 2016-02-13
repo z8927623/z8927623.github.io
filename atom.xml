@@ -973,11 +973,11 @@
   </entry>
   
   <entry>
-    <title><![CDATA[额...runloop]]></title>
-    <link href="http://yoursite.com/2015/07/18/%E9%A2%9D...runloop/"/>
-    <id>http://yoursite.com/2015/07/18/额...runloop/</id>
+    <title><![CDATA[Run Loop概述]]></title>
+    <link href="http://yoursite.com/2015/07/18/Run%20Loop%E6%A6%82%E8%BF%B0/"/>
+    <id>http://yoursite.com/2015/07/18/Run Loop概述/</id>
     <published>2015-07-17T16:00:00.000Z</published>
-    <updated>2016-02-12T15:53:56.000Z</updated>
+    <updated>2016-02-13T08:44:39.000Z</updated>
     <content type="html"><![CDATA[<h3 id="啥是run_loop">啥是run loop</h3><p>run loop就是当我们线程有任务的时候唤醒它，然后将任务分配给它去处理；当没有任务的时候，使线程沉睡，节省资源。</p>
 <p>每个线程都已经自动关联了run loop，我们不需要去创建它们。但是，并不是每个线程的run loop都是已经运行着的：</p>
 <ul>
