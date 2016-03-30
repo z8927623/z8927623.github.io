@@ -66,7 +66,7 @@
 <meta property="og:image" content="http://yoursite.com/images/runtime_5.png">
 <meta property="og:image" content="http://yoursite.com/images/runtime_6.png">
 <meta property="og:image" content="http://yoursite.com/images/runtime_7.png">
-<meta property="og:updated_time" content="2016-02-14T13:05:00.000Z">
+<meta property="og:updated_time" content="2016-02-21T12:26:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Objective-C Runtime之消息">
 <meta name="twitter:description" content="Method&amp;amp;Message什么是Method？  
@@ -249,7 +249,7 @@
 <p>从<code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>就可以明白为什么我们可以使用<code>self</code>和<code>_cmd</code>，因为他们在源码中是隐藏的，self代表着receiver，_cmd代表调用选择器selector。</p>
 <p>什么是Message？  </p>
 <p>消息是Objective-C中的核心，必须借助于runtime系统才能完成。当我们不了解runtime的时候，一个简单的<code>[receiver message]</code>往往会被认为是函数调用，实际上它仅仅是在编译期间确定了要向receiver这个接收者发送message消息，而receiver如何响应这条消息，编译阶段是无法知晓的，这个要到运行的时候来判断了。</p>
-<p>平常我们调用的<code>[self func:@&quot;呵呵哒&quot;];</code>会在编译期间被转化为<code>objc_msgSend(self, @selector(func:), @&quot;呵呵哒&quot;;</code>，也就是说，OC中发送消息会被转化为<code>objc_msgSend</code>。  </p>
+<p>平常我们调用的<code>[self func:@&quot;呵呵哒&quot;];</code>会在编译期间被转化为<code>objc_msgSend(self, @selector(func:), @&quot;呵呵哒&quot;;)</code>，也就是说，OC中发送消息会被转化为<code>objc_msgSend</code>。  </p>
 <p>那么，我们是否可以直接调用<code>objc_msgSend</code>来发送消息呢？理论上是可以的，虽然苹果极力不推荐。实际上编译器为了更好地进行错误判断，会执行严格的类型检查，也就是说，如果我们直接编写以上代码，会通不过编译，假如我们非要这么做，可以将编译选项<em>Enable Strict Checking of objc_msgSend Calls</em>设置为<em>NO</em>，或者将代码修改为<code>((int (*)(id, SEL, NSString *))objc_msgSend)(self, @selector(func:), @&quot;呵呵哒&quot;;</code>，就可以了。</p>
 <p>好了，无图无真相，下面就让我们用实验证明一下。</p>
 <p>首先我们新建了一个<code>Command Line Tool</code> Application，然后新建了一个名为MyClass的类，填写以下代码：</p>
@@ -429,7 +429,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

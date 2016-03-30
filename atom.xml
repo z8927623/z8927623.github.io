@@ -103,13 +103,13 @@
     <link href="http://yoursite.com/2016/02/03/Objective-C%20Runtime%E4%B9%8B%E6%B6%88%E6%81%AF/"/>
     <id>http://yoursite.com/2016/02/03/Objective-C Runtime之消息/</id>
     <published>2016-02-02T16:00:00.000Z</published>
-    <updated>2016-02-14T13:05:00.000Z</updated>
+    <updated>2016-02-21T12:26:15.000Z</updated>
     <content type="html"><![CDATA[<h3 id="Method&amp;Message">Method&amp;Message</h3><p>什么是Method？  </p>
 <p>方法就是一个类中有名字的一串代码，平常我们写的<br><code>- (int)func:(NString *)str { ... }</code>就是一个方法，但是它在编译的时候会被转换成C函数调用，<br><code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>，也就是说，所谓的方法实际上就是C函数。</p>
 <p>从<code>static int func(SomeClass *self, SEL _cmd, NSString *str) { ... }</code>就可以明白为什么我们可以使用<code>self</code>和<code>_cmd</code>，因为他们在源码中是隐藏的，self代表着receiver，_cmd代表调用选择器selector。</p>
 <p>什么是Message？  </p>
 <p>消息是Objective-C中的核心，必须借助于runtime系统才能完成。当我们不了解runtime的时候，一个简单的<code>[receiver message]</code>往往会被认为是函数调用，实际上它仅仅是在编译期间确定了要向receiver这个接收者发送message消息，而receiver如何响应这条消息，编译阶段是无法知晓的，这个要到运行的时候来判断了。</p>
-<p>平常我们调用的<code>[self func:@&quot;呵呵哒&quot;];</code>会在编译期间被转化为<code>objc_msgSend(self, @selector(func:), @&quot;呵呵哒&quot;;</code>，也就是说，OC中发送消息会被转化为<code>objc_msgSend</code>。  </p>
+<p>平常我们调用的<code>[self func:@&quot;呵呵哒&quot;];</code>会在编译期间被转化为<code>objc_msgSend(self, @selector(func:), @&quot;呵呵哒&quot;;)</code>，也就是说，OC中发送消息会被转化为<code>objc_msgSend</code>。  </p>
 <p>那么，我们是否可以直接调用<code>objc_msgSend</code>来发送消息呢？理论上是可以的，虽然苹果极力不推荐。实际上编译器为了更好地进行错误判断，会执行严格的类型检查，也就是说，如果我们直接编写以上代码，会通不过编译，假如我们非要这么做，可以将编译选项<em>Enable Strict Checking of objc_msgSend Calls</em>设置为<em>NO</em>，或者将代码修改为<code>((int (*)(id, SEL, NSString *))objc_msgSend)(self, @selector(func:), @&quot;呵呵哒&quot;;</code>，就可以了。</p>
 <p>好了，无图无真相，下面就让我们用实验证明一下。</p>
 <p>首先我们新建了一个<code>Command Line Tool</code> Application，然后新建了一个名为MyClass的类，填写以下代码：</p>
@@ -488,7 +488,7 @@
     <link href="http://yoursite.com/2015/11/13/NSOperation%E5%92%8CNSOperationQueue/"/>
     <id>http://yoursite.com/2015/11/13/NSOperation和NSOperationQueue/</id>
     <published>2015-11-12T16:00:00.000Z</published>
-    <updated>2016-02-12T15:34:05.000Z</updated>
+    <updated>2016-03-19T16:31:08.000Z</updated>
     <content type="html"><![CDATA[<h3 id="NSOperation">NSOperation</h3><h3 id="概述">概述</h3><p><code>NSOperation</code>是一个抽象的类，包装了处理单个任务所需要的一些数据，代表执行单个任务的一个独立单元。不过尽管它是个抽象类，但是它已经帮我们处理了繁杂的多线程问题，并且可以确保线程安全，因此我们在使用的时候，就可以更专注于自己的业务。</p>
 <p>苹果已经默认给我们封装好了两个类，分别是<code>NSInvocationOperation</code>和<code>NSBlockOperation</code></p>
 <ul>
@@ -498,7 +498,7 @@
 </li>
 <li><p><code>NSBlockOperation</code> </p>
 <p>  NSBlockOperation和NSInvocationOperation相似，只是我们可以使用block替代方法执行我们的任务</p>
-  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSBlockOperation</span> *theOp = [<span class="built_in">NSBlockOperation</span> blockOperationWithBlock:^&#123;</span><br><span class="line">         <span class="built_in">NSLog</span>(<span class="string">@"Beginning operation.\n"</span>);</span><br><span class="line">       &#125;];</span><br></pre></td></tr></table></figure>
+  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSBlockOperation</span> *theOp = [<span class="built_in">NSBlockOperation</span> blockOperationWithBlock:^&#123;</span><br><span class="line"> 		<span class="built_in">NSLog</span>(<span class="string">@"Beginning operation.\n"</span>);</span><br><span class="line">  &#125;];</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>我们在block里面定义我们想要执行的任务，作为参数传给它，然后就会自动在后台线程执行了。</p>
@@ -516,7 +516,7 @@
 </li>
 <li><p><code>main</code>（可选）<br>  实现start方法之后，我们所有的任务可以在start里面实现，当然也可以覆写这个方法，将一部分简单的任务放在main中实现，有利于代码分离。</p>
 <ul>
-<li>这个方法中我们不需要手动创建autoreleasepool，因为NSOperation已经帮我们做了。</li>
+<li>这个方法中我们不需要手动创建autorelease pool，因为NSOperation已经帮我们做了。</li>
 <li>不要调用<code>super</code>。</li>
 </ul>
 </li>
@@ -1108,62 +1108,6 @@
     <summary type="html">
     <![CDATA[<h3 id="啥是run_loop">啥是run loop</h3><p>run loop就是当我们线程有任务的时候唤醒它，然后将任务分配给它去处理；当没有任务的时候，使线程沉睡，节省资源。</p>
 <p>每个线程都已经自动关联了run loop，我们不需要去创建它们。但是，并]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[创建私有Pod（from车牛）]]></title>
-    <link href="http://yoursite.com/2015/07/03/%E5%88%9B%E5%BB%BA%E7%A7%81%E6%9C%89pod/"/>
-    <id>http://yoursite.com/2015/07/03/创建私有pod/</id>
-    <published>2015-07-02T16:00:00.000Z</published>
-    <updated>2016-02-12T11:11:05.000Z</updated>
-    <content type="html"><![CDATA[<p>##Private Pod</p>
-<p>参考文档：<a href="http://blog.wtlucky.com/blog/2015/02/26/create-private-podspec/" target="_blank" rel="external">使用Cocoapods创建私有podspec</a> <a href="https://guides.cocoapods.org/" target="_blank" rel="external">CocoaPods Guides</a></p>
-<p>###建立私有Spec Repo</p>
-<p>车牛Private Spec Repo已经托管在我们自己的gitlab上。可以直接使用<a href="http://git.souche.com/geliang/cheniu_pod.git" target="_blank" rel="external">cheniu_pod</a>，调用下面的命令即可：</p>
-<pre><code>pod repo add cheniu_pod <span class="string">http:</span><span class="comment">//git.souche.com/geliang/cheniu_pod.git</span>
-</code></pre><p>在<code>~/.cocoapods/repos</code>目录下可以看到<code>cheniu_pod</code>目录。</p>
-<p><strong><em>ps:由于使用的是http方式添加的cheniu_pod，所以添加的时候需要输入用户名和密码。</em></strong></p>
-<p>###创建Pod项目</p>
-<p>这里只讲从0开始创建Pod项目，对已经存在的项目Pod化，根据文档自己研究下。创建Pod项目直接在对应的的目录下调用一下命令：</p>
-<pre><code>pod <span class="class"><span class="keyword">lib</span> <span class="title">create</span> <span class="title">cheniuTestPod</span></span>
-</code></pre><p>然后根据提示回答几个简单的设置问题就可以。<strong><em>前缀选择CNN，测试框架随便，反正也不会去用。</em></strong>创建完成之后可以在<code>cheniuTestPod/Pod/Classes 和 Assets</code>下面添加对应的类或者资源文件。在项目的<code>Pods/DevelopmentPods/...</code>中添加进来即可。</p>
-<p>框架写好之后，可以在项目的<code>cheniuTestPod/Example for cheniuTestPod/...</code>中写一下简单的测试代码。</p>
-<p>测试通过之后，在gitlab上面创建自己的repo并把自己的代码提交到远程库中。<strong><em>必须创建tag</em></strong></p>
-<pre><code>git add -A
-git <span class="operator"><span class="keyword">commit</span> -<span class="keyword">m</span> <span class="string">'xxxxxx'</span>
-git remote <span class="keyword">add</span> origin xxxxx
-git tag -<span class="keyword">m</span> <span class="string">'xxxxx'</span> <span class="number">0.1</span><span class="number">.0</span>
-git push -u origin <span class="keyword">master</span> <span class="comment">--tags</span></span>
-</code></pre><p>修改<code>podspec</code>文件，将多余的注释和字段删除。<strong><em>如果你的pod不需要资源文件一定要删掉<code>s.resource_bundles</code>字段，其他字段根据实际情况填写即可。</em></strong> 修改好之后可以做一次简单的验证<code>pod lib lint</code>,当看到</p>
-<pre><code>-&gt; cheniuTestPod (<span class="number">0.1</span><span class="number">.0</span>)
-cheniuTestPod passed validation
-</code></pre><p>时，说明验证是通过的。<strong><em>这里不验证其实也没关系，在你将这个podspec提交到私有Spec Repo中时也会做验证的</em></strong></p>
-<p>###向Spec Repo提交podspec</p>
-<p>按照习惯提交之前要做两件事情</p>
-<ul>
-<li>删除podspec中的多余注释！</li>
-<li>做一次上面提到的验证工作。</li>
-</ul>
-<p>然后使用下面的命令：</p>
-<pre><code><span class="label">pod</span> repo <span class="keyword">push </span>cheniu_pod cheniuTestPod.podspec
-</code></pre><p>完成之后我们可以到<code>~/.cocoapods/repos/cheniu_pod/Specs</code>中找到我们提交的spec，并且可以通过<code>pod search</code>查到我们提交的库。</p>
-<p>###使用私有Pod</p>
-<p>直接在我们自己的<code>Podfile</code>中加入</p>
-<pre><code><span class="title">pod</span> <span class="string">'cheniuTestPod'</span>, <span class="string">'~&gt; 0.1.0'</span>
-</code></pre><p>和source源</p>
-<pre><code><span class="built_in">source</span> <span class="string">'http://git.souche.com/geliang/cheniu_pod.git'</span>
-<span class="built_in">source</span> <span class="string">'https://github.com/CocoaPods/Specs.git'</span>
-</code></pre><p>就可以了。<strong><em>加source非常重要，不然调用<code>pod install</code>时会找不到我们自己的私有库的。</em></strong></p>
-<p>###podspec升级，维护</p>
-<p>维护podsepc，或者采用<code>subspec</code>新功能，参考文档自己摸索。</p>
-<p>###私有的Spec Repo维护</p>
-<p>同样参考文档吧！</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>##Private Pod</p>
-<p>参考文档：<a href="http://blog.wtlucky.com/blog/2015/02/26/create-private-podspec/" target="_blank" rel="external">使用Coco]]>
     </summary>
     
   </entry>

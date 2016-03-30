@@ -257,7 +257,7 @@
 </li>
 <li><p><code>NSBlockOperation</code> </p>
 <p>  NSBlockOperation和NSInvocationOperation相似，只是我们可以使用block替代方法执行我们的任务</p>
-  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSBlockOperation</span> *theOp = [<span class="built_in">NSBlockOperation</span> blockOperationWithBlock:^&#123;</span><br><span class="line">         <span class="built_in">NSLog</span>(<span class="string">@"Beginning operation.\n"</span>);</span><br><span class="line">       &#125;];</span><br></pre></td></tr></table></figure>
+  <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSBlockOperation</span> *theOp = [<span class="built_in">NSBlockOperation</span> blockOperationWithBlock:^&#123;</span><br><span class="line"> 		<span class="built_in">NSLog</span>(<span class="string">@"Beginning operation.\n"</span>);</span><br><span class="line">  &#125;];</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>我们在block里面定义我们想要执行的任务，作为参数传给它，然后就会自动在后台线程执行了。</p>
@@ -275,7 +275,7 @@
 </li>
 <li><p><code>main</code>（可选）<br>  实现start方法之后，我们所有的任务可以在start里面实现，当然也可以覆写这个方法，将一部分简单的任务放在main中实现，有利于代码分离。</p>
 <ul>
-<li>这个方法中我们不需要手动创建autoreleasepool，因为NSOperation已经帮我们做了。</li>
+<li>这个方法中我们不需要手动创建autorelease pool，因为NSOperation已经帮我们做了。</li>
 <li>不要调用<code>super</code>。</li>
 </ul>
 </li>
@@ -671,7 +671,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -712,7 +712,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
